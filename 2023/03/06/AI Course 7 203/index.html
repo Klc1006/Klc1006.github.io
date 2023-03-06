@@ -19,27 +19,31 @@
         <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta name="description" content="实验风向：设计多智能体Q学习算法来学习一般和马尔可夫博弈中的均衡策略 相关Qlearning：一种基于相关平衡解概念的算法 实验结果：相关Q学习优于纳什Q学习 相关Q在一般和（general sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。相关Q也推广了 零和博弈，纳什均衡集和极小极大均衡集重合。">
+    <meta name="description" content="中山大学计算机学院 人工智能实验报告（七） (2022春季实验报告)  课程名称:Artificial Intelligence    教学班级 专业方向 学号 姓名     计科1班 计算机科学与技术 20337013 陈梁坤    一、实验题目 在给定文本数据集完成文本情感分类训练，在测试集完成测试，计算准确率。 思考：在前面的文本分类算法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【论文调研】Correlated Q-Learning笔记">
-<meta property="og:url" content="https://klc1006.github.io/2023/03/06/Correlated%20Q-Learning/index.html">
+<meta property="og:title" content="【AI Course】朴素贝叶斯">
+<meta property="og:url" content="https://klc1006.github.io/2023/03/06/AI%20Course%207%20203/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="实验风向：设计多智能体Q学习算法来学习一般和马尔可夫博弈中的均衡策略 相关Qlearning：一种基于相关平衡解概念的算法 实验结果：相关Q学习优于纳什Q学习 相关Q在一般和（general sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。相关Q也推广了 零和博弈，纳什均衡集和极小极大均衡集重合。">
+<meta property="og:description" content="中山大学计算机学院 人工智能实验报告（七） (2022春季实验报告)  课程名称:Artificial Intelligence    教学班级 专业方向 学号 姓名     计科1班 计算机科学与技术 20337013 陈梁坤    一、实验题目 在给定文本数据集完成文本情感分类训练，在测试集完成测试，计算准确率。 思考：在前面的文本分类算法">
 <meta property="og:locale">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/xHsGlYjcWP5hk6y.png">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/QG1vJyFrPXA8jO7.png">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/AY9GvS7zrybs1et.png">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/qIYVAepcNdS4Mjz.png">
-<meta property="article:published_time" content="2023-03-06T08:34:34.725Z">
-<meta property="article:modified_time" content="2023-03-06T09:17:02.996Z">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/cdDRSAjs9ato8Uu.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/n8qbQh74cmAN6Ok.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/8WvtmPNHxygOnuj.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/PxnRCQovbuZFDfN.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/stbjNDWe2pGaUOd.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/8bZ5NXJcEuO2tsY.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/3fF8aHbzhoCBWKL.png">
+<meta property="article:published_time" content="2023-03-06T11:38:29.637Z">
+<meta property="article:modified_time" content="2023-03-06T11:31:16.062Z">
 <meta property="article:author" content="Klc">
+<meta property="article:tag" content="朴素贝叶斯">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://s2.loli.net/2023/03/06/xHsGlYjcWP5hk6y.png">
+<meta name="twitter:image" content="https://s2.loli.net/2023/03/06/cdDRSAjs9ato8Uu.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
     
-    <title>【论文调研】Correlated Q-Learning笔记 · PityBug&#39;s Studio</title>
+    <title>【AI Course】朴素贝叶斯 · PityBug&#39;s Studio</title>
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
 - testing support for link[rel=preload]
@@ -264,7 +268,7 @@
                 <a href="/">PityBug&#39;s Studio.</a>
             </div>
             <div class="post-title header-element">
-                <a href="#" class="post-name">【论文调研】Correlated Q-Learning笔记</a>
+                <a href="#" class="post-name">【AI Course】朴素贝叶斯</a>
             </div>
         </div>
     
@@ -310,7 +314,7 @@
         <h1 class="intro-title">
             <!-- 主页  -->
             
-                【论文调研】Correlated Q-Learning笔记
+                【AI Course】朴素贝叶斯
             <!-- 404 -->
             
         </h1>
@@ -330,13 +334,15 @@
                     <div class= post-intro-tags >
     
     
+        <a class="post-tag" href="javascript:void(0);" data-tags="朴素贝叶斯">朴素贝叶斯</a>
+    
 </div>
 
                 
                 <!-- 文章字数统计 -->
                 
                     <div class="post-intro-read">
-                        <span>字数统计: <span class="post-count word-count">1.3k</span>阅读时长: <span class="post-count reading-time">4 min</span></span>
+                        <span>字数统计: <span class="post-count word-count">1.2k</span>阅读时长: <span class="post-count reading-time">5 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -497,95 +503,108 @@
             <div class="container container-unloaded">
                 <main class="main post-page">
     <article class="article-entry">
-        <p>实验风向：设计多智能体Q学习算法来学习一般和马尔可夫博弈中的均衡策略</p>
-<p>相关Qlearning：一种基于相关平衡解概念的算法</p>
-<p>实验结果：相关Q学习优于纳什Q学习</p>
-<p>相关Q在一般和（general
-sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。相关Q也推广了</p>
-<p>零和博弈，纳什均衡集和极小极大均衡集重合。</p>
-<span id="more"></span>
-<p><strong>一些便于理解相关均衡的例子：</strong></p>
-<p>交通信号。对于在交叉口相遇的两个agent，交通信号转换为概率为p的联合概率分布（stop，go）和概率为1−p的（go，stop）。没有为（go，go）或（stop，stop）分配概率质量。给出红色信号的agent的最佳行动是停止，而给出绿色信号的agent最佳行动是离开。</p>
-<ul>
-<li><p>困难点：在一般和单次博弈中，存在具有多个值的多个均衡</p></li>
-<li><p>解决：引入相关Q四种变量解决均衡选择问题</p></li>
-<li><p>四种变量：功利、平等、财阀和独裁（utilitarian, egalitarian,
-plutocratic, and dictatorial）</p></li>
-</ul>
-<h3 id="overview">overview</h3>
-<p>本文组织如下。</p>
-<ul>
-<li>一次性博弈中相关均衡的定义以及Marko博弈中相关平衡策略的定义。</li>
-<li>在第3节中，我们定义了两种版本的多智能体Q-学习，一种是集中式的，另一种是分散式的，我们展示了相关-Q、Nash-Q和FF-Q是如何作为这些通用算法的特例出现的。</li>
-<li>在第4节中，我们包括了零和和共同利益马尔可夫博弈的理论讨论，其中我们证明了相关Q学习的某些变体保证收敛到平稳均衡策略。</li>
-<li>在第6节中，我们描述了将功利主义、平等主义、财阀主义和独裁相关的Q学习与Q学习、FF-Q和Nash-Q的两个变体进行比较的模拟实验</li>
-</ul>
-<h3 id="实验比较">实验比较</h3>
-<p>使用各种多智能体Q学习算法进行的实验，其中包括三个网格游戏和网格足球，以及一组随机生成的游戏</p>
-<p>我们四分之三的相关Q学习实现是集中的：功利的、平等的和财阀的。（
-utilitarian, egalitarian, and plutocratic）</p>
-<p>只有独裁（dictatorial）的变体是分散的：（每一个特工都像独裁者一样学习。）</p>
-<h4 id="网格游戏">网格游戏</h4>
+        <h1 align="center">
+<font size=5>中山大学计算机学院</font><br>
+<font size=6>人工智能实验报告（七）</font><br>
+<font size=4>(2022春季实验报告)</font>
+</h1>
+<p><strong>课程名称:Artificial Intelligence</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">教学班级</th>
+<th style="text-align: center;">专业方向</th>
+<th style="text-align: center;">学号</th>
+<th style="text-align: center;">姓名</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">计科1班</td>
+<td style="text-align: center;">计算机科学与技术</td>
+<td style="text-align: center;">20337013</td>
+<td style="text-align: center;">陈梁坤</td>
+</tr>
+</tbody>
+</table>
+<h2 id="一实验题目">一、实验题目</h2>
+<p>在给定文本数据集完成文本情感分类训练，在测试集完成测试，计算准确率。</p>
+<p><strong>思考：</strong>在前面的文本分类算法中，如果测试文本中的单词没有在训练文本中出现会造成什么结果？</p>
+<p>会影响到后验概率的计算结果，使分类产生偏差。解决这一问题的方法是采用<strong>贝叶斯估计</strong>。具体地，方法为：</p>
 <figure>
-<img src="https://s2.loli.net/2023/03/06/xHsGlYjcWP5hk6y.png"
-alt="image-20230226175032428" />
-<figcaption aria-hidden="true">image-20230226175032428</figcaption>
+<img src="https://s2.loli.net/2023/03/06/cdDRSAjs9ato8Uu.png"
+alt="image-20220511210520596" />
+<figcaption aria-hidden="true">image-20220511210520596</figcaption>
 </figure>
-<ul>
-<li><p>reward：</p>
-<p>在GG1中，有两个不同的目标，每个目标值100分。在GG2中，有一个值100分的目标和两个障碍：如果一个代理人试图通过其中一个障碍，那么这一行动失败的概率为1/2。在GG3中，与GG2一样，有一个目标值100分，但没有随机过渡，奖励结构也不同：在开始时，如果两个代理都通过向上移动来避开中心状态，则每个代理将获得20分的奖励；此外，任何选择中心状态的代理都将获得25分的奖励（注：如果两个代理都选择中心状态，则会发生冲突，每个代理都会获得−25=25−50）。</p></li>
-<li><p>平衡策略</p>
-<p>探讨Q-learning学了什么：</p>
-<ul>
-<li>Q学习不会收敛，也不会学习均衡政策；</li>
-<li>敌友Q学习趋同，但无需学习均衡政策；</li>
-<li>NE-Q的两个变体和CE-Q的所有四个变体学习均衡策略。</li>
-</ul></li>
-</ul>
+<p>式中 λ≥0。等价于在随机变量各个取值的频数上赋予一个正数 λ≥0。当 λ=0
+时就是极大似然估计。尝取 λ=1，这时称为<strong>拉普拉斯平滑</strong>
+(Laplacian smoothing)。</p>
+<p><strong>要求使用拉普拉斯平滑技巧提高准确率</strong></p>
+<h2 id="二实验内容">二、实验内容</h2>
+<h3 id="算法原理">算法原理</h3>
+<p>朴素贝叶斯法</p>
+<p>思想：<strong>朴素贝叶斯假设，又称条件独立性假设</strong></p>
+<p>做法：根据<strong>贝叶斯定理</strong>来估计每个类别的<strong>后验概率</strong>。</p>
+<p>朴素贝叶斯法的目标是找到</p>
 <figure>
-<img src="https://s2.loli.net/2023/03/06/QG1vJyFrPXA8jO7.png"
-alt="image-20230226175852687" />
-<figcaption aria-hidden="true">image-20230226175852687</figcaption>
+<img src="https://s2.loli.net/2023/03/06/n8qbQh74cmAN6Ok.png"
+alt="image-20220511202930293" />
+<figcaption aria-hidden="true">image-20220511202930293</figcaption>
 </figure>
-<p>测试阶段：反复进行网格游戏。显示了<span
-class="math inline">\(10^4\)</span>次移动的平均得分。比赛的次数因agent的政策而异：有时agent直接向球门移动。</p>
-<p>对于每个学习算法，</p>
-<ul>
-<li>收敛性:表示Q值是否收敛；</li>
-<li>平衡值:说明任何收敛Q值是否对应于均衡策略；</li>
-<li>平衡游戏:说明测试期间的游戏轨迹是否符合平衡策略。</li>
-</ul>
-<h4 id="足球游戏">足球游戏</h4>
 <figure>
-<img src="https://s2.loli.net/2023/03/06/AY9GvS7zrybs1et.png"
-alt="image-20230226181301477" />
-<figcaption aria-hidden="true">image-20230226181301477</figcaption>
+<img src="https://s2.loli.net/2023/03/06/8WvtmPNHxygOnuj.png"
+alt="image-20220511205602180" />
+<figcaption aria-hidden="true">image-20220511205602180</figcaption>
 </figure>
-<p>圆圈代表球。如果玩家A移动W，他将失去球给球员B；但如果球员B移动E，试图偷球。</p>
 <figure>
-<img src="https://s2.loli.net/2023/03/06/qIYVAepcNdS4Mjz.png"
-alt="image-20230226183053723" />
-<figcaption aria-hidden="true">image-20230226183053723</figcaption>
+<img src="https://s2.loli.net/2023/03/06/PxnRCQovbuZFDfN.png"
+alt="image-20220511205530600" />
+<figcaption aria-hidden="true">image-20220511205530600</figcaption>
 </figure>
-<ul>
-<li><p>基本Q-learning缺点：2p0s multiple Q-learners
-没有达到收敛</p></li>
-<li><p>在表4中，我们展示了这场足球比赛测试阶段的结果。</p>
-<ul>
-<li>除Q学习者外，所有玩家都玩“好”游戏，这意味着每个玩家赢得的游戏数量大致相同；因此，分数接近0，0。</li>
-<li>Friend-Q倾向于让对方快速获胜（观察比赛的数量），并且只因为格子足球的对称性，所以踢出了一场“好”的比赛。</li>
-</ul></li>
-</ul>
-<p>总之，在网格足球这一双人零和马尔可夫博弈中，Q学习并不收敛。直观地说，这一结果的基本原理是明确的：Q学习寻求确定性最优策略，但在这个游戏中不存在这种策略。相关Q学习，如纳什Q学习，学习与foe-Q学习相同的Q值。然而，correlated-Q学习可能相关的均衡策略，而foe-Q和Nash-Q学习最小-最大均衡策略。</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/stbjNDWe2pGaUOd.png"
+alt="image-20220511205640632" />
+<figcaption aria-hidden="true">image-20220511205640632</figcaption>
+</figure>
+<h3 id="关键代码展示">关键代码展示</h3>
+<h4 id="训练数据集">训练数据集</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">emotion=[<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>]<span class="comment">#记录整个训练数据集不同的情感的频数</span></span><br><span class="line">total=[<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>] <span class="comment">#记录每种情感的中不同单词的个数</span></span><br><span class="line"></span><br><span class="line">mark=&#123;&#125;</span><br><span class="line"><span class="built_in">dict</span>=[]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">trainNB</span>(<span class="params">train_set</span>):</span><br><span class="line">    <span class="keyword">global</span> total</span><br><span class="line">    words=&#123;&#125;</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;train.txt&quot;</span>,<span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">        lines=file.readlines()[<span class="number">1</span>:]<span class="comment">#读取第二行到最倒数第一行</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> sentence <span class="keyword">in</span> lines:</span><br><span class="line">        sentence=sentence.split() <span class="comment">#  sentence[0]：句子编号 sentence[1]：情绪编号 sentence[2]:情绪</span></span><br><span class="line">        sentence[<span class="number">1</span>]=<span class="built_in">int</span>(sentence[<span class="number">1</span>]) <span class="comment">#将情绪变换转成int便于判断</span></span><br><span class="line">        emotion[sentence[<span class="number">1</span>]]+=<span class="number">1</span>  <span class="comment">#记录整个训练数据集不同的情感的频数</span></span><br><span class="line">        train_set.append(sentence) <span class="comment">#用train_set记录整个训练数据集</span></span><br><span class="line">   </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">7</span>):<span class="comment">#</span></span><br><span class="line">        d=&#123;&#125;				<span class="comment">#记录某一情绪之下，某一个单词出现的频数</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(train_set)):  <span class="comment">#编译整个训练数据集</span></span><br><span class="line">            <span class="keyword">if</span>(train_set[j][<span class="number">1</span>]==i):  </span><br><span class="line">                <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>,<span class="built_in">len</span>(train_set[j])):  <span class="comment">#</span></span><br><span class="line">                    mark[train_set[j][k]]=<span class="number">0</span>  <span class="comment">#记录整个训练数据集的不同单词的个数，总数用于拉普拉斯平滑技巧</span></span><br><span class="line">                    total[i]+=<span class="number">1</span> <span class="comment">#记录每一种情感的不同单词的个数</span></span><br><span class="line">                    <span class="keyword">if</span>(train_set[j][k] <span class="keyword">in</span> d): <span class="comment">#单词加入字典便于查找</span></span><br><span class="line">                        d[train_set[j][k]]+=<span class="number">1</span></span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        d[train_set[j][k]]=<span class="number">1</span></span><br><span class="line">        <span class="built_in">dict</span>.append(d <span class="comment">#记录每一种情绪的单词频数表</span></span><br></pre></td></tr></table></figure>
+<h4 id="测试数据集">测试数据集</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">v=[]<span class="comment">#记录测试的出的情感集合</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">testNB</span>(<span class="params">train_set,test_set</span>):</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;test.txt&quot;</span>,<span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">        lines=file.readlines()[<span class="number">1</span>:]<span class="comment">#读取第二行到最倒数第一行</span></span><br><span class="line">    <span class="keyword">for</span> sentence <span class="keyword">in</span> lines:</span><br><span class="line">        sentence=sentence.split()</span><br><span class="line">        sentence[<span class="number">1</span>]=<span class="built_in">int</span>(sentence[<span class="number">1</span>])</span><br><span class="line">        test_set.append(sentence)<span class="comment">#读取测试数据集的句子</span></span><br><span class="line">        </span><br><span class="line">    emo_prossible=<span class="number">1</span>  <span class="comment">#标记当前最优可能的情感</span></span><br><span class="line">    max_prob=-<span class="number">1</span>  <span class="comment">#最大可能概率</span></span><br><span class="line">    curr_prob=<span class="number">1</span>  <span class="comment">#记录档当前情感的概率</span></span><br><span class="line">    correct=<span class="number">0</span>  <span class="comment">#记录测试正确的数目</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(test_set)):  <span class="comment">#遍历测试集合，取出句子逐一比对</span></span><br><span class="line">        emo_prossible=<span class="number">1</span>   <span class="comment">#初始化当前最优可能的情感</span></span><br><span class="line">        max_prob=-<span class="number">1</span>   <span class="comment">#初始化最优可能的情感的概率</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(<span class="built_in">dict</span>)):</span><br><span class="line">            curr_prob=<span class="number">1</span>  <span class="comment">#初始化当前的情感的概率</span></span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>, <span class="built_in">len</span>(test_set[i])):  <span class="comment">#取出测试句子中的每个单词</span></span><br><span class="line">                <span class="keyword">if</span>(test_set[i][k] <span class="keyword">in</span> <span class="built_in">dict</span>[j]): <span class="comment">#采用拉普拉斯平滑计算概率</span></span><br><span class="line">                    curr_prob*=  (<span class="built_in">dict</span>[j][test_set[i][k]]+alpha)/(total[j+<span class="number">1</span>]+<span class="built_in">len</span>(mark)*alpha)</span><br><span class="line">                <span class="keyword">elif</span>(test_set[i][k] <span class="keyword">in</span> mark):  <span class="comment">#如果从测试句子的单词不在当前训练语句里面，采用拉普拉斯平滑避免概率为0</span></span><br><span class="line">                    curr_prob*=(alpha)/(total[j+<span class="number">1</span>]+<span class="built_in">len</span>(mark)*alpha) <span class="comment">#设置参数为1</span></span><br><span class="line">            curr_prob*=emotion[j+<span class="number">1</span>]/<span class="built_in">len</span>(train_set) </span><br><span class="line">            <span class="keyword">if</span>(curr_prob&gt;max_prob):  <span class="comment">#更新最优可能情感的信息</span></span><br><span class="line">                max_prob=curr_prob</span><br><span class="line">                emo_prossible=j+<span class="number">1</span></span><br><span class="line">        v.append(emo_prossible)     <span class="comment">#将每句估计的情感保存   </span></span><br><span class="line">        <span class="keyword">if</span>(emo_prossible==test_set[i][<span class="number">1</span>]):</span><br><span class="line">            correct+=<span class="number">1</span>    <span class="comment">#记录正确估计情感的频数</span></span><br><span class="line">    <span class="built_in">print</span>(correct/<span class="built_in">len</span>(test_set)) <span class="comment">#输出正确率</span></span><br></pre></td></tr></table></figure>
+<h4 id="对比输出">对比输出</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">result_comparison</span>(<span class="params">test_set</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;assessment   fact&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(test_set)):</span><br><span class="line">        <span class="keyword">if</span>(v[i]==test_set[i][<span class="number">1</span>]):</span><br><span class="line">            <span class="built_in">print</span>(emo[v[i]],test_set[i][<span class="number">2</span>],<span class="string">&quot; &quot;</span>,end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;correct&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(emo[v[i]],test_set[i][<span class="number">2</span>])</span><br></pre></td></tr></table></figure>
+<h2 id="三实验结果及分析">三、实验结果及分析</h2>
+<h3 id="实验结果展示实例">实验结果展示实例</h3>
+<h4 id="不使用拉普拉斯平滑">不使用拉普拉斯平滑</h4>
+<p>设置alpha=0</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/8bZ5NXJcEuO2tsY.png"
+alt="image-20220511210146496" />
+<figcaption aria-hidden="true">image-20220511210146496</figcaption>
+</figure>
+<p><strong>输出结果</strong></p>
+<p>第一列是估计的情感，第二列是实际情感，如果估计正确输出correct</p>
+<p>最后一行显示该估计算法的正确率</p>
+<p>可以看到当不用拉普拉斯平滑时，正确率只有<strong>23.4%</strong></p>
+<h4 id="使用拉普拉斯平滑">使用拉普拉斯平滑</h4>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/3fF8aHbzhoCBWKL.png"
+alt="image-20220511201955088" />
+<figcaption aria-hidden="true">image-20220511201955088</figcaption>
+</figure>
+<p><strong>输出结果</strong></p>
+<p>第一列是估计的情感，第二列是实际情感，如果估计正确输出correct</p>
+<p>最后一行显示该估计算法的正确率</p>
+<p>可以看到当使用拉普拉斯平滑后正确率提高到了<strong>38.4%</strong></p>
 
     </article>
     <!-- license -->
     
         <div class="license-wrapper">
             <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
-            <p>原文链接：<a href="https://klc1006.github.io/2023/03/06/Correlated%20Q-Learning/">https://klc1006.github.io/2023/03/06/Correlated%20Q-Learning/</a>
-            <p>发表日期：<a href="https://klc1006.github.io/2023/03/06/Correlated%20Q-Learning/">March 6th 2023, 4:34:34 pm</a>
-            <p>更新日期：<a href="https://klc1006.github.io/2023/03/06/Correlated%20Q-Learning/">March 6th 2023, 5:17:02 pm</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2023/03/06/AI%20Course%207%20203/">https://klc1006.github.io/2023/03/06/AI%20Course%207%20203/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2023/03/06/AI%20Course%207%20203/">March 6th 2023, 7:38:29 pm</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2023/03/06/AI%20Course%207%20203/">March 6th 2023, 7:31:16 pm</a>
             <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     
@@ -594,16 +613,16 @@ alt="image-20230226183053723" />
         <li class="next">
             
                 <div class="nextSlogan">Next Post</div>
-                <a href="/2023/03/06/AdaptiveFSP%E7%AC%94%E8%AE%B0/" title="【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记">
-                    <div class="nextTitle">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</div>
+                <a href="/2023/03/06/AI%20Course%208/" title="【AI Course】KNN完成情感分类标签">
+                    <div class="nextTitle">【AI Course】KNN完成情感分类标签</div>
                 </a>
             
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href="/2023/03/06/DeepStack%E7%AC%94%E8%AE%B0/" title="【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记">
-                    <div class="prevTitle">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</div>
+                <a href="/2023/03/06/AI%20Course%206/" title="【AI Course】归结演绎推理">
+                    <div class="prevTitle">【AI Course】归结演绎推理</div>
                 </a>
             
         </li>
@@ -758,7 +777,11 @@ alt="image-20230226183053723" />
                 <div class="toc-catalog">
                     <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
                 </div>
-                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#overview"><span class="toc-number">1.</span> <span class="toc-text">overview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%AF%94%E8%BE%83"><span class="toc-number">2.</span> <span class="toc-text">实验比较</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BD%91%E6%A0%BC%E6%B8%B8%E6%88%8F"><span class="toc-number">2.1.</span> <span class="toc-text">网格游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B6%B3%E7%90%83%E6%B8%B8%E6%88%8F"><span class="toc-number">2.2.</span> <span class="toc-text">足球游戏</span></a></li></ol></li></ol>
+                <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">
+中山大学计算机学院
+人工智能实验报告（七）
+(2022春季实验报告)
+</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%AE%9E%E9%AA%8C%E9%A2%98%E7%9B%AE"><span class="toc-number">1.1.</span> <span class="toc-text">一、实验题目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%AE%9E%E9%AA%8C%E5%86%85%E5%AE%B9"><span class="toc-number">1.2.</span> <span class="toc-text">二、实验内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.1.</span> <span class="toc-text">算法原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81%E5%B1%95%E7%A4%BA"><span class="toc-number">1.2.2.</span> <span class="toc-text">关键代码展示</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">训练数据集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">测试数据集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E6%AF%94%E8%BE%93%E5%87%BA"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">对比输出</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%88%86%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">三、实验结果及分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA%E5%AE%9E%E4%BE%8B"><span class="toc-number">1.3.1.</span> <span class="toc-text">实验结果展示实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E4%BD%BF%E7%94%A8%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E5%B9%B3%E6%BB%91"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">不使用拉普拉斯平滑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E5%B9%B3%E6%BB%91"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">使用拉普拉斯平滑</span></a></li></ol></li></ol></li></ol></li></ol>
             </div>
         
         <!-- sidebar -->
