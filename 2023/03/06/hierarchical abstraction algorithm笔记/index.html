@@ -19,18 +19,27 @@
         <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta property="og:type" content="website">
-<meta property="og:title">
-<meta property="og:url" content="https://klc1006.github.io/archives/index.html">
+    <meta name="description" content="（看得有点迷糊，不确定理解得对不对） Main Abstraction Algorithm  让r是我们执行公共聚类的游戏的特殊回合 对于初始的\(\hat{r}\)−1轮，我们使用任意算法\(A_r\)计算第r轮的（潜在不完美回忆）抽象。例如，在扑克中，最强agent在预循环中不使用抽象（即使他们确实使用了抽象，也不需要公共聚类，可以单独执行）。 将第\(\hat{r}\)轮的公共状态">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold&#39;em Agent 笔记">
+<meta property="og:url" content="https://klc1006.github.io/2023/03/06/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name">
+<meta property="og:description" content="（看得有点迷糊，不确定理解得对不对） Main Abstraction Algorithm  让r是我们执行公共聚类的游戏的特殊回合 对于初始的\(\hat{r}\)−1轮，我们使用任意算法\(A_r\)计算第r轮的（潜在不完美回忆）抽象。例如，在扑克中，最强agent在预循环中不使用抽象（即使他们确实使用了抽象，也不需要公共聚类，可以单独执行）。 将第\(\hat{r}\)轮的公共状态">
 <meta property="og:locale">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/3CdiK7zw1emJxBF.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/NhIy4ej2sVRg1pW.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/Qz8HFLqcykstmVr.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/VAHpQMPYvsW4JTe.png">
+<meta property="article:published_time" content="2023-03-06T08:34:34.708Z">
+<meta property="article:modified_time" content="2023-03-06T09:10:56.277Z">
 <meta property="article:author" content="Klc">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2023/03/06/3CdiK7zw1emJxBF.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
     
-    <title>PityBug&#39;s Studio</title>
+    <title>【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold&#39;em Agent 笔记 · PityBug&#39;s Studio</title>
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
 - testing support for link[rel=preload]
@@ -217,6 +226,8 @@
         }
     </script>
     
+        <body class="post-body">
+    
         <!-- header -->
         <header class="header header-mobile">
     <!-- top read progress line -->
@@ -246,6 +257,17 @@
     </div>
     <!-- toggle banner for post layout -->
     
+        
+            <div class="banner">
+        
+            <div class="blog-title header-element">
+                <a href="/">PityBug&#39;s Studio.</a>
+            </div>
+            <div class="post-title header-element">
+                <a href="#" class="post-name">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记</a>
+            </div>
+        </div>
+    
 </header>
 
         <!-- fixed footer -->
@@ -272,24 +294,78 @@
 
 
 
+    height:50vh;
+
 ">
     
     <!-- 主页  -->
     
+        
+    <!-- 404页  -->
+    
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(/)"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
+            
+                【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post...
+            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
+                
+            <!-- 404 -->
+            
         </p>
         <!-- 文章页 meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+    
+</div>
+
+                
+                <!-- 文章字数统计 -->
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">2k</span>阅读时长: <span class="post-count reading-time">7 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <!-- 撰写日期 -->
+                    <span class="iconfont-archer post-intro-calander">&#xe676;</span>
+                    <span class="post-intro-time">2023/03/06</span>
+                    <!-- busuanzi -->
+                    
+                        <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                            <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    
+                    <!-- 文章分享 -->
+                    <span class="share-wrapper">
+                        <span class="iconfont-archer share-icon">&#xe71d;</span>
+                        <span class="share-text">Share</span>
+                        <ul class="share-list">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
         
     </div>
 </div>
@@ -419,322 +495,153 @@
 
             <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
             <div class="container container-unloaded">
-                <main class="main index-page">
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/03/06/AdaptiveFSP%E7%AC%94%E8%AE%B0/">
-                
-                <span class="abstract-title-text">[Untitled Post]</span>
-            </a>
-            <div class="abstract-content">
-                <table>
-<tbody>
-<tr class="odd">
-<td>title:【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS
-CONTROL ADVERSARIAL GAMES 笔记</td>
-</tr>
-<tr class="even">
-<td>mathjax:true</td>
-</tr>
-</tbody>
-</table>
-<p>Adaptive FSP</p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/03/06</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/03/06/Correlated%20Q-Learning/">
-                
-                <span class="abstract-title-text">[Untitled Post]</span>
-            </a>
-            <div class="abstract-content">
-                <table>
-<tbody>
-<tr class="odd">
-<td>title:【论文调研】Correlated Q-Learning笔记</td>
-</tr>
-<tr class="even">
-<td>mathjax:true</td>
-</tr>
-</tbody>
-</table>
-<p>实验风向：设计多智能体Q学习算法来学习一般和马尔可夫博弈中的均衡策略</p>
-<p>相关Qlearning：一种基于相关平衡解概念的算法</p>
-<p>实验结果：相关Q学习优于纳什Q学习</p>
-<p>相关Q在一般和（general
-sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。相关Q也推广了</p>
-<p>零和博弈，纳什均衡集和极小极大均衡集重合。</p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/03/06</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/03/06/DeepStack%E7%AC%94%E8%AE%B0/">
-                
-                <span class="abstract-title-text">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</span>
-            </a>
-            <div class="abstract-content">
-                <p>发表日期: 2017 机构: Alberta University</p>
-<p><strong>核心算法：公共树博弈建模+限制深度持续重新求解+深度反事实价值网络+CFR-D算法+范围（range）</strong></p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/03/06</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/03/06/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/">
-                
-                <span class="abstract-title-text">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</span>
-            </a>
-            <div class="abstract-content">
-                参考链接：https://zhuanlan.zhihu.com/p/38168216
-Fictitious play（FP）
-每个玩家在自我对局中保持两个策略：平均策略（average
-strategies）和最优反应策略（best response)
-，每个玩家在对局中不断的采取对对手平均策略最优反应策略
-best
-response：在对手策略固定的情形下，能够获得最大收益的策略
-Extensive-Form Fictitious
-Play
-一下公式展示这是如何通过加权组合其实现等效的行为策略来实现正常形式策略的混合
-
-
-image-20230123021039...
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/03/06</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/03/06/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">
-                
-                <span class="abstract-title-text">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold&#39;em Agent 笔记</span>
-            </a>
-            <div class="abstract-content">
-                （看得有点迷糊，不确定理解得对不对）
-Main Abstraction Algorithm
-
-让r是我们执行公共聚类的游戏的特殊回合
-对于初始的\(\hat{r}\)−1轮，我们使用任意算法\(A_r\)计算第r轮的（潜在不完美回忆）抽象。例如，在扑克中，最强agent在预循环中不使用抽象（即使他们确实使用了抽象，也不需要公共聚类，可以单独执行）。
-将第\(\hat{r}\)轮的公共状态聚集到C桶中。
-
-
-
-image-20230217171729578
-
-Algorithm
-for Computing Abstraction of Public Informat...
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/03/06</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/03/06/the%20dynamics%20of%20reforcelearning/">
-                
-                <span class="abstract-title-text">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</span>
-            </a>
-            <div class="abstract-content">
-                <p>区分两个learner：</p>
+                <main class="main post-page">
+    <article class="article-entry">
+        <p>（看得有点迷糊，不确定理解得对不对）</p>
+<h3 id="main-abstraction-algorithm">Main Abstraction Algorithm</h3>
 <ul>
-<li>不知道（或忽略）其他agent的存在的 reforcelearner</li>
-<li>明确尝试学习联合动作的价值及其对应者的策略的learner</li>
+<li><p>让r是我们执行公共聚类的游戏的特殊回合</p></li>
+<li><p>对于初始的<span
+class="math inline">\(\hat{r}\)</span>−1轮，我们使用任意算法<span
+class="math inline">\(A_r\)</span>计算第r轮的（潜在不完美回忆）抽象。例如，在扑克中，最强agent在预循环中不使用抽象（即使他们确实使用了抽象，也不需要公共聚类，可以单独执行）。</p></li>
+<li><p>将第<span
+class="math inline">\(\hat{r}\)</span>轮的公共状态聚集到C桶中。</p></li>
 </ul>
-<p>以这两个视角：研究合作多智能体系统中的Q-learning</p>
-<p>关注点：</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/3CdiK7zw1emJxBF.png"
+alt="image-20230217171729578" />
+<figcaption aria-hidden="true">image-20230217171729578</figcaption>
+</figure>
+<h3
+id="algorithm-for-computing-abstraction-of-public-information有点抽象有点难懂">Algorithm
+for Computing Abstraction of Public Information(有点抽象，有点难懂)</h3>
+<p>一旦计算了该公共抽象，我们就为之前计算的每个公共桶分别计算私有信息的所有状态的从<span
+class="math inline">\(\hat{r}\)</span>到<span
+class="math inline">\(R\)</span>的每一轮抽象,<span
+class="math inline">\(A_r\)</span>，这些抽象可以使用任何任意的方法来计算。对于我们的扑克agent，我们使用了一种抽象算法，该算法之前已经被证明与<span
+class="math inline">\(A_r\)</span>的算法一样性能良好</p>
 <ul>
-<li>部分动作可观测性，博弈结构，探索策略</li>
-<li>对收敛到（最优和次优）纳什均衡和learned Q value的影响。</li>
+<li>需要计算大量的公共翻牌</li>
+<li>每一对公共状态设置距离函数（相似函数）<span
+class="math inline">\(d_{i,j}\)</span></li>
+<li>使用聚类算法，和距离函数计算公共抽象</li>
 </ul>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/03/06</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2022/09/08/Lab1/">
-                
-                <span class="abstract-title-text">Lab 1</span>
-            </a>
-            <div class="abstract-content">
-                <h2 id="实验题目">实验题目</h2>
-<h3 id="accessing-the-database">Accessing the Database</h3>
-<p>The first laboratory exercise is to connect to a database, populate
-it with data, and run very simple SQL queries.</p>
-<ul>
-<li>In case a shared database is provided for course students, user
-accounts need to be created on the database. Otherwise, the lab should
-also cover setting up a database system. Information on setting up a
-database may be found <a
-target="_blank" rel="noopener" href="https://www.db-book.com/lab-dir/index.html">here</a></li>
-<li>The next step is to connect to the database. Although most databases
-have their own text-based interface, we recommend using a graphical
-interface such as the database browser of the Netbeans IDE, or a
-database specific interface. More information on accessing these
-interfaces may be found <a
-target="_blank" rel="noopener" href="https://www.db-book.com/lab-dir/index.html">here</a>.</li>
-<li>The next step is to create tables and load sample data. Scripts for
-these tasks can be found <a
-target="_blank" rel="noopener" href="https://www.db-book.com/university-lab-dir/sample_tables-dir/index.html">here</a>.</li>
-<li>Try out some queries, and see what they do. Some example queries:
-<ul>
-<li>select * from instructor</li>
-<li>select name from instructor where dept_name = 'Comp. Sci.' and
-salary &gt; 70000</li>
-<li>select * from instructor, department where instructor.dept_name =
-department.dept_name</li>
-</ul></li>
-</ul>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/09/08</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2022/08/25/hello-world/">
-                
-                <span class="abstract-title-text">Hello World</span>
-            </a>
-            <div class="abstract-content">
-                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;
+<figure>
+<img src="https://s2.loli.net/2023/03/06/NhIy4ej2sVRg1pW.png"
+alt="image-20230217172652417" />
+<figcaption aria-hidden="true">image-20230217172652417</figcaption>
+</figure>
+<h3 id="public-abstraction-clustering-algorithm">Public Abstraction
+Clustering Algorithm</h3>
+<p>output<span class="math inline">\(c^T [i]\)</span> as the final
+abstraction</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/Qz8HFLqcykstmVr.png"
+alt="image-20230217172804895" />
+<figcaption aria-hidden="true">image-20230217172804895</figcaption>
+</figure>
+<h3 id="equilibrium-finding-algorithm">Equilibrium-Finding
+Algorithm</h3>
+<p>每当头部节点向集群叶发送数据时，我们的算法都会遇到叶间延迟，并且在接收响应时也会遇到这种延迟。每一次MCCFR迭代，这只相当于不到一毫秒。每次迭代大约需要15毫秒，因此延迟开销是负的。在这种开销很大的设置中，可以通过让子叶在每次迭代中获取更多样本，从而增加采样时间与延迟时间的比率，从而轻松地将其忽略不计。</p>
+<p>由于头部节点只能在接收到来自所有集群叶的响应后才能继续，因此如果它们的MCCFR更新完成得比其他叶更快，则一些集群可能会空闲相当长的时间。尽管我们的抽象算法将博弈树均匀地划分为子叶，但这种情况还是会发生：在某些叶上，MCCFR计算的当前策略使得游戏路径更快地结束（例如，通过折叠扑克）</p>
+<p>该算法开始于对优先级信息进行采样，并在头部叶片上执行MCCFR。当到达一个动作序列，该动作序列过渡到树的顶部（即，过渡到德克萨斯州Hold'em中的触发器）时，该算法将当前状态发送到K个子叶片C1、C2、…、…，每个子叶片CK然后从其公共桶（即，从分配给它的有效触发器Fk中的一个触发器）采样公共信息，并继续MCCFR的迭代。一旦所有子叶片完成其部分迭代，其计算值~uk将返回到头部叶片。头部叶片计算这些值的加权平均值，并根据公共信息的选择数量。</p>
+<p>这确保了预期值是无偏的，也就是说，在预期中，每个失败都被平均加权。然后，头部节点继续其MCCFR的迭代，每当样本退出顶部时（遇到一个触发器序列），重复该过程，直到迭代完成。</p>
+<p>在实践中（与伪代码中所示的不同），我们不是在每次采样超过树的顶部时与子节点通信（即，在Texas
+Hold'em中遇到一个触发器序列），而是使用两遍方法。在第一次通过时，我们只记录遇到了哪些连续（翻牌）序列。然后将这些序列发送给子叶片，以便它们可以计算这些序列的值；子叶片并行工作，但在每个子叶片中，分配给该叶片的连续序列被一个接一个地处理。然后，头部叶片执行与第一次相同的第二次传递，不同之处在于，每当样本超出树的顶部时（即，在Texas
+Hold'em中到达翻牌），都会使用从子叶片返回的值。</p>
+<p>在每个子叶片中，即每个子集群中，我们实际上拥有并使用多个内核（为简单起见，pseu
+docode中未显示）。每当到达子集群时，每个核心都会得到相同的输入，但使用不同的随机数种子来选择集群中要处理的公共样本（德克萨斯州Hold'em的公共失败），以及如何根据MCCFR对其下的操作进行随机采样。考虑到游戏的性质，内核将以非常低的概率执行冗余工作，并且在集群的不同部分中迭代最多一次就会过时。（另一种选择是将树的一部分锁定在集群中，以防止核心在相同的信息集上工作，但这会带来开销，至少在Texas
+Hold'em似乎没有必要这样做。）</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/VAHpQMPYvsW4JTe.png"
+alt="image-20230217194944332" />
+<figcaption aria-hidden="true">image-20230217194944332</figcaption>
+</figure>
+<h3
+id="new-family-of-post-processing-technique处理动作空间比较大的游戏">New
+Family of Post-Processing Technique（处理动作空间比较大的游戏）</h3>
+<p>后处理技术也被证明有助于缓解将平衡过度拟合到抽象中的问题，以及近似均衡发现可能最终导致不良行为的概率为正的问题。已经研究了两种方法，即阈值化和净化（Ganzfried、Sandholm和Waugh，2012年）。</p>
+<p>在阈值化中，低于某个阈值的动作概率被设置为零，然后剩余的概率被重新规范化。净化是阈值化的特殊情况，其中具有最高概率的动作以概率1进行（随机均匀地打破关系）。</p>
+<p>我们观察到，将反向映射和阈值化相结合会导致这样一个问题，即在动作空间的某个区域精细地离散动作不利于这些动作，因为平衡发现的概率质量在它们之间被稀释。为了缓解这个问题，我们建议将抽象动作划分为相似类，以便进行阈值处理（但不在阈值处理之后）。例如，在无限制扑克中，任何下注大小都可以达到玩家剩余筹码的数量。在给定的情况下，我们的投注抽象可以允许代理人折叠、调用、下注0.5罐、0.75罐、罐、1.5罐、2罐、5罐，等等。如果动作概率为（0.1，0.25，0.15，0.15，0.2，0.15,0,0），那么净化将选择召唤动作，而绝大多数质量（0.65）是在下注动作上。在这个例子中，我们下面详细介绍的方法将进行一个罐大小的下注（最高概率的下注动作）。</p>
+<p>最后，我们观察到，偏向于减少方差的保守操作（例如扑克中的折叠动作）有助于强大的代理人（方差增加了较弱的对手获胜的概率）。我们的实验将表明，在TH中偏好保守的“折叠”动作也会增加预期值。一个原因可能是，如果一个代理人不确定在给定情况下应该做什么（平衡行动概率是混合的），那么该代理人很可能也会不确定，因此最好在这里结束游戏，而不是继续参与代理人较弱的游戏。</p>
+<p>我们的新后处理技术结合了上面列出的所有想法。它首先将可用操作分为三类：折叠、调用和下注。如果折叠的概率超过阈值参数，我们将以概率1折叠。否则，我们会在折叠、调用和下注的“元动作”这三个选项之间进行净化。如果选择了下注，那么我们会在特定的下注动作中进行净化。</p>
+<p>显然，这项技术有很多变化，因此它产生了一个系列，这取决于使用了什么阈值来确定使用保守动作（折叠）、如何将动作分组以进行阈值处理、在桶中使用了什么值以及在元动作（可能是多个）中使用了哪个阈值。</p>
 
-More info: Writing
-Run server1$ hexo ...
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2022/08/25">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/08/25</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
+    </article>
+    <!-- license -->
     
-    <!-- paginator  -->
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2023/03/06/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">https://klc1006.github.io/2023/03/06/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2023/03/06/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">March 6th 2023, 4:34:34 pm</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2023/03/06/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">March 6th 2023, 5:10:56 pm</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2023/03/06/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/" title="【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记">
+                    <div class="nextTitle">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2023/03/06/the%20dynamics%20of%20reforcelearning/" title="【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记">
+                    <div class="prevTitle">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- comment -->
+    
+        <div class="post-comment">
+            <!-- 来必力 City 版安装代码 -->
+
+
+            
+
+            
+
+            
+
+            <!-- utteranc评论 -->
+
+
+            <!-- partial('_partial/comment/changyan') -->
+            <!--PC版-->
+
+
+            
+            
+
+            
+
+        </div>
+    
+    <!-- timeliness note -->
+    <!-- idea from: https://hexo.fluid-dev.com/posts/hexo-injector/#%E6%96%87%E7%AB%A0%E6%97%B6%E6%95%88%E6%80%A7%E6%8F%90%E7%A4%BA -->
+    
+    <!-- Mathjax -->
+    
+        
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+
+
     
 </main>
 
@@ -825,6 +732,27 @@ Run server1$ hexo ...
 
         </div>
         <!-- toc -->
+        
+            <div class="toc-wrapper toc-wrapper-loding" style=
+
+
+
+
+
+
+
+    top:50vh;
+
+>
+                <div class="toc-catalog">
+                    <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+                </div>
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#main-abstraction-algorithm"><span class="toc-number">1.</span> <span class="toc-text">Main Abstraction Algorithm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#algorithm-for-computing-abstraction-of-public-information%E6%9C%89%E7%82%B9%E6%8A%BD%E8%B1%A1%E6%9C%89%E7%82%B9%E9%9A%BE%E6%87%82"><span class="toc-number">2.</span> <span class="toc-text">Algorithm
+for Computing Abstraction of Public Information(有点抽象，有点难懂)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#public-abstraction-clustering-algorithm"><span class="toc-number">3.</span> <span class="toc-text">Public Abstraction
+Clustering Algorithm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#equilibrium-finding-algorithm"><span class="toc-number">4.</span> <span class="toc-text">Equilibrium-Finding
+Algorithm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#new-family-of-post-processing-technique%E5%A4%84%E7%90%86%E5%8A%A8%E4%BD%9C%E7%A9%BA%E9%97%B4%E6%AF%94%E8%BE%83%E5%A4%A7%E7%9A%84%E6%B8%B8%E6%88%8F"><span class="toc-number">5.</span> <span class="toc-text">New
+Family of Post-Processing Technique（处理动作空间比较大的游戏）</span></a></li></ol>
+            </div>
         
         <!-- sidebar -->
         <div class="sidebar sidebar-hide">
@@ -1081,7 +1009,16 @@ Run server1$ hexo ...
         
         <!-- async load share.js -->
         
+            <script src="/scripts/share.js?v=20211217" async></script>
+        
         <!-- mermaid -->
+        
+            <script src='https://cdn.jsdelivr.net/npm/mermaid@8.11.0/dist/mermaid.min.js'></script>
+            <script>
+                if (window.mermaid) {
+                    mermaid.initialize({theme: 'dark'});
+                }
+            </script>
         
     </body>
 </html>
