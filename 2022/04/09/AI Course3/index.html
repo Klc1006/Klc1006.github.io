@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+    
+
+<!-- keywords -->
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Klc">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Klc">
+    
+        <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta name="description" content="中山大学计算机学院 人工智能实验报告（三） (2022春季实验报告)  课程名称:Artificial Intelligence    教学班级 专业方向 学号 姓名     计科1班 计算机科学与技术 20337013 陈梁坤    一、实验题目 使用A*和 IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多种不同的启发式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【AI Course】A*和 IDA*算法解决15-puzzle问题">
+<meta property="og:url" content="https://klc1006.github.io/2022/04/09/AI%20Course3/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="中山大学计算机学院 人工智能实验报告（三） (2022春季实验报告)  课程名称:Artificial Intelligence    教学班级 专业方向 学号 姓名     计科1班 计算机科学与技术 20337013 陈梁坤    一、实验题目 使用A*和 IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多种不同的启发式">
+<meta property="og:locale">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/KLm7CXbFSQ2Hc4r.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/sbtHlEpQZm1cMAO.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/XCuyfsnqVYbQ2p5.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/KCIwXLmPQSr5UAn.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/SsFg47XZyKqewzM.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/6LWZsmhcyGXjKDn.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/nPva3qtNhoxUys6.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/ynlIL3FWiHhsRCm.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/hoNUB1yO85wsxJe.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/WGZcFaPdmBUNbuh.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/NpI1C4yXmiqs963.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/hQ652NlCZdXbKWI.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/29/1EuDVLSjAx9kgre.png">
+<meta property="article:published_time" content="2022-04-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-09T03:06:56.794Z">
+<meta property="article:author" content="Klc">
+<meta property="article:tag" content="A*">
+<meta property="article:tag" content="IDA*">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/04/29/KLm7CXbFSQ2Hc4r.png">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
+    
+    <title>【AI Course】A*和 IDA*算法解决15-puzzle问题 · PityBug&#39;s Studio</title>
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+    (function (w) {
+        'use strict'
+        // rel=preload support test
+        if (!w.loadCSS) {
+            w.loadCSS = function () {}
+        }
+        // define on the loadCSS obj
+        var rp = (loadCSS.relpreload = {})
+        // rel=preload feature support test
+        // runs once and returns a function for compat purposes
+        rp.support = (function () {
+            var ret
+            try {
+                ret = w.document.createElement('link').relList.supports('preload')
+            } catch (e) {
+                ret = false
+            }
+            return function () {
+                return ret
+            }
+        })()
+
+        // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+        // then change that media back to its intended value on load
+        rp.bindMediaToggle = function (link) {
+            // remember existing media attr for ultimate state, or default to 'all'
+            var finalMedia = link.media || 'all'
+
+            function enableStylesheet() {
+                link.media = finalMedia
+            }
+
+            // bind load handlers to enable media
+            if (link.addEventListener) {
+                link.addEventListener('load', enableStylesheet)
+            } else if (link.attachEvent) {
+                link.attachEvent('onload', enableStylesheet)
+            }
+
+            // Set rel and non-applicable media type to start an async request
+            // note: timeout allows this to happen async to let rendering continue in IE
+            setTimeout(function () {
+                link.rel = 'stylesheet'
+                link.media = 'only x'
+            })
+            // also enable media after 3 seconds,
+            // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+            setTimeout(enableStylesheet, 3000)
+        }
+
+        // loop through link elements in DOM
+        rp.poly = function () {
+            // double check this to prevent external calls from running
+            if (rp.support()) {
+                return
+            }
+            var links = w.document.getElementsByTagName('link')
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i]
+                // qualify links to those with rel=preload and as=style attrs
+                if (
+                    link.rel === 'preload' &&
+                    link.getAttribute('as') === 'style' &&
+                    !link.getAttribute('data-loadcss')
+                ) {
+                    // prevent rerunning on link
+                    link.setAttribute('data-loadcss', true)
+                    // bind listeners to toggle media back
+                    rp.bindMediaToggle(link)
+                }
+            }
+        }
+
+        // if unsupported, run the polyfill
+        if (!rp.support()) {
+            // run once at least
+            rp.poly()
+
+            // rerun poly on an interval until onload
+            var run = w.setInterval(rp.poly, 500)
+            if (w.addEventListener) {
+                w.addEventListener('load', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            } else if (w.attachEvent) {
+                w.attachEvent('onload', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            }
+        }
+
+        // commonjs
+        if (typeof exports !== 'undefined') {
+            exports.loadCSS = loadCSS
+        } else {
+            w.loadCSS = loadCSS
+        }
+    })(typeof global !== 'undefined' ? global : this)
+</script>
+
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20211217" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/dark.css?v=20211217" as="style">
+    <link rel="stylesheet" href="/css/dark.css">
+    <link rel="stylesheet" href="/css/mobile.css?v=20211217" media="(max-width: 960px)">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js?v=20211217" as="script">
+    <link rel="preload" href="/scripts/dark.js?v=20211217" as="script">
+    <link rel="preload" href="/font/Oswald-Regular.ttf" as="font" crossorigin>
+    <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
+    <!-- algolia -->
+    
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ == undefined) {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js" />')
+        }
+    </script>
+    
+        <body class="post-body">
+    
+        <!-- header -->
+        <header class="header header-mobile">
+    <!-- top read progress line -->
+    <div class="header-element">
+        <div class="read-progress"></div>
+    </div>
+    <!-- sidebar menu button -->
+    <div class="header-element">
+        
+            <div class="header-sidebar-menu">
+        
+            
+                <div style="padding-left: 1px;">&#xe775;</div>
+            
+        </div>
+    </div>
+    <!-- header actions -->
+    <div class="header-actions">
+        <!-- theme mode switch button -->
+        <span class="header-theme-btn header-element">
+            <i class="fas fa-adjust"></i>
+        </span>
+        <!-- back to home page text -->
+        <span class="home-link header-element">
+            <a href=/>PityBug's Studio.</a>
+        </span>
+    </div>
+    <!-- toggle banner for post layout -->
+    
+        
+            <div class="banner">
+        
+            <div class="blog-title header-element">
+                <a href="/">PityBug&#39;s Studio.</a>
+            </div>
+            <div class="post-title header-element">
+                <a href="#" class="post-name">【AI Course】A*和 IDA*算法解决15-puzzle问题</a>
+            </div>
+        </div>
+    
+</header>
+
+        <!-- fixed footer -->
+        <footer class="footer-fixed">
+    <!-- back to top button -->
+    <div class="footer-fixed-element">
+        
+            <div class="back-top back-top-hidden">
+        
+        
+            <div>&#xe639;</div>
+        
+        </div>
+    </div>
+</footer>
+
+        <!-- wrapper -->
+        <div class="wrapper">
+            <div class="site-intro" style="
+
+
+
+
+
+
+
+    height:50vh;
+
+">
+    
+    <!-- 主页  -->
+    
+        
+    <!-- 404页  -->
+    
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+                【AI Course】A*和 IDA*算法解决15-puzzle问题
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+                
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页 meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="A*">A*</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="IDA*">IDA*</a>
+    
+</div>
+
+                
+                <!-- 文章字数统计 -->
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">6.3k</span>阅读时长: <span class="post-count reading-time">25 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <!-- 撰写日期 -->
+                    <span class="iconfont-archer post-intro-calander">&#xe676;</span>
+                    <span class="post-intro-time">2022/04/09</span>
+                    <!-- busuanzi -->
+                    
+                        <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                            <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    
+                    <!-- 文章分享 -->
+                    <span class="share-wrapper">
+                        <span class="iconfont-archer share-icon">&#xe71d;</span>
+                        <span class="share-text">Share</span>
+                        <ul class="share-list">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+            <script>
+  // get user agent
+  function getBrowserVersions() {
+    var u = window.navigator.userAgent
+    return {
+      userAgent: u,
+      trident: u.indexOf('Trident') > -1, //IE内核
+      presto: u.indexOf('Presto') > -1, //opera内核
+      webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+      gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+      mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+      ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+      android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+      iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+      iPad: u.indexOf('iPad') > -1, //是否为iPad
+      webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+      weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+      uc: u.indexOf('UCBrowser') > -1, //是否为android下的UC浏览器
+    }
+  }
+  var browser = {
+    versions: getBrowserVersions(),
+  }
+  console.log('userAgent: ' + browser.versions.userAgent)
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded')
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document
+        .getElementsByClassName('intro-title')[0]
+        .classList.add('intro-fade-in')
+      document
+        .getElementsByClassName('intro-subtitle')[0]
+        .classList.add('intro-fade-in')
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in')
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb() {
+    if (browser.versions.uc) {
+      console.log('UCBrowser')
+      fontLoaded()
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular'],
+        },
+        loading: function () {
+          // 所有字体开始加载
+          // console.log('font loading');
+        },
+        active: function () {
+          // 所有字体已渲染
+          fontLoaded()
+        },
+        inactive: function () {
+          // 字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout')
+          fontLoaded()
+        },
+        timeout: 5000, // Set the timeout to two seconds
+      })
+    }
+  }
+
+  function asyncErr() {
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document,
+      t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0]
+    o.src = u
+    if (cb) {
+      o.addEventListener(
+        'load',
+        function (e) {
+          cb(null, e)
+        },
+        false
+      )
+    }
+    if (err) {
+      o.addEventListener(
+        'error',
+        function (e) {
+          err(null, e)
+        },
+        false
+      )
+    }
+    s.parentNode.insertBefore(o, s)
+  }
+
+  var asyncLoadWithFallBack = function (arr, success, reject) {
+    var currReject = function () {
+      reject()
+      arr.shift()
+      if (arr.length) async(arr[0], success, currReject)
+    }
+
+    async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack(
+    [
+      'https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js',
+      'https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js',
+      "/lib/webfontloader.min.js",
+    ],
+    asyncCb,
+    asyncErr
+  )
+</script>
+
+            <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+            <div class="container container-unloaded">
+                <main class="main post-page">
+    <article class="article-entry">
+        <h1 align="center">
+<font size=5>中山大学计算机学院</font><br>
+<font size=6>人工智能实验报告（三）</font><br>
+<font size=4>(2022春季实验报告)</font>
+</h1>
+<p><strong>课程名称:Artificial Intelligence</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">教学班级</th>
+<th style="text-align: center;">专业方向</th>
+<th style="text-align: center;">学号</th>
+<th style="text-align: center;">姓名</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">计科1班</td>
+<td style="text-align: center;">计算机科学与技术</td>
+<td style="text-align: center;">20337013</td>
+<td style="text-align: center;">陈梁坤</td>
+</tr>
+</tbody>
+</table>
+<h2 id="一实验题目">一、实验题目</h2>
+<p>使用A*和
+IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多种不同的启发式函数</p>
+<span id="more"></span>
+<h2 id="二实验内容">二、实验内容</h2>
+<h3 id="算法原理">1.算法原理</h3>
+<ul>
+<li><p><strong>问题重述</strong></p>
+<p>15数码问题本质上就是棋盘上乱序的15个数字将牌（整数1~15），通过允许空格周围的四个方向的将牌向空格移动，通过移动空格周围的数字将牌改变棋盘的格局（状态）。本实验的目标就是移动将牌。将初始状态改为目标状态</p></li>
+<li><p><strong>A*算法原理</strong></p>
+<p>A*算法应用启发式搜索的原理，启发式搜索又叫有信息搜索。利用问题当前状态所具有的信息来引导问题的解决方向（向最有希望的方向前进），相较于盲目搜索（无信息搜索），能够降低问题的复杂度。</p>
+<p><strong>定义函数</strong>：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">函数</th>
+<th style="text-align: center;">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">g(n)</td>
+<td style="text-align: center;">从初始节点到节点n付出的实际代价</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">h(n)</td>
+<td
+style="text-align: center;">从节点n到目标节点的最优路径的估计代价</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">h*(n)</td>
+<td
+style="text-align: center;">从节点n到目标节点的最优路径的实际代价</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">f(n)</td>
+<td
+style="text-align: center;">从初始节点到目标节点的最优路径的估计代价</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[
+  f(n)=g(n)+h(n)
+  \]</span></p>
+<p>A*算法可以看作BFS的优化，在BFS算法st的基础上加以提升：从初始节点（状态）开始，检测后继节点（状态），选取f(n)最小的节点进行拓展（可以利用优先队列来实现），同时更新被访问过的节点的g(n),直到找到目标节点，即当前节点的f(n)==0</p>
+<p><strong>核心算法步骤</strong>：</p>
+<p>①从起始状态start开始，把start作为一个待处理的对象加入优先队列OPEN中</p>
+<p>②从起始状态开始，搜索空格周围可能处理的下一个状态，并把他们加入OPEN中，计算这些状态的f(n),g(n),h(n),设置存储他们的父状态start
+或设置存储上一步操作</p>
+<p>③从OPEN中删除状态start，并加入CLOSE列表（相当于visit数组），循环操作直到找到目标状态或者开启列表为空</p>
+<p>④从OPEN中找到f(n)最小的状态，并进行拓展，计算这些状态的f(n),g(n),h(n),设置存储他们的父状态start
+或设置存储上一步操作</p>
+<p>⑥如果新的相邻状态已经在开启列表，则更新他们的g(x)</p></li>
+<li><p><strong>IDA</strong>*<strong>算法原理</strong></p>
+<p>IDA*是迭代加深深度优先搜索的拓展，与A*算法的结合。由于不需要存储父节点（状态），空间复杂度远远小于A*</p>
+<p><strong>定义函数</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">函数</th>
+<th style="text-align: center;">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">g(n)</td>
+<td style="text-align: center;">从初始节点到节点n付出的实际代价</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">h(n)</td>
+<td
+style="text-align: center;">从节点n到目标节点的最优路径的估计代价</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">h*(n)</td>
+<td
+style="text-align: center;">从节点n到目标节点的最优路径的实际代价</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">f(n)</td>
+<td
+style="text-align: center;">从初始节点到目标节点的最优路径的估计代价</td>
+</tr>
+</tbody>
+</table>
+<p>在每一步的迭代深度搜索的过程中，都是优先对邻接状态f(n)最小的状态进行搜索，当某一层的搜素的所有可访问的最小可估价函数&gt;某一给定的阈值时，即h(n)&gt;h*(n)，进行剪纸，不在访问，进行回溯。</p>
+<p><strong>核心算法布置</strong></p>
+<p>①设计阈值bound，定义递归的进程</p>
+<p>②从起始状态start开始，计算start可达到的每一个下一个状态的估计f(n),选取最小的节点作为下一个访问状态</p>
+<p>③对于某一个状态，如果估价函数大于bound，返回当前状态的估价函数值，范围为false</p>
+<p>④对一某一个状态，如果是目标状态，则返回true，并返回该状态。</p></li>
+</ul>
+<h3 id="关键代码展示">2.关键代码展示</h3>
+<pre><code>**启发式函数**</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">MDT=[]      </span><br><span class="line"><span class="comment">#定义矩阵MDT,MDT[i][j]定义为第i个格子到第j个格子的曼哈顿距离</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">    tmp=[]</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">        tmp.append(<span class="built_in">abs</span>(<span class="built_in">int</span>(i / N) - <span class="built_in">int</span>(j / N))+<span class="built_in">abs</span>(<span class="built_in">int</span>(i % N) - <span class="built_in">int</span>(j % N)))   </span><br><span class="line">        <span class="comment">#构造每个数字将牌到目标位置的曼哈顿距离</span></span><br><span class="line">    MDT.append(tmp)    </span><br><span class="line">    <span class="comment">#虽然增加了空间的使用，但是减少了函数的调用，把调用函数转化为访问空间</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">manhattan</span>(<span class="params">pz</span>):          <span class="comment">#定义曼哈顿距离函数（启发式函数）</span></span><br><span class="line">    <span class="built_in">sum</span>=<span class="number">0</span>                   <span class="comment">#初始化h(n)为0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(N2):</span><br><span class="line">        <span class="keyword">if</span> pz[<span class="number">0</span>][i]==N2:    <span class="comment">#当数字为16，即空格位置，不算入h(n)估价，跳过</span></span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="built_in">sum</span>+=MDT[i][pz[<span class="number">0</span>][i]-<span class="number">1</span>] <span class="comment">#遍历每个数字，计算累积的的最终状态代价</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sum</span>              <span class="comment">#返回h(n)</span></span><br></pre></td></tr></table></figure>
+<p>​ <strong>A*算法</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">Astar</span>(<span class="params">s</span>):</span><br><span class="line">    OPEN=PriorityQueue()     <span class="comment">#优先队列OPEN存放待访问状态，f(n)函数小的状态优先拓展</span></span><br><span class="line">    s.MD=manhattan(s)       <span class="comment">#求初始状态的h(n)</span></span><br><span class="line">    s.cost=<span class="number">0</span>               <span class="comment">#定义初始状态的g(n)为0</span></span><br><span class="line">    CLOSE=&#123;&#125;               <span class="comment">#定义CLOSE数组，存放拓展过的状态节点</span></span><br><span class="line">    u=puzzle()        <span class="comment">#声明u便于暂存当前状态</span></span><br><span class="line">    v=puzzle()      <span class="comment"># 声明v便于暂存当前状态</span></span><br><span class="line">    initial=State() <span class="comment"># 声initial便于暂存当前状态</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># initial.puzzle.MD=0+s.MD</span></span><br><span class="line">    <span class="comment"># initial.puzzle.cost=0+s.cost</span></span><br><span class="line">    <span class="comment"># initial.puzzle.space=0+s.space</span></span><br><span class="line">    <span class="comment"># for i in range(45):</span></span><br><span class="line">    <span class="comment">#     initial.puzzle.path[i]=0+s.path[i]</span></span><br><span class="line">    <span class="comment"># for i in range(16):</span></span><br><span class="line">    <span class="comment">#     initial.puzzle.f[i]=0+s.f[i]</span></span><br><span class="line"></span><br><span class="line">    initial.puzzle=copy.deepcopy(s)   <span class="comment">#深拷贝函数耗时较长</span></span><br><span class="line">    initial.estimated=manhattan(s)     <span class="comment">#计算初始状态h(n)</span></span><br><span class="line">    OPEN.put(initial)      <span class="comment">#初始状态加入队列</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">not</span> OPEN.empty()):  <span class="comment">#当队列不为空，搜索不停止</span></span><br><span class="line">        <span class="keyword">global</span> <span class="built_in">sum</span>    <span class="comment">#就算探索状态节点</span></span><br><span class="line">        <span class="built_in">sum</span>+=<span class="number">1</span>  </span><br><span class="line">        st=State()     <span class="comment">#声明st便于暂存出队状态节点</span></span><br><span class="line">        st=copy.deepcopy(OPEN.get()) <span class="comment">#st暂存出队状态节点</span></span><br><span class="line">        <span class="comment"># print(st.puzzle.f)</span></span><br><span class="line">        u=copy.deepcopy(st.puzzle)    <span class="comment">#u暂存出队状态节点的数字棋盘</span></span><br><span class="line">        <span class="comment"># print(u.f)</span></span><br><span class="line">        <span class="keyword">if</span>(u.MD==<span class="number">0</span>):  <span class="comment">#当启发函数最小估计代价为0，即搜索至目标状态</span></span><br><span class="line">            <span class="comment"># print(u.f)</span></span><br><span class="line">            <span class="comment"># print(u.path)</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="built_in">len</span>(CLOSE))  </span><br><span class="line">            <span class="keyword">return</span> u   <span class="comment">#返回成功搜索节点状态</span></span><br><span class="line">        CLOSE[u.f.__str__()]=<span class="literal">True</span> <span class="comment">#CLOSE数组存储已经拓展过的状态节点</span></span><br><span class="line">        </span><br><span class="line">        sx=<span class="built_in">int</span>(u.space/N)    <span class="comment">#空格的横坐标</span></span><br><span class="line">        sy=<span class="built_in">int</span>(u.space%N)   <span class="comment">#空格的纵坐标</span></span><br><span class="line">        <span class="comment"># print(sx,sy)</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> r <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):  <span class="comment">#对四个方向的邻接状态进行探索</span></span><br><span class="line">            tx=sx+diraction[r][<span class="number">0</span>]  <span class="comment">#下一个状态的横坐标</span></span><br><span class="line">            ty=sy+diraction[r][<span class="number">1</span>] <span class="comment">#下一个状态的纵坐标</span></span><br><span class="line">            <span class="keyword">if</span> (tx&lt;<span class="number">0</span> <span class="keyword">or</span> ty&lt;<span class="number">0</span> <span class="keyword">or</span> tx&gt;=N <span class="keyword">or</span> ty&gt;=N):<span class="comment">#空格越界，接续执行</span></span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            v=copy.deepcopy(u)  <span class="comment">#保存出队状态</span></span><br><span class="line">            v.MD-=MDT[tx*N+ty][v.f[tx*N+ty]-<span class="number">1</span>]</span><br><span class="line">            v.MD+=MDT[sx*N+sy][v.f[tx*N+ty]-<span class="number">1</span>] <span class="comment">#计算移动数字后的状态的h(n)</span></span><br><span class="line"></span><br><span class="line">            temp=v.f[tx * N + ty]</span><br><span class="line">            v.f[tx * N + ty]=v.f[sx * N + sy]</span><br><span class="line">            v.f[sx * N + sy]=temp   <span class="comment">#移动数字的操作:被移动数字与16交换</span></span><br><span class="line"></span><br><span class="line">            v.space=tx*N+ty    <span class="comment">#记录移动后空格所处的位置</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">not</span> (v.f.__str__() <span class="keyword">in</span> CLOSE) ):   <span class="comment">#环检测，如果没有出过队</span></span><br><span class="line">                <span class="comment"># path[v.cost]=dir[r] #找路径和状态</span></span><br><span class="line">                <span class="comment"># print(v.f)</span></span><br><span class="line">                v.path.append(r)     <span class="comment">#队列加入邻接状态</span></span><br><span class="line">                v.cost+=<span class="number">1</span>            <span class="comment">#cost++ g(n)函数</span></span><br><span class="line">                new=State()          <span class="comment">#创建新的state，用于入队列</span></span><br><span class="line">                new.puzzle=copy.deepcopy(v)</span><br><span class="line">                new.estimated=v.cost+v.MD</span><br><span class="line">                OPEN.put(new)       <span class="comment">#入优先队列OPEN</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>​</p>
+<p><strong>IDA*算法</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">IDAstar</span>(<span class="params">depth,prev</span>):                <span class="comment">#IDA*函数</span></span><br><span class="line">    <span class="keyword">global</span> sum_node                     <span class="comment">#统计访问过的状态的数量</span></span><br><span class="line">    sum_node+=<span class="number">1</span>   </span><br><span class="line">    <span class="keyword">global</span> state                        <span class="comment">#使用全局变量 状态state</span></span><br><span class="line">    <span class="keyword">global</span> bound                        <span class="comment">#使用全局变量 阈值bound</span></span><br><span class="line">    <span class="keyword">if</span> state[<span class="number">2</span>] ==<span class="number">0</span>:                    <span class="comment">#如果当前状态到目标状态的最小估计代价为0,即当前状态为目标状态</span></span><br><span class="line">        <span class="keyword">return</span> (<span class="literal">True</span>,depth+state[<span class="number">2</span>])    <span class="comment">#返回（搜索成功，成功搜索步数）</span></span><br><span class="line">    <span class="keyword">if</span> depth+state[<span class="number">2</span>]&gt;bound:            <span class="comment">#如果初始状态到当前状态的最小代价g(n)=depth+当前状态到目标状态的最小估计代价h(n)&gt;阈值</span></span><br><span class="line">        <span class="keyword">return</span> (<span class="literal">False</span>,depth+state[<span class="number">2</span>])   <span class="comment">#返回（搜索失败，失败搜索步数）</span></span><br><span class="line">    sx=<span class="built_in">int</span>(state[<span class="number">1</span>]/N)                  <span class="comment">#一维位置转换为二维坐标</span></span><br><span class="line">    sy=<span class="built_in">int</span>(state[<span class="number">1</span>]%N)                  <span class="comment">#一维位置转换为二维坐标</span></span><br><span class="line"></span><br><span class="line">    tmp=[[],<span class="number">0</span>,<span class="number">0</span>]                        <span class="comment">#用于存储当前状态，便于回溯</span></span><br><span class="line"></span><br><span class="line">    successor=[]                        <span class="comment">#后继，邻接状态</span></span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        tx=sx+diraction[r][<span class="number">0</span>]           <span class="comment">#下一个状态的横坐标</span></span><br><span class="line">        ty=sy+diraction[r][<span class="number">1</span>]           <span class="comment">#下一个状态的纵坐标</span></span><br><span class="line">        <span class="keyword">if</span> (tx&lt;<span class="number">0</span> <span class="keyword">or</span> ty&lt;<span class="number">0</span> <span class="keyword">or</span> tx&gt;=N <span class="keyword">or</span> ty&gt;=N): <span class="comment">#空格越界，接续执行</span></span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span>((<span class="built_in">max</span>(prev,r)-<span class="built_in">min</span>(prev,r))==<span class="number">2</span>): <span class="comment">#不走回头路</span></span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        h_n=state[<span class="number">2</span>]-MDT[tx*N+ty][state[<span class="number">0</span>][tx*N+ty]-<span class="number">1</span>]</span><br><span class="line">        h_n+=MDT[sx*N+sy][state[<span class="number">0</span>][tx*N+ty]-<span class="number">1</span>]          <span class="comment">#计算移动数字后的状态的h(n)</span></span><br><span class="line">        successor.append((h_n,r))                       <span class="comment">#插入后继数组</span></span><br><span class="line">    <span class="built_in">sorted</span>(successor,key=<span class="keyword">lambda</span> x:(x[<span class="number">0</span>],x[<span class="number">1</span>]))          <span class="comment">#对后继数组进行排序，h(n)较小的优先访问</span></span><br><span class="line">    successor.reverse()</span><br><span class="line"></span><br><span class="line">    Min=[<span class="literal">False</span>,<span class="number">9999</span>]                                    <span class="comment">#保存邻接状态的最小代价</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> successor:</span><br><span class="line">        tx=sx+diraction[r[<span class="number">1</span>]][<span class="number">0</span>]                        <span class="comment">#下一个状态的横坐标</span></span><br><span class="line">        ty=sy+diraction[r[<span class="number">1</span>]][<span class="number">1</span>]                        <span class="comment">#下一个状态的纵坐标</span></span><br><span class="line">        <span class="keyword">if</span> (tx&lt;<span class="number">0</span> <span class="keyword">or</span> ty&lt;<span class="number">0</span> <span class="keyword">or</span> tx&gt;=N <span class="keyword">or</span> ty&gt;=N):            <span class="comment">#空格越界，接续执行</span></span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span>((<span class="built_in">max</span>(prev,r[<span class="number">1</span>])-<span class="built_in">min</span>(prev,r[<span class="number">1</span>]))==<span class="number">2</span>):         <span class="comment">#对上一个状态判重剪枝</span></span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="comment">#tmp=copy.deepcopy(state)                        #存储当前状态，便于回溯</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> state[<span class="number">0</span>]:</span><br><span class="line">            tmp[<span class="number">0</span>].append(item)</span><br><span class="line">        tmp[<span class="number">1</span>]=<span class="number">0</span>+state[<span class="number">1</span>]</span><br><span class="line">        tmp[<span class="number">2</span>]=<span class="number">0</span>+state[<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">        state[<span class="number">2</span>]-=MDT[tx*N+ty][state[<span class="number">0</span>][tx*N+ty]-<span class="number">1</span>]</span><br><span class="line">        state[<span class="number">2</span>]+=MDT[sx*N+sy][state[<span class="number">0</span>][tx*N+ty]-<span class="number">1</span>]     <span class="comment">#计算移动数字后的状态的h(n)</span></span><br><span class="line">        temp=state[<span class="number">0</span>][tx * N + ty]</span><br><span class="line">        state[<span class="number">0</span>][tx * N + ty]=state[<span class="number">0</span>][sx * N + sy]</span><br><span class="line">        state[<span class="number">0</span>][sx * N + sy]=temp                      <span class="comment">#移动数字的操作:被移动数字与16交换</span></span><br><span class="line">                                                        <span class="comment"># print(state[0])</span></span><br><span class="line">        state[<span class="number">1</span>]=tx*N+ty                                <span class="comment">#记录移动后空格所处的位置</span></span><br><span class="line">        a=(<span class="literal">False</span>,<span class="number">0</span>)                                     <span class="comment">#记录递归搜索后搜索成功与否，以及搜索步长</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">not</span> <span class="built_in">str</span>(state[<span class="number">0</span>]) <span class="keyword">in</span> CLOSE):                 <span class="comment">#环检测</span></span><br><span class="line">            CLOSE[<span class="built_in">str</span>(state[<span class="number">0</span>])]=depth+state[<span class="number">2</span>]         <span class="comment">#如果没有探索过，加入字典，并记录该状态的f(n)</span></span><br><span class="line">            a=IDAstar(depth+<span class="number">1</span>,r[<span class="number">1</span>])                     <span class="comment">#迭代深搜</span></span><br><span class="line">            <span class="keyword">if</span>(a[<span class="number">0</span>]):                                   <span class="comment">#如果搜索成功</span></span><br><span class="line">                path[depth]=r[<span class="number">1</span>]                        <span class="comment">#记录当前深度的操作</span></span><br><span class="line">                <span class="keyword">return</span> a                                <span class="comment">#返回（搜索成功，最小步长）</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">if</span>(a[<span class="number">1</span>]&lt;Min[<span class="number">1</span>]):                        <span class="comment">#如果没有搜索成功</span></span><br><span class="line">                    Min[<span class="number">1</span>]=a[<span class="number">1</span>]                         <span class="comment">#更新邻接状态的最小代价，用于更新阈值bound</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> CLOSE[<span class="built_in">str</span>(state[<span class="number">0</span>])]&gt;=(depth+state[<span class="number">2</span>]):  <span class="comment">#如果当前状态已经被探索过，而且先前探索过的状态的f(n)&gt;目前相同状态的f(n)</span></span><br><span class="line">                CLOSE[<span class="built_in">str</span>(state[<span class="number">0</span>])]=depth+state[<span class="number">2</span>]     <span class="comment">#更新该状态的最小f(n)</span></span><br><span class="line">                a=IDAstar(depth+<span class="number">1</span>,r[<span class="number">1</span>])                 <span class="comment">#迭代搜索</span></span><br><span class="line">                <span class="keyword">if</span>(a[<span class="number">0</span>]):                               <span class="comment">#如果搜索成功</span></span><br><span class="line">                    path[depth]=r[<span class="number">1</span>]                    <span class="comment">#记录当前深度的操作</span></span><br><span class="line">                    <span class="keyword">return</span> a                            <span class="comment">#返回（搜索成功，最小步长）</span></span><br><span class="line">                <span class="keyword">elif</span> a[<span class="number">1</span>]&lt;Min[<span class="number">1</span>]:                       <span class="comment">#如果没有搜索成功</span></span><br><span class="line">                    Min[<span class="number">1</span>]=a[<span class="number">1</span>]                         <span class="comment">#更新邻接状态的最小代价，用于更新阈值bound</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">#state=copy.deepcopy(tmp)                        #回溯</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">            state[<span class="number">0</span>][i]=<span class="number">0</span>+tmp[<span class="number">0</span>][i]</span><br><span class="line">        state[<span class="number">1</span>]=<span class="number">0</span>+tmp[<span class="number">1</span>]</span><br><span class="line">        state[<span class="number">2</span>]=<span class="number">0</span>+tmp[<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Min</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">ID</span>(<span class="params">In</span>):                         <span class="comment">#迭代深搜</span></span><br><span class="line">    <span class="keyword">global</span> state                    <span class="comment">#使用全局变量 状态state</span></span><br><span class="line">    <span class="keyword">global</span> bound                    <span class="comment">#使用全局变量 阈值bound</span></span><br><span class="line">    In[<span class="number">2</span>] = manhattan(In)</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:                     <span class="comment">#bound的值用全局变量进行更新</span></span><br><span class="line">        <span class="comment">#state=copy.deepcopy(In)     #使用深拷贝函数，保存状态</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">            state[<span class="number">0</span>][i]=<span class="number">0</span>+In[<span class="number">0</span>][i]</span><br><span class="line">        state[<span class="number">1</span>]=<span class="number">0</span>+In[<span class="number">1</span>]</span><br><span class="line">        state[<span class="number">2</span>]=<span class="number">0</span>+In[<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">        a=IDAstar(<span class="number">0</span>,-<span class="number">100</span>)           <span class="comment">#进入IDA*算法，返回（a[0]搜索成功与否，a[1]搜索代价）</span></span><br><span class="line">        <span class="keyword">if</span> (a[<span class="number">0</span>]):                  <span class="comment">#搜索成功，保存搜索路径</span></span><br><span class="line">            ans=<span class="string">&quot;&quot;</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(bound):</span><br><span class="line">                ans+=<span class="built_in">dir</span>[path[i]]   <span class="comment">#path利用0右边移动，1上边移动，2左边移动，3下边移动，保存</span></span><br><span class="line">            <span class="keyword">return</span> ans</span><br><span class="line">        bound=a[<span class="number">1</span>]                  <span class="comment">#阈值更新临界状态的最小代价f(n)</span></span><br><span class="line">        <span class="keyword">if</span> bound&gt;<span class="number">100</span>:               <span class="comment">#超过限制退出循环</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;failed&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="创新点优化">3.创新点&amp;优化</h3>
+<ul>
+<li><strong>提前判断该15数码问题是否有解</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">isValid</span>(<span class="params">In</span>):</span><br><span class="line">    ans=<span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> In[<span class="number">0</span>][i]:</span><br><span class="line">            ans+=<span class="number">6</span>-i%<span class="number">4</span>-i/<span class="number">4</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i):</span><br><span class="line">            <span class="keyword">if</span> In[<span class="number">0</span>][j]&gt;In[<span class="number">0</span>][i]:</span><br><span class="line">                ans+=<span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> ans&amp;<span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span> <span class="comment">#合法</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span> <span class="comment">#不合法</span></span><br></pre></td></tr></table></figure>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220317000740937.png"
+alt="image-20220317000740937" />
+<figcaption aria-hidden="true">image-20220317000740937</figcaption>
+</figure>
+<p>原理：</p>
+<p>在算N数码的逆序数时，不把0算入在内；</p>
+<p>当N为奇数时， 当 两个N数码的逆序数
+奇偶性相同时，可以互达，否则不行；</p>
+<p>当N为偶数时，当
+两个N数码的奇偶性相同的话，那么两个N数码中的0所在行的差值
+k，k也必须是偶数时，才能互达；</p>
+<p>当两个N数码的奇偶性不同时，那么两个N数码中的0所在行的差值
+k，k也必须是奇数时，才能互达；</p>
+<ul>
+<li><strong>将深拷贝换成赋值语句</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#tmp=copy.deepcopy(state)                        #存储当前状态，便于回溯</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> item <span class="keyword">in</span> state[<span class="number">0</span>]:</span><br><span class="line">    tmp[<span class="number">0</span>].append(item)</span><br><span class="line">tmp[<span class="number">1</span>]=<span class="number">0</span>+state[<span class="number">1</span>]</span><br><span class="line">tmp[<span class="number">2</span>]=<span class="number">0</span>+state[<span class="number">2</span>]</span><br></pre></td></tr></table></figure>
+<p>时间对比：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>样例1</strong></th>
+<th><strong>样例2</strong></th>
+<th><strong>样例3</strong></th>
+<th><strong>样例4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>直接赋值</td>
+<td>0.5s</td>
+<td>0.3s</td>
+<td>0.1s</td>
+<td>4s</td>
+</tr>
+<tr class="even">
+<td>调用深拷贝函数</td>
+<td>5.25s</td>
+<td>3.1s</td>
+<td>1.17s</td>
+<td>38s</td>
+</tr>
+</tbody>
+</table>
+<p>使用copy.deepcopy()是，程序新建地址空间，耗费大量时间，可以看到直接使用赋值语句，减少copy.deepcopy()函数的调用，大大提高用时效率。</p>
+<ul>
+<li>**对IDA*加入环检测，较少访问节点次数**</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">not</span> <span class="built_in">str</span>(state[<span class="number">0</span>]) <span class="keyword">in</span> CLOSE):                 <span class="comment">#环检测</span></span><br><span class="line">    CLOSE[<span class="built_in">str</span>(state[<span class="number">0</span>])]=depth+state[<span class="number">2</span>]         <span class="comment">#如果没有探索过，加入字典，并记录该状态的f(n)</span></span><br><span class="line">    a=IDAstar(depth+<span class="number">1</span>,r[<span class="number">1</span>])                     <span class="comment">#迭代深搜</span></span><br><span class="line">    <span class="keyword">if</span>(a[<span class="number">0</span>]):                                   <span class="comment">#如果搜索成功</span></span><br><span class="line">        path[depth]=r[<span class="number">1</span>]                        <span class="comment">#记录当前深度的操作</span></span><br><span class="line">        <span class="keyword">return</span> a                                <span class="comment">#返回（搜索成功，最小步长）</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span>(a[<span class="number">1</span>]&lt;Min[<span class="number">1</span>]):                        <span class="comment">#如果没有搜索成功</span></span><br><span class="line">            Min[<span class="number">1</span>]=a[<span class="number">1</span>]                         <span class="comment">#更新邻接状态的最小代价，用于更新阈值bound</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">if</span> CLOSE[<span class="built_in">str</span>(state[<span class="number">0</span>])]&gt;=(depth+state[<span class="number">2</span>]):  <span class="comment">#如果当前状态已经被探索过，而且先前探索过的状态的f(n)&gt;目前相同状态的f(n)</span></span><br><span class="line">        CLOSE[<span class="built_in">str</span>(state[<span class="number">0</span>])]=depth+state[<span class="number">2</span>]     <span class="comment">#更新该状态的最小f(n)</span></span><br><span class="line">        a=IDAstar(depth+<span class="number">1</span>,r[<span class="number">1</span>])                 <span class="comment">#迭代搜索</span></span><br><span class="line">        <span class="keyword">if</span>(a[<span class="number">0</span>]):                               <span class="comment">#如果搜索成功</span></span><br><span class="line">            path[depth]=r[<span class="number">1</span>]                    <span class="comment">#记录当前深度的操作</span></span><br><span class="line">            <span class="keyword">return</span> a                            <span class="comment">#返回（搜索成功，最小步长）</span></span><br><span class="line">        <span class="keyword">elif</span> a[<span class="number">1</span>]&lt;Min[<span class="number">1</span>]:                       <span class="comment">#如果没有搜索成功</span></span><br><span class="line">            Min[<span class="number">1</span>]=a[<span class="number">1</span>]                         <span class="comment">#更新邻接状态的最小代价，用于更新阈值bound</span></span><br></pre></td></tr></table></figure>
+<p>加入环检测后，针对IDA*的性能分析如下表：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>样例1</strong></th>
+<th><strong>样例2</strong></th>
+<th><strong>样例3</strong></th>
+<th><strong>样例4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>有</strong>环检测剪枝</td>
+<td>18651</td>
+<td>12201</td>
+<td>4315</td>
+<td>158044</td>
+</tr>
+<tr class="even">
+<td><strong>无</strong>环检测剪枝</td>
+<td>21985</td>
+<td>15389</td>
+<td>4414</td>
+<td>261175</td>
+</tr>
+</tbody>
+</table>
+<p>仅对IDA*做出改进，可以看到加入环检测（判重）剪枝后，探索的状态节点有所减少，样例4为例，探访的状态节点少了五分之二</p>
+<ul>
+<li><strong>提前计算每个数字到指定位置的曼哈顿距离</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MDT=[]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">    tmp=[]</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">        tmp.append(<span class="built_in">abs</span>(<span class="built_in">int</span>(i / N) - <span class="built_in">int</span>(j / N))+<span class="built_in">abs</span>(<span class="built_in">int</span>(i % N) - <span class="built_in">int</span>(j % N)))</span><br><span class="line">    MDT.append(tmp)</span><br></pre></td></tr></table></figure>
+<p>能够减少函数的调用，把函数调用转换为访问二维列表，提高运算效率</p>
+<ul>
+<li><strong>先对初步判断其后继状态节点的最小估计函数，较小的先探索</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">successor=[]                        <span class="comment">#后继，邻接状态</span></span><br><span class="line"><span class="keyword">for</span> r <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">    tx=sx+diraction[r][<span class="number">0</span>]           <span class="comment">#下一个状态的横坐标</span></span><br><span class="line">    ty=sy+diraction[r][<span class="number">1</span>]           <span class="comment">#下一个状态的纵坐标</span></span><br><span class="line">    <span class="keyword">if</span> (tx&lt;<span class="number">0</span> <span class="keyword">or</span> ty&lt;<span class="number">0</span> <span class="keyword">or</span> tx&gt;=N <span class="keyword">or</span> ty&gt;=N): <span class="comment">#空格越界，接续执行</span></span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">if</span>((<span class="built_in">max</span>(prev,r)-<span class="built_in">min</span>(prev,r))==<span class="number">2</span>): <span class="comment">#不走回头路</span></span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    h_n=state[<span class="number">2</span>]-MDT[tx*N+ty][state[<span class="number">0</span>][tx*N+ty]-<span class="number">1</span>]</span><br><span class="line">    h_n+=MDT[sx*N+sy][state[<span class="number">0</span>][tx*N+ty]-<span class="number">1</span>]          <span class="comment">#计算移动数字后的状态的h(n)</span></span><br><span class="line">    successor.append((h_n,r))                       <span class="comment">#插入后继数组</span></span><br><span class="line"><span class="built_in">sorted</span>(successor,key=<span class="keyword">lambda</span> x:(x[<span class="number">0</span>],x[<span class="number">1</span>]))          <span class="comment">#对后继数组进行排序，h(n)较小的优先访问</span></span><br><span class="line">successor.reverse()</span><br></pre></td></tr></table></figure>
+<p>访问节点：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>样例1</strong></th>
+<th><strong>样例2</strong></th>
+<th><strong>样例3</strong></th>
+<th><strong>样例4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>有</strong>排序</td>
+<td>18651</td>
+<td>12201</td>
+<td>4315</td>
+<td>158044</td>
+</tr>
+<tr class="even">
+<td><strong>无</strong>排序</td>
+<td>18514</td>
+<td>6087</td>
+<td>6498</td>
+<td>43405</td>
+</tr>
+</tbody>
+</table>
+<p>运行耗时：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>样例1</strong></th>
+<th><strong>样例2</strong></th>
+<th><strong>样例3</strong></th>
+<th><strong>样例4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>有</strong>排序</td>
+<td>0.5s</td>
+<td>0.3s</td>
+<td>0.1s</td>
+<td>4s</td>
+</tr>
+<tr class="even">
+<td><strong>无</strong>排序</td>
+<td>0.68s</td>
+<td>0.285s</td>
+<td>0.29s</td>
+<td>1.7s</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到对邻接状态的最小估价进行排序，并没有实质上减少状态节点的访问。对于样例3有明显的改进，但是对于样例4反而增加了访问的状态节点数，增加了运算时间。</p>
+<h2 id="三实验结果及分析">三、实验结果及分析</h2>
+<h3 id="实验结果展示实例">1.实验结果展示实例</h3>
+<p><strong>A*</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>实验结果</th>
+<th>期望结果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316130056965.png"
+alt="image-20220316130056965" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094057846.png"
+alt="image-20220316094057846" /></td>
+</tr>
+<tr class="even">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316130132693.png"
+alt="image-20220316130132693" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094110419.png"
+alt="image-20220316094110419" /></td>
+</tr>
+<tr class="odd">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316130141584.png"
+alt="image-20220316130141584" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094117192.png"
+alt="image-20220316094117192" /></td>
+</tr>
+<tr class="even">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316130148530.png"
+alt="image-20220316130148530" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094122308.png"
+alt="image-20220316094122308" /></td>
+</tr>
+</tbody>
+</table>
+<p><strong>IDA*</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>实验结果</th>
+<th>期望结果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316125151950.png"
+alt="image-20220316125151950" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094057846.png"
+alt="image-20220316094057846" /></td>
+</tr>
+<tr class="even">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316125144828.png"
+alt="image-20220316125144828" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094110419.png"
+alt="image-20220316094110419" /></td>
+</tr>
+<tr class="odd">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094216050.png"
+alt="image-20220316094216050" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094117192.png"
+alt="image-20220316094117192" /></td>
+</tr>
+<tr class="even">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094319542.png"
+alt="image-20220316094319542" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316094122308.png"
+alt="image-20220316094122308" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="评测指标展示及分析">2.评测指标展示及分析</h3>
+<ul>
+<li><p><strong>A*与IDA*算法性能分析</strong></p>
+<p>A*算法采取的是广度优先搜索的策略，但是在运算过程中，我们引入启发函数，使得在广度搜索的时候是有意识的优先拓展最小代价比较小的部分，有一定前进的方向，但是目标仍然不明确。虽然该算法是有提示的搜素，但是可以发现该算法所用的时间复杂度较大，因为该算法需要使用<strong>大量的空间存储</strong>以及探索过的状态节点，以防止重复探索</p>
+<p>IDA*算法采用的是迭代深度优先搜索的策略，搜索过程中会采用估价函数，通过剪枝减少不必要的搜索。该算法通过更新阈值来不断迭代深度搜索。由于使用了回溯的方法，所以在回溯过程中不必保存中间状态，大大节省空间。然而在每次回溯过程中，需要从头搜索，由此，该算法的<strong>时间复杂性较大</strong></p>
+<p>由于A*算法与IDA*算法所写的代码不能够完全一致，所以在理论上与实践中运行程序所用的时间存在一定的差距，我们通过比较两个算法<strong>访问状态节点的数目</strong>，比较两个算法的时间复杂度。</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>样例1</strong></th>
+<th><strong>样例2</strong></th>
+<th><strong>样例3</strong></th>
+<th><strong>样例4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong>*</td>
+<td>3180</td>
+<td>5649</td>
+<td>3871</td>
+<td>28017</td>
+</tr>
+<tr class="even">
+<td><strong>IDA</strong>*</td>
+<td>18651</td>
+<td>12201</td>
+<td>4315</td>
+<td>158044</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到IDA*相较于A*算法，访问节点的数目上较多，所以该算法的时间复杂度理论上要大。</p>
+<p>**为什么实验结果表明A*算法所用的时间会比IDA*的算法所用时长？**</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>样例1</strong></th>
+<th><strong>样例2</strong></th>
+<th><strong>样例3</strong></th>
+<th><strong>样例4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong>*</td>
+<td>5s</td>
+<td>9s</td>
+<td>6s</td>
+<td>47s</td>
+</tr>
+<tr class="even">
+<td><strong>IDA</strong></td>
+<td>0.5s</td>
+<td>0.3s</td>
+<td>0.1s</td>
+<td>4s</td>
+</tr>
+</tbody>
+</table>
+<p>原因是</p>
+<p>A*算法在调用函数时创建大量的空间，创建空间所用的时间已经远大于算法真正所需要的时间。</p>
+<p>另一方面，A*算法在保存状态时在5处使用了copy.deepcopy()函数，相较于没有使用该函数的IDA*时间性能较差，事实上，IDA*是优化后的版本，将copy.deepcopy（）函数替换为赋值语句，大大提高了计算性能。</p></li>
+<li><p><strong>启发式函数性能分析</strong></p>
+<ul>
+<li>在极端情况下,如果h(n)=0,那么只有g(n)实际上是有用的,这时A*算法也就是迪杰斯特拉算法,它能保证一定可以找到一条最优路径.</li>
+<li>如果h(n)总是小于(或者等于)从结点n走到目标结点的步数,那么A<em>算法是一定可以找到最优路径的.h(n)越小,A</em>扩展的结点越多,导致A*算法越慢.</li>
+<li>如果h(n)恰好等于从结点n走到目标结点的步数,A<em>算法扩展的所有结点都在最优路径上,它不会扩展任何其他无关结点,此时A</em>算法的速度是非常快的.尽管你无法总是做到这一点,但在某些特定情况下你确实做到.知道A*算法可以在某些时候运行的很好是一件很值得高兴的事.</li>
+<li>如果h(n)所给出的信息有时大于从结点n走到目标结点的步数,那么A*算法将无法确保能够找到最优路径,但它会运行得更快.</li>
+<li>在另一种极端的情况下,如果h(n)非常接近于g(n),那么只有h(n)将起作用,此时A*算法实际上变成宽度优先搜索.</li>
+<li>当h(n)尽量接近h*(n)时算法是较为优秀的</li>
+<li>曼哈顿距离的启发函数以及算是一个优秀的启发式函数了</li>
+</ul></li>
+<li><p><strong>环检测，剪枝性能分析</strong></p>
+<p>对IDA*做出改进</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>无环检测</th>
+<th>有环检测</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152223161.png"
+alt="image-20220316152223161" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152436168.png"
+alt="image-20220316152436168" /></td>
+</tr>
+<tr class="even">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152230219.png"
+alt="image-20220316152230219" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152406689.png"
+alt="image-20220316152406689" /></td>
+</tr>
+<tr class="odd">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152247457.png"
+alt="image-20220316152247457" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152331750.png"
+alt="image-20220316152331750" /></td>
+</tr>
+<tr class="even">
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152309831.png"
+alt="image-20220316152309831" /></td>
+<td><img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316152351583.png"
+alt="image-20220316152351583" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>样例1</strong></th>
+<th><strong>样例2</strong></th>
+<th><strong>样例3</strong></th>
+<th><strong>样例4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>有</strong>环检测剪枝</td>
+<td>18651</td>
+<td>12201</td>
+<td>4315</td>
+<td>158044</td>
+</tr>
+<tr class="even">
+<td><strong>无</strong>环检测剪枝</td>
+<td>21985</td>
+<td>15389</td>
+<td>4414</td>
+<td>261175</td>
+</tr>
+</tbody>
+</table>
+<p>仅对IDA*做出改进，可以看到加入环检测（判重）剪枝后，探索的状态节点有所减少，样例四为例，探访的状态节点少了五分之二</p></li>
+<li><p><strong>c++与python 性能分析</strong></p>
+<p>在用python写这两份算法之前，先用c++编写了这两个算法，用c++写程序相较于python性能也有很大的提升</p>
+<p>使用C++运行IDA*算法代码</p>
+<p>运行ppt上的代码（最初四个样例）</p>
+<p>样例1：</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316154305038.png"
+alt="image-20220316154305038" />
+<figcaption aria-hidden="true">image-20220316154305038</figcaption>
+</figure>
+<p>样例2：</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316154108436.png"
+alt="image-20220316154108436" />
+<figcaption aria-hidden="true">image-20220316154108436</figcaption>
+</figure>
+<p>样例3：</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316154329768.png"
+alt="image-20220316154329768" />
+<figcaption aria-hidden="true">image-20220316154329768</figcaption>
+</figure>
+<p>样例4：</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316154346252.png"
+alt="image-20220316154346252" />
+<figcaption aria-hidden="true">image-20220316154346252</figcaption>
+</figure>
+<p>由于python运行时间较长</p>
+<p>此处只对ppt样例4和ppt样例2进行演示：</p>
+<p>样例2</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316202125114.png"
+alt="image-20220316202125114" />
+<figcaption aria-hidden="true">image-20220316202125114</figcaption>
+</figure>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316202134604.png"
+alt="image-20220316202134604" />
+<figcaption aria-hidden="true">image-20220316202134604</figcaption>
+</figure>
+<p>样例4</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20220316154646873.png"
+alt="image-20220316154646873" />
+<figcaption aria-hidden="true">image-20220316154646873</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/KLm7CXbFSQ2Hc4r.png"
+alt="image-20220316154531485" />
+<figcaption aria-hidden="true">image-20220316154531485</figcaption>
+</figure>
+<p>可以看到仅仅是样例4，用python版本的IDA*算法也跑了220s左右而样例2也跑了393s</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>ppt样例1</th>
+<th>ppt样例2</th>
+<th>ppt样例3</th>
+<th>ppt样例4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>c++版IDA*</td>
+<td>100s</td>
+<td>0.4s</td>
+<td>152s</td>
+<td>2.2s</td>
+</tr>
+<tr class="even">
+<td>python版IDA*</td>
+<td>——</td>
+<td>393s</td>
+<td>——</td>
+<td>220s</td>
+</tr>
+</tbody>
+</table>
+<p>原因：</p>
+<p>c++和python代码都会转变成CPU指令，然而python转换出来的cpu指令会比较多。</p>
+<p>c++是编译型语言，需要通过预处理，编译，链接之后才会生成可执行文件</p>
+<p>python是解释型语言，需要把源代码转换成字节码文件，再由python虚拟机一条条执行字节码指令，需要经过解释器这个过程</p></li>
+</ul>
+<h2 id="四思考题">四、思考题</h2>
+<ol type="1">
+<li>如果用列表作为字典的键，会发生什么现象？用元组呢？</li>
+</ol>
+<p><strong>字典用法解释：</strong></p>
+<p>键必须是可哈希的，大多数Python对象可以作为键，但它们必须是可哈希的对象。像列表和字典这样的可变类型，由于它们不是可哈希的，所以不能作为键。
+所有不可变的类型都是可哈希的，因此它们都可以做为字典的键。</p>
+<p>数字和字符串可以被用做字典的键，元组是不可变的但也可能不是一成不变的，因此用元组做有效的键必须要加限制：若元组中只包括像数字和字符串这样的不可变参数，才可以作为字典中有效的键。</p>
+<p><strong>为什么键必须是可哈希的？</strong></p>
+<p>解释器调用哈希函数，根据字典中键的值来计算存储你的数据的位置。如果键是可变对象，它的值可改变。如果键发生变化，哈希函数会映射到不同的地址来存储数据。如果这样的情况发生，哈希函数就不可能可靠地存储或获取相关的数据。选择可哈希的键的原因就是因为它们的值不能改变。</p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/sbtHlEpQZm1cMAO.png"
+alt="image-20220316233121076" />
+<figcaption aria-hidden="true">image-20220316233121076</figcaption>
+</figure>
+<p>字典中的键为list是可变的，不可哈希，报错</p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/XCuyfsnqVYbQ2p5.png"
+alt="image-20220316233130209" />
+<figcaption aria-hidden="true">image-20220316233130209</figcaption>
+</figure>
+<p>字典中的键是元组，不可变，可哈希，程序正常运行</p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/KCIwXLmPQSr5UAn.png"
+alt="image-20220316233137776" />
+<figcaption aria-hidden="true">image-20220316233137776</figcaption>
+</figure>
+<p>字典中的键是元组，但是元组中含有list类型元素，导致元组可变，不可哈希，程序报错</p>
+<ol start="2" type="1">
+<li>在本课件第 2 章和第 4 章提到的数据类型中，哪些是可变数据类型，
+哪些是不可变数据类型？试结合代码分析。</li>
+</ol>
+<p>可变 /不可变 数据类型：变量值发生改变时，变量的内存地址 不变/改变 。
+• 提示：① 你可能会用到 id() 函数。② Python 的赋值运算符（
+（=）是引用传递。）</p>
+<p><strong>数字是不可变数据类型</strong></p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/SsFg47XZyKqewzM.png"
+alt="image-20220316233922159" />
+<figcaption aria-hidden="true">image-20220316233922159</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/6LWZsmhcyGXjKDn.png"
+alt="image-20220316233926553" />
+<figcaption aria-hidden="true">image-20220316233926553</figcaption>
+</figure>
+<p>每一个数字都由一片地址空间进行存储，=只是引用传递，本质上还是对同一片空间进行访问</p>
+<p><strong>列表是可变数据类型</strong></p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/nPva3qtNhoxUys6.png"
+alt="image-20220316233936044" />
+<figcaption aria-hidden="true">image-20220316233936044</figcaption>
+</figure>
+<p>更改列表里面的元素，地址没有发生改变</p>
+<p><strong>元组是不可变数据类型</strong></p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/ynlIL3FWiHhsRCm.png"
+alt="image-20220316233950944" />
+<figcaption aria-hidden="true">image-20220316233950944</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/hoNUB1yO85wsxJe.png"
+alt="image-20220316234726505" />
+<figcaption aria-hidden="true">image-20220316234726505</figcaption>
+</figure>
+<p>对元组内元素发生更改，会报错</p>
+<p><strong>字符串是不可变数据类型</strong></p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/WGZcFaPdmBUNbuh.png"
+alt="image-20220316233941648" />
+<figcaption aria-hidden="true">image-20220316233941648</figcaption>
+</figure>
+<p>对字符串本身发生更改，地址会发生改变，追加元素，对原来字符串并没有发生更改</p>
+<p><strong>字典是可变数据类型</strong></p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/NpI1C4yXmiqs963.png"
+alt="image-20220316234005372" />
+<figcaption aria-hidden="true">image-20220316234005372</figcaption>
+</figure>
+<p>更改字典里面的元素，地址没有发生改变</p>
+<p><strong>集合是不可变数据类型</strong></p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/hQ652NlCZdXbKWI.png"
+alt="image-20220316234316013" />
+<figcaption aria-hidden="true">image-20220316234316013</figcaption>
+</figure>
+<p>集合中有可变数据类型，会报错</p>
+<figure>
+<img src="https://s2.loli.net/2022/04/29/1EuDVLSjAx9kgre.png"
+alt="image-20220316234022985" />
+<figcaption aria-hidden="true">image-20220316234022985</figcaption>
+</figure>
+<p>修改集合后，地址未发生更改，但是集合原本的元素并没有发生更改</p>
+<h2 id="五参考资料">五、参考资料</h2>
+<p>https://blog.csdn.net/free4wuyou/article/details/15676597?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164733496816781685340998%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164733496816781685340998&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2<sub>all</sub>first_rank_ecpm_v1~rank_v31_ecpm-5-15676597.142</p>
+<p>https://blog.csdn.net/qq_40998706/article/details/87828065?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164741396216780271553315%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164741396216780271553315&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2<sub>all</sub>first_rank_ecpm_v1~rank_v31_ecpm-1-87828065.142</p>
+<p>https://blog.csdn.net/stl112514/article/details/37689823?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164744586416780271921157%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=164744586416780271921157&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2<sub>all</sub>first_rank_ecpm_v1~rank_v31_ecpm-1-37689823.142</p>
+
+    </article>
+    <!-- license -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2022/04/09/AI%20Course3/">https://klc1006.github.io/2022/04/09/AI%20Course3/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2022/04/09/AI%20Course3/">April 9th 2022, 12:00:00 am</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2022/04/09/AI%20Course3/">March 9th 2023, 11:06:56 am</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2022/04/28/AI%20Course%206/" title="【AI Course】归结演绎推理">
+                    <div class="nextTitle">【AI Course】归结演绎推理</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2022/03/02/AI%20course%201_20337013/" title="【AI Course】一致代价实现最短路径">
+                    <div class="prevTitle">【AI Course】一致代价实现最短路径</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- comment -->
+    
+        <div class="post-comment">
+            <!-- 来必力 City 版安装代码 -->
+
+
+            
+
+            
+
+            
+
+            <!-- utteranc评论 -->
+
+
+            <!-- partial('_partial/comment/changyan') -->
+            <!--PC版-->
+
+
+            
+            
+
+            
+
+        </div>
+    
+    <!-- timeliness note -->
+    <!-- idea from: https://hexo.fluid-dev.com/posts/hexo-injector/#%E6%96%87%E7%AB%A0%E6%97%B6%E6%95%88%E6%80%A7%E6%8F%90%E7%A4%BA -->
+    
+    <!-- Mathjax -->
+    
+        
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+
+
+    
+</main>
+
+                <!-- profile -->
+                
+            </div>
+            <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+        <div class="social">
+            
+    
+        
+            
+                <a href="mailto:1172485065@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/Klc1006" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                    
+                    <img class="profile-qr" src="/assets/wechatqr.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+
+        </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- website approve for Chinese user -->
+    
+    <!-- 不蒜子  -->
+    
+        <div class="busuanzi-container">
+            
+             
+                <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+            
+        </div>
+    	
+</footer>
+
+        </div>
+        <!-- toc -->
+        
+            <div class="toc-wrapper toc-wrapper-loding" style=
+
+
+
+
+
+
+
+    top:50vh;
+
+>
+                <div class="toc-catalog">
+                    <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+                </div>
+                <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">
+中山大学计算机学院
+人工智能实验报告（三）
+(2022春季实验报告)
+</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%AE%9E%E9%AA%8C%E9%A2%98%E7%9B%AE"><span class="toc-number">1.1.</span> <span class="toc-text">一、实验题目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%AE%9E%E9%AA%8C%E5%86%85%E5%AE%B9"><span class="toc-number">1.2.</span> <span class="toc-text">二、实验内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.算法原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81%E5%B1%95%E7%A4%BA"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.关键代码展示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%BC%98%E5%8C%96"><span class="toc-number">1.2.3.</span> <span class="toc-text">3.创新点&amp;优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%88%86%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">三、实验结果及分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA%E5%AE%9E%E4%BE%8B"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.实验结果展示实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%84%E6%B5%8B%E6%8C%87%E6%A0%87%E5%B1%95%E7%A4%BA%E5%8F%8A%E5%88%86%E6%9E%90"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.评测指标展示及分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E6%80%9D%E8%80%83%E9%A2%98"><span class="toc-number">1.4.</span> <span class="toc-text">四、思考题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">1.5.</span> <span class="toc-text">五、参考资料</span></a></li></ol></li></ol>
+            </div>
+        
+        <!-- sidebar -->
+        <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+        <div class="sidebar-panel-archives">
+    <!-- 在 ejs 中将 archive 按照时间排序 -->
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 16
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+        
+            
+            
+            <div class="archive-year"> 2023 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/08</span>
+            <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span>
+            <a class="archive-post-title" href="/2023/03/07/cpp/">面向对象编程 OOP（cpp语言篇）</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/20</span>
+            <a class="archive-post-title" href="/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/12</span>
+            <a class="archive-post-title" href="/2023/02/12/the%20dynamics%20of%20reforcelearning/">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/07</span>
+            <a class="archive-post-title" href="/2023/02/07/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/05</span>
+            <a class="archive-post-title" href="/2023/02/05/Correlated%20Q-Learning/">【论文调研】Correlated Q-Learning笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/28</span>
+            <a class="archive-post-title" href="/2023/01/28/DeepStack%E7%AC%94%E8%AE%B0/">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/16</span>
+            <a class="archive-post-title" href="/2023/01/16/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2022 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/03</span>
+            <a class="archive-post-title" href="/2022/10/03/Lab1/">Lab 1</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span>
+            <a class="archive-post-title" href="/2022/08/25/hello-world/">Hello World</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/09</span>
+            <a class="archive-post-title" href="/2022/06/09/AI%20Course%2012/">【AI Course】PDDL解决规划问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/19</span>
+            <a class="archive-post-title" href="/2022/05/19/AI%20Course%208/">【AI Course】KNN完成情感分类标签</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/07</span>
+            <a class="archive-post-title" href="/2022/05/07/AI%20Course%207%20203/">【AI Course】朴素贝叶斯</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/28</span>
+            <a class="archive-post-title" href="/2022/04/28/AI%20Course%206/">【AI Course】归结演绎推理</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span>
+            <a class="archive-post-title" href="/2022/04/09/AI%20Course3/">【AI Course】A*和 IDA*算法解决15-puzzle问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/02</span>
+            <a class="archive-post-title" href="/2022/03/02/AI%20course%201_20337013/">【AI Course】一致代价实现最短路径</a>
+        </li>
+    
+    </div>
+</div>
+
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+        
+            <span class="sidebar-tag-name" data-tags="论文调研">
+                <span class="iconfont-archer">&#xe606;</span>
+                论文调研
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="FSP">
+                <span class="iconfont-archer">&#xe606;</span>
+                FSP
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="归结推理">
+                <span class="iconfont-archer">&#xe606;</span>
+                归结推理
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="A*">
+                <span class="iconfont-archer">&#xe606;</span>
+                A*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IDA*">
+                <span class="iconfont-archer">&#xe606;</span>
+                IDA*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="PDDL">
+                <span class="iconfont-archer">&#xe606;</span>
+                PDDL
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="规划问题">
+                <span class="iconfont-archer">&#xe606;</span>
+                规划问题
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="AI">
+                <span class="iconfont-archer">&#xe606;</span>
+                AI
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="最短路径">
+                <span class="iconfont-archer">&#xe606;</span>
+                最短路径
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="朴素贝叶斯">
+                <span class="iconfont-archer">&#xe606;</span>
+                朴素贝叶斯
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="KNN">
+                <span class="iconfont-archer">&#xe606;</span>
+                KNN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="分类">
+                <span class="iconfont-archer">&#xe606;</span>
+                分类
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="cpp">
+                <span class="iconfont-archer">&#xe606;</span>
+                cpp
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="leetcode">
+                <span class="iconfont-archer">&#xe606;</span>
+                leetcode
+            </span>
+        
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+        缺失模块，请参考主题文档进行安装配置：https://github.com/fi3ework/hexo-theme-archer#%E5%AE%89%E8%A3%85%E4%B8%BB%E9%A2%98
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+
+    </div>
+</div>
+
+        <!-- site-meta -->
+        <script>
+    var siteMetaRoot = "/"
+    if (siteMetaRoot === "undefined") {
+        siteMetaRoot = '/'
+    }
+    var siteMeta = {
+        url: "https://Klc1006.github.io",
+        root: siteMetaRoot,
+        author: "Klc"
+    }
+</script>
+
+        <!-- import experimental options here -->
+        <!-- Custom Font -->
+
+
+        <!-- main func -->
+        <script src="/scripts/main.js?v=20211217"></script>
+        <!-- dark mode -->
+        <script src="/scripts/dark.js?v=20211217"></script>
+        <!-- fancybox -->
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
+        <!-- algolia -->
+        
+        <!-- busuanzi -->
+        
+            <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+        
+        <!-- CNZZ -->
+        
+        <!-- async load share.js -->
+        
+            <script src="/scripts/share.js?v=20211217" async></script>
+        
+        <!-- mermaid -->
+        
+            <script src='https://cdn.jsdelivr.net/npm/mermaid@8.11.0/dist/mermaid.min.js'></script>
+            <script>
+                if (window.mermaid) {
+                    mermaid.initialize({theme: 'dark'});
+                }
+            </script>
+        
+    </body>
+</html>

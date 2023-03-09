@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+    
+
+<!-- keywords -->
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Klc">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Klc">
+    
+        <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta name="description" content="Adaptive FSP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记">
+<meta property="og:url" content="https://klc1006.github.io/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="Adaptive FSP">
+<meta property="og:locale">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/9P7rZTYMAtL3hdv.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/nuQlm7qN9w3ZhaM.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/whdyU4rBuTvoMgY.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/bXB4rElfw5iTWGN.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/L179nZvjoGpgrD5.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/6OehfLHr79sycp2.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/RpOMFZo2T8xfUcz.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/8mKc4Siy6urMV2k.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/JjBXq6RbioPLHaA.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/HkbqtvjBUGLAVaO.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/WkQVl5UfqCda3O7.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/O57IDUtQJdRlzFj.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/crDV1pNGAzSkP7a.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/NS5JM6kKYQcIlby.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/OMrIxNasdwYhinK.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/JvZ9XHOrixel1QV.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/iP5AOZdltryoVcb.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/Lotx1lUrkOcvYGI.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/06/Qo94HFDcMPtTkCE.png">
+<meta property="article:published_time" content="2023-02-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-09T03:13:39.776Z">
+<meta property="article:author" content="Klc">
+<meta property="article:tag" content="论文调研">
+<meta property="article:tag" content="FSP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2023/03/06/9P7rZTYMAtL3hdv.png">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
+    
+    <title>【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记 · PityBug&#39;s Studio</title>
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+    (function (w) {
+        'use strict'
+        // rel=preload support test
+        if (!w.loadCSS) {
+            w.loadCSS = function () {}
+        }
+        // define on the loadCSS obj
+        var rp = (loadCSS.relpreload = {})
+        // rel=preload feature support test
+        // runs once and returns a function for compat purposes
+        rp.support = (function () {
+            var ret
+            try {
+                ret = w.document.createElement('link').relList.supports('preload')
+            } catch (e) {
+                ret = false
+            }
+            return function () {
+                return ret
+            }
+        })()
+
+        // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+        // then change that media back to its intended value on load
+        rp.bindMediaToggle = function (link) {
+            // remember existing media attr for ultimate state, or default to 'all'
+            var finalMedia = link.media || 'all'
+
+            function enableStylesheet() {
+                link.media = finalMedia
+            }
+
+            // bind load handlers to enable media
+            if (link.addEventListener) {
+                link.addEventListener('load', enableStylesheet)
+            } else if (link.attachEvent) {
+                link.attachEvent('onload', enableStylesheet)
+            }
+
+            // Set rel and non-applicable media type to start an async request
+            // note: timeout allows this to happen async to let rendering continue in IE
+            setTimeout(function () {
+                link.rel = 'stylesheet'
+                link.media = 'only x'
+            })
+            // also enable media after 3 seconds,
+            // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+            setTimeout(enableStylesheet, 3000)
+        }
+
+        // loop through link elements in DOM
+        rp.poly = function () {
+            // double check this to prevent external calls from running
+            if (rp.support()) {
+                return
+            }
+            var links = w.document.getElementsByTagName('link')
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i]
+                // qualify links to those with rel=preload and as=style attrs
+                if (
+                    link.rel === 'preload' &&
+                    link.getAttribute('as') === 'style' &&
+                    !link.getAttribute('data-loadcss')
+                ) {
+                    // prevent rerunning on link
+                    link.setAttribute('data-loadcss', true)
+                    // bind listeners to toggle media back
+                    rp.bindMediaToggle(link)
+                }
+            }
+        }
+
+        // if unsupported, run the polyfill
+        if (!rp.support()) {
+            // run once at least
+            rp.poly()
+
+            // rerun poly on an interval until onload
+            var run = w.setInterval(rp.poly, 500)
+            if (w.addEventListener) {
+                w.addEventListener('load', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            } else if (w.attachEvent) {
+                w.attachEvent('onload', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            }
+        }
+
+        // commonjs
+        if (typeof exports !== 'undefined') {
+            exports.loadCSS = loadCSS
+        } else {
+            w.loadCSS = loadCSS
+        }
+    })(typeof global !== 'undefined' ? global : this)
+</script>
+
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20211217" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/dark.css?v=20211217" as="style">
+    <link rel="stylesheet" href="/css/dark.css">
+    <link rel="stylesheet" href="/css/mobile.css?v=20211217" media="(max-width: 960px)">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js?v=20211217" as="script">
+    <link rel="preload" href="/scripts/dark.js?v=20211217" as="script">
+    <link rel="preload" href="/font/Oswald-Regular.ttf" as="font" crossorigin>
+    <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
+    <!-- algolia -->
+    
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ == undefined) {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js" />')
+        }
+    </script>
+    
+        <body class="post-body">
+    
+        <!-- header -->
+        <header class="header header-mobile">
+    <!-- top read progress line -->
+    <div class="header-element">
+        <div class="read-progress"></div>
+    </div>
+    <!-- sidebar menu button -->
+    <div class="header-element">
+        
+            <div class="header-sidebar-menu">
+        
+            
+                <div style="padding-left: 1px;">&#xe775;</div>
+            
+        </div>
+    </div>
+    <!-- header actions -->
+    <div class="header-actions">
+        <!-- theme mode switch button -->
+        <span class="header-theme-btn header-element">
+            <i class="fas fa-adjust"></i>
+        </span>
+        <!-- back to home page text -->
+        <span class="home-link header-element">
+            <a href=/>PityBug's Studio.</a>
+        </span>
+    </div>
+    <!-- toggle banner for post layout -->
+    
+        
+            <div class="banner">
+        
+            <div class="blog-title header-element">
+                <a href="/">PityBug&#39;s Studio.</a>
+            </div>
+            <div class="post-title header-element">
+                <a href="#" class="post-name">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</a>
+            </div>
+        </div>
+    
+</header>
+
+        <!-- fixed footer -->
+        <footer class="footer-fixed">
+    <!-- back to top button -->
+    <div class="footer-fixed-element">
+        
+            <div class="back-top back-top-hidden">
+        
+        
+            <div>&#xe639;</div>
+        
+        </div>
+    </div>
+</footer>
+
+        <!-- wrapper -->
+        <div class="wrapper">
+            <div class="site-intro" style="
+
+
+
+
+
+
+
+    height:50vh;
+
+">
+    
+    <!-- 主页  -->
+    
+        
+    <!-- 404页  -->
+    
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+                【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL ...
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+                
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页 meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="论文调研">论文调研</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="FSP">FSP</a>
+    
+</div>
+
+                
+                <!-- 文章字数统计 -->
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">2.6k</span>阅读时长: <span class="post-count reading-time">10 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <!-- 撰写日期 -->
+                    <span class="iconfont-archer post-intro-calander">&#xe676;</span>
+                    <span class="post-intro-time">2023/02/20</span>
+                    <!-- busuanzi -->
+                    
+                        <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                            <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    
+                    <!-- 文章分享 -->
+                    <span class="share-wrapper">
+                        <span class="iconfont-archer share-icon">&#xe71d;</span>
+                        <span class="share-text">Share</span>
+                        <ul class="share-list">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+            <script>
+  // get user agent
+  function getBrowserVersions() {
+    var u = window.navigator.userAgent
+    return {
+      userAgent: u,
+      trident: u.indexOf('Trident') > -1, //IE内核
+      presto: u.indexOf('Presto') > -1, //opera内核
+      webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+      gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+      mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+      ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+      android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+      iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+      iPad: u.indexOf('iPad') > -1, //是否为iPad
+      webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+      weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+      uc: u.indexOf('UCBrowser') > -1, //是否为android下的UC浏览器
+    }
+  }
+  var browser = {
+    versions: getBrowserVersions(),
+  }
+  console.log('userAgent: ' + browser.versions.userAgent)
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded')
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document
+        .getElementsByClassName('intro-title')[0]
+        .classList.add('intro-fade-in')
+      document
+        .getElementsByClassName('intro-subtitle')[0]
+        .classList.add('intro-fade-in')
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in')
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb() {
+    if (browser.versions.uc) {
+      console.log('UCBrowser')
+      fontLoaded()
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular'],
+        },
+        loading: function () {
+          // 所有字体开始加载
+          // console.log('font loading');
+        },
+        active: function () {
+          // 所有字体已渲染
+          fontLoaded()
+        },
+        inactive: function () {
+          // 字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout')
+          fontLoaded()
+        },
+        timeout: 5000, // Set the timeout to two seconds
+      })
+    }
+  }
+
+  function asyncErr() {
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document,
+      t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0]
+    o.src = u
+    if (cb) {
+      o.addEventListener(
+        'load',
+        function (e) {
+          cb(null, e)
+        },
+        false
+      )
+    }
+    if (err) {
+      o.addEventListener(
+        'error',
+        function (e) {
+          err(null, e)
+        },
+        false
+      )
+    }
+    s.parentNode.insertBefore(o, s)
+  }
+
+  var asyncLoadWithFallBack = function (arr, success, reject) {
+    var currReject = function () {
+      reject()
+      arr.shift()
+      if (arr.length) async(arr[0], success, currReject)
+    }
+
+    async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack(
+    [
+      'https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js',
+      'https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js',
+      "/lib/webfontloader.min.js",
+    ],
+    asyncCb,
+    asyncErr
+  )
+</script>
+
+            <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+            <div class="container container-unloaded">
+                <main class="main post-page">
+    <article class="article-entry">
+        <p>Adaptive FSP</p>
+<span id="more"></span>
+<h2 id="名词解释">名词解释</h2>
+<p>元策略（meta-strategies）：提出基于复杂的原博弈得到一个规模小得多的<strong>经验博弈
+empirical game/meta
+game</strong>，通过对经验博弈的推理(meta-reasoning)得到的元策略(meta-strategies)，依托这些信息指导在原策略空间中寻找新的策略，同时使逼近可能的原博弈的均衡解。对于任意联合策略的期望收益，通过适当的方法进行估计并记录在<strong>经验收益矩阵
+empirical payoff table</strong>中</p>
+<p>混合nash均衡</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/9P7rZTYMAtL3hdv.png"
+alt="image-20230128201928792" />
+<figcaption aria-hidden="true">image-20230128201928792</figcaption>
+</figure>
+<p>主要思想：不仅针对meta policy训练，还针对能够适应BR的adaptive deep RL
+agent进行训练。</p>
+<h2 id="introduce">Introduce</h2>
+<p>CFR 主要限制是不清楚如何将其扩展到连续动作空间</p>
+<p>FSP：简单地扩展到连续动作空间，FSP是一种求解两人零和（2p0s）博弈的迭代算法（每次迭代都可以查看）</p>
+<p>在每次迭代中，每个玩家都会计算出对对手元策略的最佳响应</p>
+<p>在普通FSP中，元策略是在先前迭代中计算的所有策略的统一平均值（在迭代k上，它是从迭代1到k−1的所有策略统一平均值）</p>
+<p>FSP被保证最终收敛到纳什均衡，在纳什均衡中，两个参与者的元策略都是对另一个的最优响应</p>
+<p>vanilla
+FSP的局限性：学习对具有深度RL的元策略的最佳响应可能导致对元策略策略的过度拟合，从而减缓向低可利用性策略的收敛。</p>
+<p>（ For example, in a game of soccer the kicker might adversarially
+figure out how to move in such a way that the population of previous
+goalie policies has not seen before, causing degenerate behavior (Gleave
+et al., 2019).）</p>
+<p><strong>主要贡献：</strong></p>
+<p>Adapt
+FSP增强了迭代k中玩家的元策略，自适应对手主动更新其策略以应对最佳响应。自适应对手充当正则化因子regularizer
+，减少对先前策略群体（population of policies）的过度拟合。</p>
+<p>步骤</p>
+<ul>
+<li>首先证明了AdaptFSP属于一类被称为广义弱化虚拟博弈（GWFP）的算法，所有这些算法都可证明在2p0s博弈中收敛到纳什均衡。</li>
+<li>在四个表格和连续博弈中评估AdaptFSP</li>
+<li>引入了部分可观测性：将对手的观测延迟十倍</li>
+</ul>
+<p>AdaptFSP相较于生成的策略更健壮，可利用性更低，。</p>
+<p>AdaptFSP produces policies that are more robust and less exploitable
+than FSP in these settings</p>
+<h2 id="related-work">Related work</h2>
+<ol type="1">
+<li></li>
+</ol>
+<p>fully observable 2p0s games：必须执行连续控制（agents have to perform
+continuous control）</p>
+<p>（Bansal et al. (2017) study fully observable 2p0s games in which the
+agents have to perform continuous control. ）</p>
+<p>方法：（对手抽样） opponent
+sampling：当训练策略时，对手的行为从过去策略的缓冲区中采样。他们没有保留所有策略，而是使用过去策略的滑动窗口（<strong>sliding
+window</strong>）。</p>
+<p>缺陷：they do not study the exploitability（可利用性） of their
+learned agents.</p>
+<ol start="2" type="1">
+<li></li>
+</ol>
+<p>the question of meta learning in two-player competitive continuous
+control tasks.</p>
+<p>两人竞争性连续控制任务中的元学习问题。</p>
+<p>（Al-Shedivat et al. (2017) study the question of meta learning in
+two-player competitive continuous control tasks.）</p>
+<p>实验结果：元学习智能体表现最好Two players play several rounds against
+each other, and they show that the <strong>meta-learning agent performs
+the best</strong> out of several candidate algorithms.</p>
+<p>特点（缺陷）：实验环境是完全可观测的，在完全可观察环境中收敛到最优策略的许多算法在部分可观察环境下不保持该特性。</p>
+<p><strong>本文实验会会引入部分可观测性</strong></p>
+<ol start="3" type="1">
+<li></li>
+</ol>
+<p>NFSP</p>
+<p>(Heinrich and Silver, 2016)</p>
+<p>使用深度强化学习，从自博弈中学习到2p0s不完美信息博弈中的纳什均衡。</p>
+<p>使用深度神经网络来近似平均策略，并使用深度神经网来学习具有RL式奖励的策略，但仅在具有小动作空间的游戏中有效。</p>
+<ol start="4" type="1">
+<li></li>
+</ol>
+<p>足球比赛：球员团队可以在足球比赛中相互竞争</p>
+<p>（Liu et al. (2019) introduce the MuJoCo Soccer domain where teams of
+players can compete against each other in a soccer match.）</p>
+<p>去中心化基于种群的训练（decentralized population-based
+training）表现出合作和可利用性的能力</p>
+<p>实验结果：在20分钟内收敛到纳什均衡，但是该足球环境是完全可观察的observable</p>
+<ol start="5" type="1">
+<li></li>
+</ol>
+<p>最大限度地实现信息理论目标，以学习可推广到下游任务的各种技能。</p>
+<p>（ysenbach et al. (2018) show they can maximize an information
+theoretic objective to learn a diverse set of skills that are
+generalizable to downstream tasks.）</p>
+<ol start="6" type="1">
+<li></li>
+</ol>
+<p>提出了一种基于原型表示的学习不同技能的自我监督方法，该技术对下游任务具有很强的泛化能力（Yarats
+et al. (2021) present a self-supervised technique for learning different
+skills based on prototypical representations that shows strong
+generalization to downstream tasks.）</p>
+<ol start="7" type="1">
+<li></li>
+</ol>
+<p>POMDP（部分可观测马尔可夫决策过程）背景下RL的泛化</p>
+<p>（Ghosh et al. (2021) study generalization in RL in the context of
+POMDPs (Partially Observable Markov Decision Process) and show classic
+RL algorithms do not perform as well in POMDPs as in MDPs.）</p>
+<p>验证结果：经典RL算法在POMDP中的表现不如MDP，提出了一种基于集成的方法，并表明它比普通RL更有效地泛化（即解决POMDP）。这不直接适用于2p0s博弈，并且需要为每个agent训练N个策略</p>
+<p><strong>本文只需要为每个agent提供两个策略。</strong></p>
+<h2 id="background-and-notation">BACKGROUND AND NOTATION</h2>
+<p><strong>PPO</strong></p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/nuQlm7qN9w3ZhaM.png"
+alt="image-20230128165027876" />
+<figcaption aria-hidden="true">image-20230128165027876</figcaption>
+</figure>
+<p><strong>SAC</strong></p>
+<p>an off-policy actor-critic algorithm, meaning it uses a buffer of
+past data to continually update its actor and critic functions</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/whdyU4rBuTvoMgY.png"
+alt="image-20230128165346449" />
+<figcaption aria-hidden="true">image-20230128165346449</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/bXB4rElfw5iTWGN.png"
+alt="image-20230128165410762" />
+<figcaption aria-hidden="true">image-20230128165410762</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/L179nZvjoGpgrD5.png"
+alt="image-20230128165310568" />
+<figcaption aria-hidden="true">image-20230128165310568</figcaption>
+</figure>
+<p>SAC updates a replay buffer D by collecting trajectories and performs
+gradient descent using ADAM on these objective functions</p>
+<p><strong>NORMAL FORM GAMES</strong></p>
+<p>a 2p0s game that can be specified by a matrix P ∈ R m×n. Each row in
+the matrix corresponds to an action of player 1 and each column
+corresponds to an action of player 2. The entry Pij specifies the payoff
+if player 1 plays i and player 2 plays j.</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/6OehfLHr79sycp2.png"
+alt="image-20230128164554920" />
+<figcaption aria-hidden="true">image-20230128164554920</figcaption>
+</figure>
+<ul>
+<li><p>policy profile</p>
+<p><span class="math inline">\(\pi=(\pi^1,\pi^2)\)</span>定义为<span
+class="math inline">\(u^1(\pi^1,\pi^2)\)</span>,2p0s:<span
+class="math inline">\(u^1(\pi^1,\pi^2)=-u^2(\pi^1,\pi^2)\)</span></p></li>
+<li><p>定义best response</p>
+<p><span class="math inline">\(BR(\pi^i)\in \arg
+\max_{\pi^{-i}}u(\pi^{-i},\pi^{i})\)</span></p></li>
+<li><p>定义exploitability</p>
+<p>.The exploitability of a policy <span
+class="math inline">\(π^1\)</span> is defined to be how much worse the
+policy does against <span class="math inline">\(BR(π^1 )\)</span>
+compared to how a Nash equilibrium strategy <span
+class="math inline">\(π^1_∗\)</span> does against <span
+class="math inline">\(BR(π^1_∗ )\)</span>,</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/RpOMFZo2T8xfUcz.png"
+alt="image-20230128171006235" />
+<figcaption aria-hidden="true">image-20230128171006235</figcaption>
+</figure></li>
+<li><p><span class="math inline">\(\epsilon-BR\)</span></p>
+<p>a policy <span class="math inline">\(π^2\)</span> is an ϵ-best
+response to <span class="math inline">\(π^1\)</span></p></li>
+</ul>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/8mKc4Siy6urMV2k.png"
+alt="image-20230128171232225" />
+<figcaption aria-hidden="true">image-20230128171232225</figcaption>
+</figure>
+<p><strong>FP</strong></p>
+<ul>
+<li><p>choose a uniform policy<span
+class="math inline">\(\beta_u^1,\beta_u^2\)</span></p></li>
+<li><p>initialize their average policy to this uniform policy <span
+class="math inline">\(\pi^1=\beta_u^1,\pi^2=\beta_u^2\)</span></p></li>
+<li><p>agent computes a best response to the opponent’s average
+policy<span
+class="math inline">\(\beta^p_t=\arg\max_{\beta^p}(\beta^P,\pi^{-p}_{t-1})\)</span></p></li>
+<li><p>update their average policy<span
+class="math inline">\(\pi_t^p=\frac{t-1}{t}\pi^p_{t-1}+\frac{1}{t}\beta^p_t\)</span></p></li>
+<li><p>注意这里使用优化后的average policy<span
+class="math inline">\(\pi_t^p=\frac{t-1}{t+1}\pi^p_{t-1}+\frac{2}{t+1}\beta^p_t\)</span></p></li>
+</ul>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/JjBXq6RbioPLHaA.png"
+alt="image-20230122015608822" />
+<figcaption aria-hidden="true">image-20230122015608822</figcaption>
+</figure>
+<p><strong>EXACT CASE</strong></p>
+<p>算法提出需要保证计算精确最佳响应</p>
+<ul>
+<li><p>运行N次迭代（或直到收敛）</p></li>
+<li><p>不是计算对手元策略的最佳响应，而是计算元策略和正则策略的线性组合的最佳响应。</p></li>
+<li><p>假设进行到AdaptFP的第i次迭代，我们为每个玩家都有元策略<span
+class="math inline">\(\pi^1_i,\pi^2_i\)</span></p></li>
+<li><p>将正则化策略初始化为空策略，并且在内部循环的每个迭代j中，我们计算</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/HkbqtvjBUGLAVaO.png"
+alt="image-20230128182435540" />
+<figcaption aria-hidden="true">image-20230128182435540</figcaption>
+</figure></li>
+</ul>
+<p>其中</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/WkQVl5UfqCda3O7.png"
+alt="image-20230128182551501" />
+<figcaption aria-hidden="true">image-20230128182551501</figcaption>
+</figure>
+<p>从玩家1的角度来看（对玩家2来说是对称的），玩家2的内循环是对抗性地找到对对手的最佳响应，玩家1必须学习对adaptable的对手的最佳响应。（From
+player 1’s perspective (it is symmetric for player 2), the inner loop
+for player 2 is adversarially finding a best response to the opponent’s,
+and player 1 must learn a best response to an opponent that is allowed
+to adapt.）</p>
+<p>在内部循环的末尾，将最新的最佳响应添加到元策略中。纯粹基于迭代来比较可利用性是不公平的，因为在自适应情况下，我们计算的最佳响应比在非自适应情况下多得多。因此，在的图中，我们显示了<strong>基于为每个玩家计算</strong>的最佳响应总数的结果。</p>
+<p>证明AFP能够在2p0s问题上收敛至nash均衡</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/O57IDUtQJdRlzFj.png"
+alt="image-20230128183151531" />
+<figcaption aria-hidden="true">image-20230128183151531</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/crDV1pNGAzSkP7a.png"
+alt="image-20230122015523809" />
+<figcaption aria-hidden="true">image-20230122015523809</figcaption>
+</figure>
+<p><strong>approximate case</strong></p>
+<p>近似的情况是类似的，但不使用一个内部循环寻找最佳响应，我们只是在近似player1的最佳对策的过程中不断训练player2的regularizer
+agent。在每次迭代<span
+class="math inline">\(i\)</span>中，我们为玩家<span
+class="math inline">\(p\)</span>训练一个策略<span
+class="math inline">\(\beta_i^p\)</span>，<strong>正则化因子（
+regularizer）<span
+class="math inline">\(\pi_r^p\)</span>也是如此</strong>，该因子在每次迭代中会重新初始化。该策略使用强化学习算法（例如PPO或者SAC）进行训练，不受<span
+class="math inline">\(\beta_i^{-p}\)</span>约束,
+在训练中，对手的行为是抽样前i个最佳对策<span
+class="math inline">\(\beta_i^p,...,\beta_i^p\)</span>的平均值，<strong>也是如此正则化因子<span
+class="math inline">\(\pi_r^p\)</span>。</strong></p>
+<p>策略平均操作 DREAM (Steinberger et al., 2020)</p>
+<p>在每episode开始时，我们根据权重从一组策略中采样一个策略，并使用该策略运行整个episode</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/NS5JM6kKYQcIlby.png"
+alt="image-20230122024942411" />
+<figcaption aria-hidden="true">image-20230122024942411</figcaption>
+</figure>
+<h2 id="result">Result</h2>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/OMrIxNasdwYhinK.png"
+alt="image-20230128200128836" />
+<figcaption aria-hidden="true">image-20230128200128836</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/JvZ9XHOrixel1QV.png"
+alt="image-20230128200402443" />
+<figcaption aria-hidden="true">image-20230128200402443</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/iP5AOZdltryoVcb.png"
+alt="image-20230128200306828" />
+<figcaption aria-hidden="true">image-20230128200306828</figcaption>
+</figure>
+<p>SAC的训练效率最高，观察包括agent当前位置、相对于球的位置、相对于球门的位置和对手位置的数据。我们通过将对手状态的观察滞后10个时间步，将不完美的信息引入游戏。</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/Lotx1lUrkOcvYGI.png"
+alt="image-20230128200416845" />
+<figcaption aria-hidden="true">image-20230128200416845</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2023/03/06/Qo94HFDcMPtTkCE.png"
+alt="image-20230128200445685" />
+<figcaption aria-hidden="true">image-20230128200445685</figcaption>
+</figure>
+<p>使用PPO强化学习算法，因为它在这种环境中最有效。观察结果包括关于agent当前位置以及对方agent的数据。为了在比赛中引入不完美的信息，对手的代理人落后10时间步长。在每episode开始时，我们根据给定的权重从集合中抽取一个策略，并在整个episode中使用该策略。我们在最佳响应的整个培训过程中重复该过程，这确保了策略的训练是与平均策略相比进行训练。</p>
+<h2 id="总结展望">总结展望</h2>
+<p>在未来，仍有许多工作要开发鲁棒算法来解决连续控制博弈。这种类型的游戏非常重要，因为许多现实世界应用程序都涉及连续的动作空间，包括世界上涉及机器人的应用程序。虽然这项工作侧重于<strong>两人零和游戏</strong>，但我们认为这只是开发能够在真实世界交互中更广泛有效地发挥作用的代理的第一步。下一步是走向<strong>更复杂的连续状态和行动空间环境</strong>，包括同时涉及<strong>合作和竞争</strong>的环境。</p>
+
+    </article>
+    <!-- license -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">https://klc1006.github.io/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">February 20th 2023, 12:00:00 am</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">March 9th 2023, 11:13:39 am</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2023/03/07/cpp/" title="面向对象编程 OOP（cpp语言篇）">
+                    <div class="nextTitle">面向对象编程 OOP（cpp语言篇）</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2023/02/12/the%20dynamics%20of%20reforcelearning/" title="【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记">
+                    <div class="prevTitle">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- comment -->
+    
+        <div class="post-comment">
+            <!-- 来必力 City 版安装代码 -->
+
+
+            
+
+            
+
+            
+
+            <!-- utteranc评论 -->
+
+
+            <!-- partial('_partial/comment/changyan') -->
+            <!--PC版-->
+
+
+            
+            
+
+            
+
+        </div>
+    
+    <!-- timeliness note -->
+    <!-- idea from: https://hexo.fluid-dev.com/posts/hexo-injector/#%E6%96%87%E7%AB%A0%E6%97%B6%E6%95%88%E6%80%A7%E6%8F%90%E7%A4%BA -->
+    
+    <!-- Mathjax -->
+    
+        
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+
+
+    
+</main>
+
+                <!-- profile -->
+                
+            </div>
+            <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+        <div class="social">
+            
+    
+        
+            
+                <a href="mailto:1172485065@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/Klc1006" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                    
+                    <img class="profile-qr" src="/assets/wechatqr.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+
+        </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- website approve for Chinese user -->
+    
+    <!-- 不蒜子  -->
+    
+        <div class="busuanzi-container">
+            
+             
+                <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+            
+        </div>
+    	
+</footer>
+
+        </div>
+        <!-- toc -->
+        
+            <div class="toc-wrapper toc-wrapper-loding" style=
+
+
+
+
+
+
+
+    top:50vh;
+
+>
+                <div class="toc-catalog">
+                    <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+                </div>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="toc-number">1.</span> <span class="toc-text">名词解释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#introduce"><span class="toc-number">2.</span> <span class="toc-text">Introduce</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#related-work"><span class="toc-number">3.</span> <span class="toc-text">Related work</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#background-and-notation"><span class="toc-number">4.</span> <span class="toc-text">BACKGROUND AND NOTATION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#result"><span class="toc-number">5.</span> <span class="toc-text">Result</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%E5%B1%95%E6%9C%9B"><span class="toc-number">6.</span> <span class="toc-text">总结展望</span></a></li></ol>
+            </div>
+        
+        <!-- sidebar -->
+        <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+        <div class="sidebar-panel-archives">
+    <!-- 在 ejs 中将 archive 按照时间排序 -->
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 16
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+        
+            
+            
+            <div class="archive-year"> 2023 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/08</span>
+            <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span>
+            <a class="archive-post-title" href="/2023/03/07/cpp/">面向对象编程 OOP（cpp语言篇）</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/20</span>
+            <a class="archive-post-title" href="/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/12</span>
+            <a class="archive-post-title" href="/2023/02/12/the%20dynamics%20of%20reforcelearning/">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/07</span>
+            <a class="archive-post-title" href="/2023/02/07/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/05</span>
+            <a class="archive-post-title" href="/2023/02/05/Correlated%20Q-Learning/">【论文调研】Correlated Q-Learning笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/28</span>
+            <a class="archive-post-title" href="/2023/01/28/DeepStack%E7%AC%94%E8%AE%B0/">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/16</span>
+            <a class="archive-post-title" href="/2023/01/16/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2022 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/03</span>
+            <a class="archive-post-title" href="/2022/10/03/Lab1/">Lab 1</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/25</span>
+            <a class="archive-post-title" href="/2022/08/25/hello-world/">Hello World</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/09</span>
+            <a class="archive-post-title" href="/2022/06/09/AI%20Course%2012/">【AI Course】PDDL解决规划问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/19</span>
+            <a class="archive-post-title" href="/2022/05/19/AI%20Course%208/">【AI Course】KNN完成情感分类标签</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/07</span>
+            <a class="archive-post-title" href="/2022/05/07/AI%20Course%207%20203/">【AI Course】朴素贝叶斯</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/28</span>
+            <a class="archive-post-title" href="/2022/04/28/AI%20Course%206/">【AI Course】归结演绎推理</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span>
+            <a class="archive-post-title" href="/2022/04/09/AI%20Course3/">【AI Course】A*和 IDA*算法解决15-puzzle问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/02</span>
+            <a class="archive-post-title" href="/2022/03/02/AI%20course%201_20337013/">【AI Course】一致代价实现最短路径</a>
+        </li>
+    
+    </div>
+</div>
+
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+        
+            <span class="sidebar-tag-name" data-tags="论文调研">
+                <span class="iconfont-archer">&#xe606;</span>
+                论文调研
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="FSP">
+                <span class="iconfont-archer">&#xe606;</span>
+                FSP
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="归结推理">
+                <span class="iconfont-archer">&#xe606;</span>
+                归结推理
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="A*">
+                <span class="iconfont-archer">&#xe606;</span>
+                A*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IDA*">
+                <span class="iconfont-archer">&#xe606;</span>
+                IDA*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="PDDL">
+                <span class="iconfont-archer">&#xe606;</span>
+                PDDL
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="规划问题">
+                <span class="iconfont-archer">&#xe606;</span>
+                规划问题
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="AI">
+                <span class="iconfont-archer">&#xe606;</span>
+                AI
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="最短路径">
+                <span class="iconfont-archer">&#xe606;</span>
+                最短路径
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="朴素贝叶斯">
+                <span class="iconfont-archer">&#xe606;</span>
+                朴素贝叶斯
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="KNN">
+                <span class="iconfont-archer">&#xe606;</span>
+                KNN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="分类">
+                <span class="iconfont-archer">&#xe606;</span>
+                分类
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="cpp">
+                <span class="iconfont-archer">&#xe606;</span>
+                cpp
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="leetcode">
+                <span class="iconfont-archer">&#xe606;</span>
+                leetcode
+            </span>
+        
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+        缺失模块，请参考主题文档进行安装配置：https://github.com/fi3ework/hexo-theme-archer#%E5%AE%89%E8%A3%85%E4%B8%BB%E9%A2%98
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+
+    </div>
+</div>
+
+        <!-- site-meta -->
+        <script>
+    var siteMetaRoot = "/"
+    if (siteMetaRoot === "undefined") {
+        siteMetaRoot = '/'
+    }
+    var siteMeta = {
+        url: "https://Klc1006.github.io",
+        root: siteMetaRoot,
+        author: "Klc"
+    }
+</script>
+
+        <!-- import experimental options here -->
+        <!-- Custom Font -->
+
+
+        <!-- main func -->
+        <script src="/scripts/main.js?v=20211217"></script>
+        <!-- dark mode -->
+        <script src="/scripts/dark.js?v=20211217"></script>
+        <!-- fancybox -->
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
+        <!-- algolia -->
+        
+        <!-- busuanzi -->
+        
+            <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+        
+        <!-- CNZZ -->
+        
+        <!-- async load share.js -->
+        
+            <script src="/scripts/share.js?v=20211217" async></script>
+        
+        <!-- mermaid -->
+        
+            <script src='https://cdn.jsdelivr.net/npm/mermaid@8.11.0/dist/mermaid.min.js'></script>
+            <script>
+                if (window.mermaid) {
+                    mermaid.initialize({theme: 'dark'});
+                }
+            </script>
+        
+    </body>
+</html>
