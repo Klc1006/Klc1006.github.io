@@ -426,49 +426,29 @@
         
         
             
-            
         
         <article class="index-post">
-            <a class="abstract-title" href="/2022/10/03/Lab1/">
+            <a class="abstract-title" href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/">
                 
-                <span class="abstract-title-text">Lab 1</span>
+                <span class="abstract-title-text">【计算机图形学】Assignment5 Bezier Curve</span>
             </a>
             <div class="abstract-content">
-                <h2 id="实验题目">实验题目</h2>
-<h3 id="accessing-the-database">Accessing the Database</h3>
-<p>The first laboratory exercise is to connect to a database, populate
-it with data, and run very simple SQL queries.</p>
-<ul>
-<li>In case a shared database is provided for course students, user
-accounts need to be created on the database. Otherwise, the lab should
-also cover setting up a database system. Information on setting up a
-database may be found <a
-target="_blank" rel="noopener" href="https://www.db-book.com/lab-dir/index.html">here</a></li>
-<li>The next step is to connect to the database. Although most databases
-have their own text-based interface, we recommend using a graphical
-interface such as the database browser of the Netbeans IDE, or a
-database specific interface. More information on accessing these
-interfaces may be found <a
-target="_blank" rel="noopener" href="https://www.db-book.com/lab-dir/index.html">here</a>.</li>
-<li>The next step is to create tables and load sample data. Scripts for
-these tasks can be found <a
-target="_blank" rel="noopener" href="https://www.db-book.com/university-lab-dir/sample_tables-dir/index.html">here</a>.</li>
-<li>Try out some queries, and see what they do. Some example queries:
-<ul>
-<li>select * from instructor</li>
-<li>select name from instructor where dept_name = 'Comp. Sci.' and
-salary &gt; 70000</li>
-<li>select * from instructor, department where instructor.dept_name =
-department.dept_name</li>
-</ul></li>
-</ul>
+                Task 1
+Bézier曲线本质上是由调和函数根据控制点插值生成，其参数方程如下：
+\[
+Q(t)=\sum_{i=0}^nP_iB_{i,n}(t),t\in[0,1]
+\] 控制点记为\(P_i,i=0,...,n\)，一共有\(n+1\)个控制顶点。上式是一个n次多项式，一共n+1项，每个控制点对应一项。多项式系数\(B_{i,n}(t)\)是Bernstein基函数，其数学公式为：
+\[
+B_{i,n}(t)=\frac{n!}{i!(n-i)!}t^i(1-t)^{n-i},i=0,1,...,n
+\] 实现代码时需要将Q（t）定义为Point2D 对象
+12...
             </div>
             <!-- read more -->
             
             <div class="abstract-post-meta">
                 <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/06">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/10/03</span>
+                <div class="abstract-date" title="Last updated: 2023/03/15">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/12/25</span>
                 </div>
                 <!-- tags -->
                 
@@ -483,23 +463,138 @@ department.dept_name</li>
             
         
         <article class="index-post">
-            <a class="abstract-title" href="/2022/08/25/hello-world/">
+            <a class="abstract-title" href="/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">
                 
-                <span class="abstract-title-text">Hello World</span>
+                <span class="abstract-title-text">【计算机图形学】Assignment4 Ray Tracing</span>
             </a>
             <div class="abstract-content">
-                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;
+                task 1
+阅读《Ray Tracing in One Weekend》的Chapter 4
+，完成射线类和简单的摄像机构建，并渲染一个渐变的蓝色天空背景图。贴出效果图，简述你遇到的问题以及是如何解决的。
 
-More info: Writing
-Run server1$ hexo ...
+定义光线ray类
+123456789101112131415161718192021#ifndef RAY_H#define RAY_H#include &quot;vec3.h&quot;class ray &#123;    public:        ray() &#123;&#125;        ray(const point3&amp; origin, c...
             </div>
             <!-- read more -->
             
             <div class="abstract-post-meta">
                 <!-- date -->
-                <div class="abstract-date" title="Last updated: 2022/08/25">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/08/25</span>
+                <div class="abstract-date" title="Last updated: 2023/03/15">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/12/05</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
+            <a class="abstract-title" href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/">
+                
+                <span class="abstract-title-text">【计算机图形学】Assignment3 Lighting Texturing</span>
+            </a>
+            <div class="abstract-content">
+                task 1
+最邻近采样算法
+设i+u, j+v(i, j为正整数， u,
+v为大于零小于1的小数，下同)为待求象素坐标，则待求象素灰 度的值 f(i+u,
+j+v) 如下图所示：
+t
+若我们在A区域插入像素，该像素值与（i，j）的值相同，同理若是在B区域插入像素，这该像素值与（i+1,j）的值相同。
+该算法实际上就是对输入的uv坐标作四舍五入，在算法之前我们需要将纹理坐标uv
+从$[0,1] ×[0,1] \(映射到\)[0,width-1]
+×[0,height-1] $
+函数texture.readPixel(25,35,r,g,b,a)可以读取
+坐标为(25...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/03/15">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/11/29</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
+            <a class="abstract-title" href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">
+                
+                <span class="abstract-title-text">【计算机图形学】Assignment2_Rasterization_ZBuffering</span>
+            </a>
+            <div class="abstract-content">
+                Task1
+实现Bresenham直线光栅化算法（你应该要用到线性插值函数VertexData::lerp（
+）参考链 接。
+该函数在TRShaderPipeline.cpp 文件中，其中的from 和to
+参数分别代表直线的起点和终点， screen_width 和screen_height
+是窗口的宽高，超出窗口的点应该被丢弃。rasterized_points 存
+放光栅化插值得到的点。
+我们需要做的任务实际上就是描绘一个直线线段，首先我们定义两个点（x1，y1）（x2，y2），得到以下数学符号标记
+\[
+\Delta x=x_1-x_0 &gt;0,\Delta...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/03/15">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/10/26</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
+            <a class="abstract-title" href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">
+                
+                <span class="abstract-title-text">【计算机图形学】Assignment1 3D Transformation</span>
+            </a>
+            <div class="abstract-content">
+                Task 1
+实现观察矩阵（View
+Matrix）的计算，如下所示，该函数在TRRenderer.cpp 文件中。
+实验原理
+该实验实际上是需要我们实现glm::lookAt函数
+①整体平移，将摄像机平移至世界坐标系原点，
+②将顶点从世界坐标系变换至摄像机坐标系。
+参数解释：camera摄像机的位置，target摄像机目标点，worldup世界空间的上向量
+具体步骤：
+
+根据这些参数确定摄像机坐标系的三个轴向量
+注意：变换到视图空间中时摄像机是朝向视图空间的−Z方向的，所以求视图空间中的Z轴时是摄像机的位置减去目标点的位置
+\[
+  Z=normalize(c...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/03/15">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/10/09</span>
                 </div>
                 <!-- tags -->
                 
@@ -852,47 +947,11 @@ IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多�
         </article>
         <div class="index-post-divider"></div>
     
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2022/03/02/AI%20course%201_20337013/">
-                
-                <span class="abstract-title-text">【AI Course】一致代价实现最短路径</span>
-            </a>
-            <div class="abstract-content">
-                <h1 id="ai-course-labsweek2">AI course LabsWeek2</h1>
-<h2 id="一实验目的">一、实验目的</h2>
-<p>一致代价搜索（带环检测）实现最小代价路径查找</p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/09">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/03/02</span>
-                </div>
-                <!-- tags -->
-                
-                    <div class= abstract-tags >
-    
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="AI">AI</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="最短路径">最短路径</a>
-    
-</div>
-
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
     <!-- paginator  -->
+    
+        <nav class="page-nav">
+            <span class="page-number current">1</span><a class="page-number" href="/archives/2022/page/2/">2</a><a class="extend next" rel="next" href="/archives/2022/page/2/">NEXT &gt;</a>
+        </nav>
     
 </main>
 
@@ -1075,14 +1134,7 @@ IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多�
         
         
         
-        
-        
-        
-        
-        
     
-        
-        
         
         
         
@@ -1183,7 +1235,7 @@ IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多�
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 17
+        Total : 16
         </div>
         <!-- search  -->
         
@@ -1199,6 +1251,12 @@ IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多�
             
         
         <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span>
+            <a class="archive-post-title" href="/2023/03/15/%E3%80%90RL%E3%80%91PPO/">【RL】PPO以及更新神经网络RNN</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
             <span class="archive-post-date">03/08</span>
             <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
         </li>
@@ -1211,38 +1269,8 @@ IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多�
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">02/20</span>
-            <a class="archive-post-title" href="/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/12</span>
-            <a class="archive-post-title" href="/2023/02/12/the%20dynamics%20of%20reforcelearning/">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/07</span>
-            <a class="archive-post-title" href="/2023/02/07/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/05</span>
-            <a class="archive-post-title" href="/2023/02/05/Correlated%20Q-Learning/">【论文调研】Correlated Q-Learning笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">01/28</span>
-            <a class="archive-post-title" href="/2023/01/28/DeepStack%E7%AC%94%E8%AE%B0/">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">01/16</span>
-            <a class="archive-post-title" href="/2023/01/16/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</a>
+            <span class="archive-post-date">01/09</span>
+            <a class="archive-post-title" href="/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">【计算机图形学】Assignment6 Mass Spring Simulation</a>
         </li>
     
         
@@ -1256,14 +1284,32 @@ IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多�
             
         
         <li class="archive-post-item">
-            <span class="archive-post-date">10/03</span>
-            <a class="archive-post-title" href="/2022/10/03/Lab1/">Lab 1</a>
+            <span class="archive-post-date">12/25</span>
+            <a class="archive-post-title" href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/">【计算机图形学】Assignment5 Bezier Curve</a>
         </li>
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">08/25</span>
-            <a class="archive-post-title" href="/2022/08/25/hello-world/">Hello World</a>
+            <span class="archive-post-date">12/05</span>
+            <a class="archive-post-title" href="/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">【计算机图形学】Assignment4 Ray Tracing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/29</span>
+            <a class="archive-post-title" href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/">【计算机图形学】Assignment3 Lighting Texturing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/26</span>
+            <a class="archive-post-title" href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">【计算机图形学】Assignment2_Rasterization_ZBuffering</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/09</span>
+            <a class="archive-post-title" href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">【计算机图形学】Assignment1 3D Transformation</a>
         </li>
     
         
@@ -1322,16 +1368,6 @@ IDA*算法解决15-puzzle问题，启发式函数自己选取，可以尝试多�
 
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
-        
-            <span class="sidebar-tag-name" data-tags="论文调研">
-                <span class="iconfont-archer">&#xe606;</span>
-                论文调研
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="FSP">
-                <span class="iconfont-archer">&#xe606;</span>
-                FSP
-            </span>
         
             <span class="sidebar-tag-name" data-tags="归结推理">
                 <span class="iconfont-archer">&#xe606;</span>

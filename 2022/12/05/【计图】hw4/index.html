@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+    
+
+<!-- keywords -->
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Klc">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Klc">
+    
+        <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta name="description" content="task 1 阅读《Ray Tracing in One Weekend》的Chapter 4 ，完成射线类和简单的摄像机构建，并渲染一个渐变的蓝色天空背景图。贴出效果图，简述你遇到的问题以及是如何解决的。  定义光线ray类 123456789101112131415161718192021#ifndef RAY_H#define RAY_H#include &quot;vec3.h&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【计算机图形学】Assignment4 Ray Tracing">
+<meta property="og:url" content="https://klc1006.github.io/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="task 1 阅读《Ray Tracing in One Weekend》的Chapter 4 ，完成射线类和简单的摄像机构建，并渲染一个渐变的蓝色天空背景图。贴出效果图，简述你遇到的问题以及是如何解决的。  定义光线ray类 123456789101112131415161718192021#ifndef RAY_H#define RAY_H#include &quot;vec3.h&amp;">
+<meta property="og:locale">
+<meta property="og:image" content="c:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221204154708570.png">
+<meta property="og:image" content="c:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221205110313569.png">
+<meta property="og:image" content="c:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221205110306635.png">
+<meta property="article:published_time" content="2022-12-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-15T08:44:06.058Z">
+<meta property="article:author" content="Klc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221204154708570.png">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
+    
+    <title>【计算机图形学】Assignment4 Ray Tracing · PityBug&#39;s Studio</title>
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+    (function (w) {
+        'use strict'
+        // rel=preload support test
+        if (!w.loadCSS) {
+            w.loadCSS = function () {}
+        }
+        // define on the loadCSS obj
+        var rp = (loadCSS.relpreload = {})
+        // rel=preload feature support test
+        // runs once and returns a function for compat purposes
+        rp.support = (function () {
+            var ret
+            try {
+                ret = w.document.createElement('link').relList.supports('preload')
+            } catch (e) {
+                ret = false
+            }
+            return function () {
+                return ret
+            }
+        })()
+
+        // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+        // then change that media back to its intended value on load
+        rp.bindMediaToggle = function (link) {
+            // remember existing media attr for ultimate state, or default to 'all'
+            var finalMedia = link.media || 'all'
+
+            function enableStylesheet() {
+                link.media = finalMedia
+            }
+
+            // bind load handlers to enable media
+            if (link.addEventListener) {
+                link.addEventListener('load', enableStylesheet)
+            } else if (link.attachEvent) {
+                link.attachEvent('onload', enableStylesheet)
+            }
+
+            // Set rel and non-applicable media type to start an async request
+            // note: timeout allows this to happen async to let rendering continue in IE
+            setTimeout(function () {
+                link.rel = 'stylesheet'
+                link.media = 'only x'
+            })
+            // also enable media after 3 seconds,
+            // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+            setTimeout(enableStylesheet, 3000)
+        }
+
+        // loop through link elements in DOM
+        rp.poly = function () {
+            // double check this to prevent external calls from running
+            if (rp.support()) {
+                return
+            }
+            var links = w.document.getElementsByTagName('link')
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i]
+                // qualify links to those with rel=preload and as=style attrs
+                if (
+                    link.rel === 'preload' &&
+                    link.getAttribute('as') === 'style' &&
+                    !link.getAttribute('data-loadcss')
+                ) {
+                    // prevent rerunning on link
+                    link.setAttribute('data-loadcss', true)
+                    // bind listeners to toggle media back
+                    rp.bindMediaToggle(link)
+                }
+            }
+        }
+
+        // if unsupported, run the polyfill
+        if (!rp.support()) {
+            // run once at least
+            rp.poly()
+
+            // rerun poly on an interval until onload
+            var run = w.setInterval(rp.poly, 500)
+            if (w.addEventListener) {
+                w.addEventListener('load', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            } else if (w.attachEvent) {
+                w.attachEvent('onload', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            }
+        }
+
+        // commonjs
+        if (typeof exports !== 'undefined') {
+            exports.loadCSS = loadCSS
+        } else {
+            w.loadCSS = loadCSS
+        }
+    })(typeof global !== 'undefined' ? global : this)
+</script>
+
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20211217" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/dark.css?v=20211217" as="style">
+    <link rel="stylesheet" href="/css/dark.css">
+    <link rel="stylesheet" href="/css/mobile.css?v=20211217" media="(max-width: 960px)">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js?v=20211217" as="script">
+    <link rel="preload" href="/scripts/dark.js?v=20211217" as="script">
+    <link rel="preload" href="/font/Oswald-Regular.ttf" as="font" crossorigin>
+    <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
+    <!-- algolia -->
+    
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ == undefined) {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js" />')
+        }
+    </script>
+    
+        <body class="post-body">
+    
+        <!-- header -->
+        <header class="header header-mobile">
+    <!-- top read progress line -->
+    <div class="header-element">
+        <div class="read-progress"></div>
+    </div>
+    <!-- sidebar menu button -->
+    <div class="header-element">
+        
+            <div class="header-sidebar-menu">
+        
+            
+                <div style="padding-left: 1px;">&#xe775;</div>
+            
+        </div>
+    </div>
+    <!-- header actions -->
+    <div class="header-actions">
+        <!-- theme mode switch button -->
+        <span class="header-theme-btn header-element">
+            <i class="fas fa-adjust"></i>
+        </span>
+        <!-- back to home page text -->
+        <span class="home-link header-element">
+            <a href=/>PityBug's Studio.</a>
+        </span>
+    </div>
+    <!-- toggle banner for post layout -->
+    
+        
+            <div class="banner">
+        
+            <div class="blog-title header-element">
+                <a href="/">PityBug&#39;s Studio.</a>
+            </div>
+            <div class="post-title header-element">
+                <a href="#" class="post-name">【计算机图形学】Assignment4 Ray Tracing</a>
+            </div>
+        </div>
+    
+</header>
+
+        <!-- fixed footer -->
+        <footer class="footer-fixed">
+    <!-- back to top button -->
+    <div class="footer-fixed-element">
+        
+            <div class="back-top back-top-hidden">
+        
+        
+            <div>&#xe639;</div>
+        
+        </div>
+    </div>
+</footer>
+
+        <!-- wrapper -->
+        <div class="wrapper">
+            <div class="site-intro" style="
+
+
+
+
+
+
+
+    height:50vh;
+
+">
+    
+    <!-- 主页  -->
+    
+        
+    <!-- 404页  -->
+    
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+                【计算机图形学】Assignment4 Ray Tracing
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+                
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页 meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+    
+</div>
+
+                
+                <!-- 文章字数统计 -->
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">6.8k</span>阅读时长: <span class="post-count reading-time">31 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <!-- 撰写日期 -->
+                    <span class="iconfont-archer post-intro-calander">&#xe676;</span>
+                    <span class="post-intro-time">2022/12/05</span>
+                    <!-- busuanzi -->
+                    
+                        <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                            <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    
+                    <!-- 文章分享 -->
+                    <span class="share-wrapper">
+                        <span class="iconfont-archer share-icon">&#xe71d;</span>
+                        <span class="share-text">Share</span>
+                        <ul class="share-list">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+            <script>
+  // get user agent
+  function getBrowserVersions() {
+    var u = window.navigator.userAgent
+    return {
+      userAgent: u,
+      trident: u.indexOf('Trident') > -1, //IE内核
+      presto: u.indexOf('Presto') > -1, //opera内核
+      webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+      gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+      mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+      ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+      android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+      iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+      iPad: u.indexOf('iPad') > -1, //是否为iPad
+      webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+      weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+      uc: u.indexOf('UCBrowser') > -1, //是否为android下的UC浏览器
+    }
+  }
+  var browser = {
+    versions: getBrowserVersions(),
+  }
+  console.log('userAgent: ' + browser.versions.userAgent)
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded')
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document
+        .getElementsByClassName('intro-title')[0]
+        .classList.add('intro-fade-in')
+      document
+        .getElementsByClassName('intro-subtitle')[0]
+        .classList.add('intro-fade-in')
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in')
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb() {
+    if (browser.versions.uc) {
+      console.log('UCBrowser')
+      fontLoaded()
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular'],
+        },
+        loading: function () {
+          // 所有字体开始加载
+          // console.log('font loading');
+        },
+        active: function () {
+          // 所有字体已渲染
+          fontLoaded()
+        },
+        inactive: function () {
+          // 字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout')
+          fontLoaded()
+        },
+        timeout: 5000, // Set the timeout to two seconds
+      })
+    }
+  }
+
+  function asyncErr() {
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document,
+      t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0]
+    o.src = u
+    if (cb) {
+      o.addEventListener(
+        'load',
+        function (e) {
+          cb(null, e)
+        },
+        false
+      )
+    }
+    if (err) {
+      o.addEventListener(
+        'error',
+        function (e) {
+          err(null, e)
+        },
+        false
+      )
+    }
+    s.parentNode.insertBefore(o, s)
+  }
+
+  var asyncLoadWithFallBack = function (arr, success, reject) {
+    var currReject = function () {
+      reject()
+      arr.shift()
+      if (arr.length) async(arr[0], success, currReject)
+    }
+
+    async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack(
+    [
+      'https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js',
+      'https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js',
+      "/lib/webfontloader.min.js",
+    ],
+    asyncCb,
+    asyncErr
+  )
+</script>
+
+            <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+            <div class="container container-unloaded">
+                <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="task-1">task 1</h2>
+<p>阅读《Ray Tracing in One Weekend》的Chapter 4
+，完成射线类和简单的摄像机构建，并渲染一个渐变的蓝色天空背景图。贴出效果图，简述你遇到的问题以及是如何解决的。</p>
+<p><img src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221204154708570.png" alt="image-20221204154708570" style="zoom:100%;" /></p>
+<p><strong>定义光线ray类</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> RAY_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RAY_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;vec3.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ray</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">ray</span>() &#123;&#125;</span><br><span class="line">        <span class="built_in">ray</span>(<span class="type">const</span> point3&amp; origin, <span class="type">const</span> vec3&amp; direction)</span><br><span class="line">            : <span class="built_in">orig</span>(origin), <span class="built_in">dir</span>(direction)</span><br><span class="line">        &#123;&#125;</span><br><span class="line">        <span class="function">point3 <span class="title">origin</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> orig; &#125;</span><br><span class="line">        <span class="function">vec3 <span class="title">direction</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> dir; &#125;</span><br><span class="line">        <span class="function">point3 <span class="title">at</span><span class="params">(<span class="type">double</span> t)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> orig + t*dir;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        point3 orig;</span><br><span class="line">        vec3 dir;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>定义光线追踪函数</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">color <span class="title">ray_color</span><span class="params">(<span class="type">const</span> ray&amp; r)</span> </span>&#123;</span><br><span class="line">    vec3 unit_direction = <span class="built_in">unit_vector</span>(r.<span class="built_in">direction</span>());</span><br><span class="line">    <span class="keyword">auto</span> t = <span class="number">0.5</span>*(unit_direction.<span class="built_in">y</span>() + <span class="number">1.0</span>);</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">1.0</span>-t)*<span class="built_in">color</span>(<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>) + t*<span class="built_in">color</span>(<span class="number">0.5</span>, <span class="number">0.7</span>, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>该函数实现关于y轴上（画布从高到低）线性渐变</p></li>
+<li><p>经过scaling操作后，光线会落在单位范围内（-1&lt;y&lt;1）,实现水平方线上没有梯度，而在垂直方向上实现渐变梯度</p></li>
+<li><p>利用渐变特性，返回一个线性插值函数，参数为t，其中（0&lt;=t&lt;=1）当t线性变化时，返回的垂直方向上的背景颜色也是有梯度变化（渐变）的,公式如下：
+<span class="math display">\[
+BlendedValue=(1-t)·startValue+t·endValue
+\]</span></p></li>
+</ul>
+<h2 id="task-2">task 2</h2>
+<p>阅读《Ray Tracing in One Weekend》的Chapter 5 、Chapter 6 和Chapter 7
+，为场景添加并渲染一个简单的球形物体。贴出效果图，简述你遇到的问题以及是如何解决的。</p>
+<p><strong>Chapter 5</strong></p>
+<p><strong>画一个球状物体</strong></p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221204161855240.png"
+alt="image-20221204161855240" />
+<figcaption aria-hidden="true">image-20221204161855240</figcaption>
+</figure>
+<p>限定一个以<span
+class="math inline">\((C_x,C_y,C_z)\)</span>为中心，以<span
+class="math inline">\(R\)</span>为半径的球体，对于空间内的一个点<span
+class="math inline">\(P(x,y,x)\)</span>我们会有以下公式 <span
+class="math display">\[
+(P-C)·(P-C)=(x-C_x)^2+(y-C_y)^2+(z-C_z)^2=R
+\]</span> 而在上一个任务中我们定义光线在画布中的点应该为<span
+class="math inline">\(P(t)=A+tB\)</span>，带入后得到以下公式 <span
+class="math display">\[
+(A+tB-C)·(A+tB-C)=R^2
+\]</span> 也就是 <span class="math display">\[
+t^2b·b+2tb·(A-C)+(A-C)·(A-C)-R^2=0
+\]</span>
+通过计算判别式，我们可以判断光线是否落在空间的球体上，从而有下列代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">hit_sphere</span><span class="params">(<span class="type">const</span> point3&amp; center, <span class="type">double</span> radius, <span class="type">const</span> ray&amp; r)</span> </span>&#123;</span><br><span class="line">    vec3 oc = r.<span class="built_in">origin</span>() - center;</span><br><span class="line">    <span class="keyword">auto</span> a = <span class="built_in">dot</span>(r.<span class="built_in">direction</span>(), r.<span class="built_in">direction</span>());</span><br><span class="line">    <span class="keyword">auto</span> b = <span class="number">2.0</span> * <span class="built_in">dot</span>(oc, r.<span class="built_in">direction</span>());</span><br><span class="line">    <span class="keyword">auto</span> c = <span class="built_in">dot</span>(oc, oc) - radius*radius;</span><br><span class="line">    <span class="keyword">auto</span> discriminant = b*b - <span class="number">4</span>*a*c;</span><br><span class="line">    <span class="keyword">return</span> (discriminant &gt; <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果落在球体上，那么返回rgb（1，0，0）(红色)，呈现出上述效果图</p>
+<p>到目前为止，我们只是简单呈现了一个球体形状，没有加上阴影和反射光线，而且改代码粗糙在于，如果降球体空间定在z=+1位置上，画布上同样呈现出一个球体形状（这样显然是不合理的，你不可能看见处在你身后的东西），在接下来的步骤中会进一步细化</p>
+<p><strong>Chapter 6</strong></p>
+<p><strong>利用法线进行shading</strong></p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205101856946.png"
+alt="image-20221205101856946" />
+<figcaption aria-hidden="true">image-20221205101856946</figcaption>
+</figure>
+<ul>
+<li><p>假定物体始终维持再摄像机前面</p></li>
+<li><p>我们使用color map对发现进行着色</p></li>
+<li><p>在这里，我们假设法线为单位向量，每各组件介于-1到1之间使得将每个分量映射到0到1之间，从而可以将xyz空间映射到rgb空间</p></li>
+<li><p>我们不仅需要知道光线是否命中球体而且也要知道命中点</p>
+<p>实现如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">double</span> <span class="title">hit_sphere</span><span class="params">(<span class="type">const</span> point3&amp; center, <span class="type">double</span> radius, <span class="type">const</span> ray&amp; r)</span> </span>&#123;</span><br><span class="line">    vec3 oc = r.<span class="built_in">origin</span>() - center;</span><br><span class="line">    <span class="keyword">auto</span> a = <span class="built_in">dot</span>(r.<span class="built_in">direction</span>(), r.<span class="built_in">direction</span>());</span><br><span class="line">    <span class="keyword">auto</span> b = <span class="number">2.0</span> * <span class="built_in">dot</span>(oc, r.<span class="built_in">direction</span>());</span><br><span class="line">    <span class="keyword">auto</span> c = <span class="built_in">dot</span>(oc, oc) - radius*radius;</span><br><span class="line">    <span class="keyword">auto</span> discriminant = b*b - <span class="number">4</span>*a*c;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (discriminant &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1.0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">return</span> (-b - <span class="built_in">sqrt</span>(discriminant) ) / (<span class="number">2.0</span>*a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">color <span class="title">ray_color</span><span class="params">(<span class="type">const</span> ray&amp; r)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> t = <span class="built_in">hit_sphere</span>(<span class="built_in">point3</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>), <span class="number">0.5</span>, r);</span><br><span class="line">    <span class="keyword">if</span> (t &gt; <span class="number">0.0</span>) &#123;</span><br><span class="line">        vec3 N = <span class="built_in">unit_vector</span>(r.<span class="built_in">at</span>(t) - <span class="built_in">vec3</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.5</span>*<span class="built_in">color</span>(N.<span class="built_in">x</span>()+<span class="number">1</span>, N.<span class="built_in">y</span>()+<span class="number">1</span>, N.<span class="built_in">z</span>()+<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    vec3 unit_direction = <span class="built_in">unit_vector</span>(r.<span class="built_in">direction</span>());</span><br><span class="line">    t = <span class="number">0.5</span>*(unit_direction.<span class="built_in">y</span>() + <span class="number">1.0</span>);</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">1.0</span>-t)*<span class="built_in">color</span>(<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>) + t*<span class="built_in">color</span>(<span class="number">0.5</span>, <span class="number">0.7</span>, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>错误尝试：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205101954928.png"
+alt="image-20221205101954928" />
+<figcaption aria-hidden="true">image-20221205101954928</figcaption>
+</figure>
+<p>该图像，相当于在空间内，对每个点都找了法向量，而不是球面上的法向量</p>
+<p><strong>封装hittable类</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> HITTABLE_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HITTABLE_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ray.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">hit_record</span> &#123;</span><br><span class="line">    point3 p;</span><br><span class="line">    vec3 normal;</span><br><span class="line">    <span class="type">double</span> t;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">hittable</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">hit</span><span class="params">(<span class="type">const</span> ray&amp; r, <span class="type">double</span> t_min, <span class="type">double</span> t_max, hit_record&amp;</span></span></span><br><span class="line"><span class="params"><span class="function">    rec)</span> <span class="type">const</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>封装球体类</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> SPHERE_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SPHERE_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;hittable.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;vec3.h&quot;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">sphere</span> : <span class="keyword">public</span> hittable &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"><span class="built_in">sphere</span>() &#123;&#125;</span><br><span class="line"><span class="built_in">sphere</span>(point3 cen, <span class="type">double</span> r) : <span class="built_in">center</span>(cen), <span class="built_in">radius</span>(r) &#123;&#125;;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">hit</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function"><span class="type">const</span> ray&amp; r, <span class="type">double</span> t_min, <span class="type">double</span> t_max, hit_record&amp; rec)</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"><span class="keyword">override</span></span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">point3 center;</span><br><span class="line"><span class="type">double</span> radius;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">sphere::hit</span><span class="params">(<span class="type">const</span> ray&amp; r, <span class="type">double</span> t_min, <span class="type">double</span> t_max, hit_record&amp; rec)</span></span></span><br><span class="line"><span class="function"><span class="type">const</span> </span>&#123;</span><br><span class="line">    vec3 oc = r.<span class="built_in">origin</span>() - center;</span><br><span class="line">    <span class="keyword">auto</span> a = r.<span class="built_in">direction</span>().<span class="built_in">length_squared</span>();</span><br><span class="line">    <span class="keyword">auto</span> half_b = <span class="built_in">dot</span>(oc, r.<span class="built_in">direction</span>());</span><br><span class="line">    <span class="keyword">auto</span> c = oc.<span class="built_in">length_squared</span>() - radius*radius;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">auto</span> discriminant = half_b*half_b - a*c;</span><br><span class="line">    <span class="keyword">if</span> (discriminant &lt; <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">auto</span> sqrtd = <span class="built_in">sqrt</span>(discriminant);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Find the nearest root that lies in the acceptable range.</span></span><br><span class="line">    <span class="keyword">auto</span> root = (-half_b - sqrtd) / a;</span><br><span class="line">    <span class="keyword">if</span> (root &lt; t_min || t_max &lt; root) &#123;</span><br><span class="line">        root = (-half_b + sqrtd) / a;</span><br><span class="line">        <span class="keyword">if</span> (root &lt; t_min || t_max &lt; root)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    rec.t = root;</span><br><span class="line">    rec.p = r.<span class="built_in">at</span>(rec.t);</span><br><span class="line">    rec.normal = (rec.p - center) / radius;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>比较光线和表面法向量，分析光线从表面外射入，还是从表面内射出（点乘）</p>
+<ul>
+<li>点乘大于0，从表面内射出</li>
+<li>点乘小于零，从表面外射入</li>
+<li>同时需要保存与光线相反的法向量</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> front_face;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">dot</span>(ray_direction, outward_normal) &gt; <span class="number">0.0</span>) &#123;</span><br><span class="line">    <span class="comment">// ray is inside the sphere</span></span><br><span class="line">    normal = -outward_normal;</span><br><span class="line">    front_face = <span class="literal">false</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// ray is outside the sphere</span></span><br><span class="line">    normal = outward_normal;</span><br><span class="line">    front_face = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里我们可以在hit_record
+struct.设定front_face,从而限定，该点位置的法向量始终保持与光想相反的方向。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">hit_record</span> &#123;</span><br><span class="line">    point3 p;</span><br><span class="line">    vec3 normal;</span><br><span class="line">    <span class="type">double</span> t;</span><br><span class="line">    <span class="type">bool</span> front_face;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="type">void</span> <span class="title">set_face_normal</span><span class="params">(<span class="type">const</span> ray&amp; r, <span class="type">const</span> vec3&amp; outward_normal)</span> </span>&#123;</span><br><span class="line">        front_face = <span class="built_in">dot</span>(r.<span class="built_in">direction</span>(), outward_normal) &lt; <span class="number">0</span>;</span><br><span class="line">        normal = front_face ? outward_normal :-outward_normal;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们需要重新设计一个类，hittable_list类存储可击中的点</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> HITTABLE_LIST_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HITTABLE_LIST_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;hittable.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> std::shared_ptr;</span><br><span class="line"><span class="keyword">using</span> std::make_shared;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">hittable_list</span> : <span class="keyword">public</span> hittable &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">hittable_list</span>() &#123;&#125;</span><br><span class="line">        <span class="built_in">hittable_list</span>(shared_ptr&lt;hittable&gt; object) &#123; <span class="built_in">add</span>(object); &#125;</span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123; objects.<span class="built_in">clear</span>(); &#125;</span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">(shared_ptr&lt;hittable&gt; object)</span> </span>&#123; objects.<span class="built_in">push_back</span>(object); &#125;</span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">hit</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">            <span class="type">const</span> ray&amp; r, <span class="type">double</span> t_min, <span class="type">double</span> t_max, hit_record&amp; rec)</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        std::vector&lt;shared_ptr&lt;hittable&gt;&gt; objects;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">hittable_list::hit</span><span class="params">(<span class="type">const</span> ray&amp; r, <span class="type">double</span> t_min, <span class="type">double</span> t_max, hit_record&amp;</span></span></span><br><span class="line"><span class="params"><span class="function">rec)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    hit_record temp_rec;</span><br><span class="line">    <span class="type">bool</span> hit_anything = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">auto</span> closest_so_far = t_max;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span>&amp; object : objects) &#123;</span><br><span class="line">        <span class="keyword">if</span> (object-&gt;<span class="built_in">hit</span>(r, t_min, closest_so_far, temp_rec)) &#123;</span><br><span class="line">            hit_anything = <span class="literal">true</span>;</span><br><span class="line">            closest_so_far = temp_rec.t;</span><br><span class="line">            rec = temp_rec;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> hit_anything;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>接下来，就可以自行定义数学公式上精确度，以及定义默认值，设计rtweekend.h</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> RTWEEKEND_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RTWEEKEND_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;limits&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Usings</span></span><br><span class="line"><span class="keyword">using</span> std::shared_ptr;</span><br><span class="line"><span class="keyword">using</span> std::make_shared;</span><br><span class="line"><span class="keyword">using</span> std::sqrt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Constants</span></span><br><span class="line"><span class="type">const</span> <span class="type">double</span> infinity = std::numeric_limits&lt;<span class="type">double</span>&gt;::<span class="built_in">infinity</span>();</span><br><span class="line"><span class="type">const</span> <span class="type">double</span> pi = <span class="number">3.1415926535897932385</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Utility Functions</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">double</span> <span class="title">degrees_to_radians</span><span class="params">(<span class="type">double</span> degrees)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> degrees * pi / <span class="number">180.0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Common Headers</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ray.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;vec3.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205104248486.png"
+alt="image-20221205104248486" />
+<figcaption aria-hidden="true">image-20221205104248486</figcaption>
+</figure>
+<p><strong>Chapter 7</strong></p>
+<p><strong>抗锯齿（边缘平滑）</strong></p>
+<p>（光线采样取平均）对于给定的像素，我们在该像素中有几个样本，并通过每个像素发送光线样本。然后对这些光线的颜色进行平均：</p>
+<figure>
+<img
+src="https://raytracing.github.io/images/fig-1.07-pixel-samples.jpg"
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>核心代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">write_color</span><span class="params">(std::ostream &amp;out, color pixel_color, <span class="type">int</span> samples_per_pixel)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> r = pixel_color.<span class="built_in">x</span>();</span><br><span class="line">    <span class="keyword">auto</span> g = pixel_color.<span class="built_in">y</span>();</span><br><span class="line">    <span class="keyword">auto</span> b = pixel_color.<span class="built_in">z</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Divide the color by the number of samples.</span></span><br><span class="line">    <span class="keyword">auto</span> scale = <span class="number">1.0</span> / samples_per_pixel;</span><br><span class="line">    r *= scale;</span><br><span class="line">    g *= scale;</span><br><span class="line">    b *= scale;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Write the translated [0,255] value of each color component.</span></span><br><span class="line">    out &lt;&lt; <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="number">256</span> * <span class="built_in">clamp</span>(r, <span class="number">0.0</span>, <span class="number">0.999</span>)) &lt;&lt; <span class="string">&#x27; &#x27;</span></span><br><span class="line">        &lt;&lt; <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="number">256</span> * <span class="built_in">clamp</span>(g, <span class="number">0.0</span>, <span class="number">0.999</span>)) &lt;&lt; <span class="string">&#x27; &#x27;</span></span><br><span class="line">        &lt;&lt; <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="number">256</span> * <span class="built_in">clamp</span>(b, <span class="number">0.0</span>, <span class="number">0.999</span>)) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>创建摄像机类</strong></p>
+<p>创建一个相机类来管理我们的虚拟相机和场景拼接的相关任务，以下类使用前面的轴对齐相机实现了一个简单的相机：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> CAMERA_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CAMERA_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rtweekend.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">camera</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">camera</span>() &#123;</span><br><span class="line">            <span class="keyword">auto</span> aspect_ratio = <span class="number">16.0</span> / <span class="number">9.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> viewport_height = <span class="number">2.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> viewport_width = aspect_ratio * viewport_height;</span><br><span class="line">            <span class="keyword">auto</span> focal_length = <span class="number">1.0</span>;</span><br><span class="line"></span><br><span class="line">            origin = <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">            horizontal = <span class="built_in">vec3</span>(viewport_width, <span class="number">0.0</span>, <span class="number">0.0</span>);</span><br><span class="line">            vertical = <span class="built_in">vec3</span>(<span class="number">0.0</span>, viewport_height, <span class="number">0.0</span>);</span><br><span class="line">            lower_left_corner = origin - horizontal/<span class="number">2</span> - vertical/<span class="number">2</span> - <span class="built_in">vec3</span>(<span class="number">0</span>, <span class="number">0</span>, focal_length);</span><br><span class="line">        &#125;</span><br><span class="line">            <span class="function">ray <span class="title">get_ray</span><span class="params">(<span class="type">double</span> u, <span class="type">double</span> v)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">ray</span>(origin, lower_left_corner + u*horizontal + v*vertical - origin);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        point3 origin;</span><br><span class="line">        point3 lower_left_corner;</span><br><span class="line">        vec3 horizontal;</span><br><span class="line">        vec3 vertical;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">原图像</th>
+<th style="text-align: center;">抗锯齿</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td
+style="text-align: center;"><img src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205110313569.png" alt="image-20221205110313569" style="zoom:80%;" /></td>
+<td
+style="text-align: center;"><img src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205110306635.png" alt="image-20221205110306635" style="zoom:84%;" /></td>
+</tr>
+</tbody>
+</table>
+<p>可以看到抗锯齿有明显的改善</p>
+<h2 id="task-3">task 3</h2>
+<p>阅读《Ray Tracing in One Weekend》的Chapter 8 、Chapter 9 和Chapter
+10
+，为场景中的球形物体添加漫反射材质、金属材质和电解质材质，并渲染相应的材质效果图。贴出效果图，简述你遇到的问题以及是如何解决的。</p>
+<p><strong>Chapter 8</strong></p>
+<p><strong>漫反射材质</strong></p>
+<ul>
+<li><p>考虑漫反射具有随机性，假定球面上的点是P，P点法向量为n，我们可以找到两个球体中心点（P+n）（P-n）</p></li>
+<li><p>以图中所示为例，光线从外面设想球体表面，在以同侧球体中心在（P+n），半径为|n|的范围随机选取点S</p></li>
+<li><p>返回（S-P）作为反射光线</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205111528853.png"
+alt="image-20221205111528853" />
+<figcaption aria-hidden="true">image-20221205111528853</figcaption>
+</figure></li>
+</ul>
+<p>我们需要一种方法来在单位半径的球体中选择一个随机点。我们将使用通常最简单的算法：rejection
+method。首先，在单位立方体中选择一个随机点，其中x、y和z的范围均为−1到+1。如果该点在球体之外，拒绝此点，重试。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">vec3</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="type">static</span> vec3 <span class="title">random</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">vec3</span>(<span class="built_in">random_double</span>(), <span class="built_in">random_double</span>(), <span class="built_in">random_double</span>());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="type">static</span> vec3 <span class="title">random</span><span class="params">(<span class="type">double</span> min, <span class="type">double</span> max)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">vec3</span>(<span class="built_in">random_double</span>(min,max), <span class="built_in">random_double</span>(min,max),<span class="built_in">random_double</span>(min,max));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vec3 <span class="title">random_in_unit_sphere</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="keyword">auto</span> p = vec3::<span class="built_in">random</span>(<span class="number">-1</span>,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (p.<span class="built_in">length_squared</span>() &gt;= <span class="number">1</span>) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对ray_color函数更新，同时我们要限制最大深度递归，以防击不中任何东西</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">color <span class="title">ray_color</span><span class="params">(<span class="type">const</span> ray&amp; r, <span class="type">const</span> hittable&amp; world, <span class="type">int</span> depth)</span> </span>&#123;</span><br><span class="line">    hit_record rec;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// If we&#x27;ve exceeded the ray bounce limit, no more light is gathered.</span></span><br><span class="line">    <span class="keyword">if</span> (depth &lt;= <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">color</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (world.<span class="built_in">hit</span>(r, <span class="number">0</span>, infinity, rec)) &#123;</span><br><span class="line">        point3 target = rec.p + rec.normal + <span class="built_in">random_in_unit_sphere</span>();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.5</span> * <span class="built_in">ray_color</span>(<span class="built_in">ray</span>(rec.p, target - rec.p), world, depth<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    vec3 unit_direction = <span class="built_in">unit_vector</span>(r.<span class="built_in">direction</span>());</span><br><span class="line">    <span class="keyword">auto</span> t = <span class="number">0.5</span>*(unit_direction.<span class="built_in">y</span>() + <span class="number">1.0</span>);</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">1.0</span>-t)*<span class="built_in">color</span>(<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>) + t*<span class="built_in">color</span>(<span class="number">0.5</span>, <span class="number">0.7</span>, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>得到效果图如下：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205113149536.png"
+alt="image-20221205113149536" />
+<figcaption aria-hidden="true">image-20221205113149536</figcaption>
+</figure>
+<p>由效果图我们可以看到物体非常暗，这是因为球体每次反弹只吸收一半的能量，因此它们是50%的反射器，我们将颜色提高到幂，或者在我们的简单情况下，它只是平方根的形式，更改如下代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">write_color</span><span class="params">(std::ostream &amp;out, color pixel_color, <span class="type">int</span> samples_per_pixel)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> r = pixel_color.<span class="built_in">x</span>();</span><br><span class="line">    <span class="keyword">auto</span> g = pixel_color.<span class="built_in">y</span>();</span><br><span class="line">    <span class="keyword">auto</span> b = pixel_color.<span class="built_in">z</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Divide the color by the number of samples and gamma-correct for</span></span><br><span class="line">    gamma=<span class="number">2.0</span>.</span><br><span class="line">    <span class="keyword">auto</span> scale = <span class="number">1.0</span> / samples_per_pixel;</span><br><span class="line">    r = <span class="built_in">sqrt</span>(scale * r);</span><br><span class="line">    g = <span class="built_in">sqrt</span>(scale * g);</span><br><span class="line">    b = <span class="built_in">sqrt</span>(scale * b);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Write the translated [0,255] value of each color component.</span></span><br><span class="line">    out &lt;&lt; <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="number">256</span> * <span class="built_in">clamp</span>(r, <span class="number">0.0</span>, <span class="number">0.999</span>)) &lt;&lt; <span class="string">&#x27; &#x27;</span></span><br><span class="line">        &lt;&lt; <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="number">256</span> * <span class="built_in">clamp</span>(g, <span class="number">0.0</span>, <span class="number">0.999</span>)) &lt;&lt; <span class="string">&#x27; &#x27;</span></span><br><span class="line">        &lt;&lt; <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="number">256</span> * <span class="built_in">clamp</span>(b, <span class="number">0.0</span>, <span class="number">0.999</span>)) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>进而图像变为浅灰色（其实目前图像跟期望还有一定差距，后续会做修改）</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205113720875.png"
+alt="image-20221205113720875" />
+<figcaption aria-hidden="true">image-20221205113720875</figcaption>
+</figure>
+<p>还有一个微妙的错误。一些反射光线击中了它们反射的物体，而不是精确地t=0，而是在t
+= −0.0000001或t =
+0.0000001或球体相交给我们的任何浮点近似。因此，我们需要忽略非常接近零的命中：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (world.<span class="built_in">hit</span>(r, <span class="number">0.001</span>, infinity, rec)) &#123;</span><br></pre></td></tr></table></figure>
+<p>更改之后的效果如下：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205114355452.png"
+alt="image-20221205114355452" />
+<figcaption aria-hidden="true">image-20221205114355452</figcaption>
+</figure>
+<p>由此可以看到明显的漫反射和阴影效果</p>
+<p><strong>真实朗伯反射</strong>：</p>
+<p>相较于简单的漫反射，<strong>真实朗伯反射</strong>选取圆上一个点S，最后返回反射光线</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205114601665.png"
+alt="image-20221205114601665" />
+<figcaption aria-hidden="true">image-20221205114601665</figcaption>
+</figure>
+<p>补充函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> vec3 <span class="title">random_in_unit_sphere</span><span class="params">()</span> </span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">vec3 <span class="title">random_unit_vector</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">unit_vector</span>(<span class="built_in">random_in_unit_sphere</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>更改ray_color（）函数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (world.<span class="built_in">hit</span>(r, <span class="number">0.001</span>, infinity, rec)) &#123;</span><br><span class="line">    point3 target = rec.p + rec.normal + <span class="built_in">random_unit_vector</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0.5</span> * <span class="built_in">ray_color</span>(<span class="built_in">ray</span>(rec.p, target - rec.p), world, depth<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>效果图如下：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205114904887.png"
+alt="image-20221205114904887" />
+<figcaption aria-hidden="true">image-20221205114904887</figcaption>
+</figure>
+<p>两种反射的区别：</p>
+<ul>
+<li><p>更改后阴影不太明显</p></li>
+<li><p>更换后，两个球体的外观都较亮</p></li>
+</ul>
+<p><strong>其他反射</strong></p>
+<p>一种更直观的方法是，对远离撞击点的所有角度都具有统一的散射方向，而不依赖于与法线的角度。许多第一批光线跟踪论文使用了这种漫反射方法（在采用朗伯漫反射之前）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vec3 <span class="title">random_in_hemisphere</span><span class="params">(<span class="type">const</span> vec3&amp; normal)</span> </span>&#123;</span><br><span class="line">    vec3 in_unit_sphere = <span class="built_in">random_in_unit_sphere</span>();</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">dot</span>(in_unit_sphere, normal) &gt; <span class="number">0.0</span>) <span class="comment">// In the same hemisphere as the</span></span><br><span class="line">    normal</span><br><span class="line">        <span class="keyword">return</span> in_unit_sphere;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> -in_unit_sphere;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>效果图如下：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205115929288.png"
+alt="image-20221205115929288" />
+<figcaption aria-hidden="true">image-20221205115929288</figcaption>
+</figure>
+<p><strong>Chapter 9</strong></p>
+<p><strong>金属材质：</strong></p>
+<p>让不同的物体有不同的材质，考虑两件事:</p>
+<ul>
+<li>产生散射光线（或者说它吸收了入射光线）。</li>
+<li>如果散射，说明光线应该衰减多少。</li>
+</ul>
+<p>以下给出抽象材料类</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> MATERIAL_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MATERIAL_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rtweekend.h&quot;</span></span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">hit_record</span>;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">material</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">scatter</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="type">const</span> ray&amp; r_in, <span class="type">const</span> hit_record&amp; rec, color&amp; attenuation, ray&amp;</span></span></span><br><span class="line"><span class="params"><span class="function">        scattered)</span> <span class="type">const</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>对于我们已经拥有的朗伯（漫反射）情况，它可以总是散射并通过其反射率衰减，或者它可以不衰减地散射但吸收一部分光线，或者它可能是这些策略的混合。对于朗伯材料，我们得到了这个简单的类</p>
+<ul>
+<li>如果我们生成的随机单位向量正好与法向量相反，则两者相加为零，这将导致零散射方向向量。这会导致以后出现糟糕的情况（无限和NaN），因此我们需要在传递条件之前拦截它。</li>
+<li>创建一个新的向量方法vec3:：nearzero（），如果向量在所有维度上都非常接近于零，则返回true</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">vec3</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">near_zero</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Return true if the vector is close to zero in all dimensions.</span></span><br><span class="line">        <span class="type">const</span> <span class="keyword">auto</span> s = <span class="number">1e-8</span>;</span><br><span class="line">        <span class="keyword">return</span> (<span class="built_in">fabs</span>(e[<span class="number">0</span>]) &lt; s) &amp;&amp; (<span class="built_in">fabs</span>(e[<span class="number">1</span>]) &lt; s) &amp;&amp; (<span class="built_in">fabs</span>(e[<span class="number">2</span>]) &lt; s);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">lambertian</span> : <span class="keyword">public</span> material &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">lambertian</span>(<span class="type">const</span> color&amp; a) : <span class="built_in">albedo</span>(a) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">scatter</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">            <span class="type">const</span> ray&amp; r_in, <span class="type">const</span> hit_record&amp; rec, color&amp; attenuation, ray&amp;scattered</span></span></span><br><span class="line"><span class="params"><span class="function">        )</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">            <span class="keyword">auto</span> scatter_direction = rec.normal + <span class="built_in">random_unit_vector</span>();</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Catch degenerate scatter direction</span></span><br><span class="line">            <span class="keyword">if</span> (scatter_direction.<span class="built_in">near_zero</span>())</span><br><span class="line">            scatter_direction = rec.normal;</span><br><span class="line">            </span><br><span class="line">            scattered = <span class="built_in">ray</span>(rec.p, scatter_direction);</span><br><span class="line">            attenuation = albedo;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        color albedo;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>镜面反射：</strong></p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205152318066.png"
+alt="image-20221205152318066" />
+<figcaption aria-hidden="true">image-20221205152318066</figcaption>
+</figure>
+<p>设计<strong>镜面反射函数</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vec3 <span class="title">reflect</span><span class="params">(<span class="type">const</span> vec3&amp; v, <span class="type">const</span> vec3&amp; n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> v - <span class="number">2</span>*<span class="built_in">dot</span>(v,n)*n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用上述镜面反射函数，设计<strong>金属类</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">metal</span> : <span class="keyword">public</span> material &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">metal</span>(<span class="type">const</span> color&amp; a) : <span class="built_in">albedo</span>(a) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">scatter</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="type">const</span> ray&amp; r_in, <span class="type">const</span> hit_record&amp; rec, color&amp; attenuation, ray&amp;scattered</span></span></span><br><span class="line"><span class="params"><span class="function">        )</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">            vec3 reflected = <span class="built_in">reflect</span>(<span class="built_in">unit_vector</span>(r_in.<span class="built_in">direction</span>()),</span><br><span class="line">            rec.normal);</span><br><span class="line">            scattered = <span class="built_in">ray</span>(rec.p, reflected);</span><br><span class="line">            attenuation = albedo;</span><br><span class="line">            <span class="keyword">return</span> (<span class="built_in">dot</span>(scattered.<span class="built_in">direction</span>(), rec.normal) &gt; <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        color albedo;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>效果图：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205152919070.png"
+alt="image-20221205152919070" />
+<figcaption aria-hidden="true">image-20221205152919070</figcaption>
+</figure>
+<p><strong>模糊反射：</strong></p>
+<ul>
+<li>使用新的小球，随机化反射方向终点</li>
+<li>球体越大，反射越模糊。</li>
+<li>可以添加一个模糊性参数，即球体的半径（因此零不是扰动）</li>
+<li>问题在于对于 big spheres和 grazing rays，会造成表面以下散射</li>
+</ul>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205153024316.png"
+alt="image-20221205153024316" />
+<figcaption aria-hidden="true">image-20221205153024316</figcaption>
+</figure>
+<p>此时，我们更新metal类</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">metal</span> : <span class="keyword">public</span> material &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">metal</span>(<span class="type">const</span> color&amp; a, <span class="type">double</span> f) : <span class="built_in">albedo</span>(a), <span class="built_in">fuzz</span>(f &lt; <span class="number">1</span> ? f : <span class="number">1</span>) &#123;&#125;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">scatter</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">            <span class="type">const</span> ray&amp; r_in, <span class="type">const</span> hit_record&amp; rec, color&amp; attenuation, ray&amp;scattered</span></span></span><br><span class="line"><span class="params"><span class="function">        )</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">            vec3 reflected = <span class="built_in">reflect</span>(<span class="built_in">unit_vector</span>(r_in.<span class="built_in">direction</span>()),</span><br><span class="line">            rec.normal);</span><br><span class="line">            scattered = <span class="built_in">ray</span>(rec.p, reflected + fuzz*<span class="built_in">random_in_unit_sphere</span>());</span><br><span class="line">            attenuation = albedo;</span><br><span class="line">            <span class="keyword">return</span> (<span class="built_in">dot</span>(scattered.<span class="built_in">direction</span>(), rec.normal) &gt; <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        color albedo;</span><br><span class="line">        <span class="type">double</span> fuzz;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>效果图： <img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205153802128.png"
+alt="image-20221205153802128" /></p>
+<p><strong>Chapter 10</strong></p>
+<p><strong>电解质材料</strong>：</p>
+<p>水、玻璃和钻石等透明材料是电介质。当光线照射到它们时，它会分裂为反射光线和折射（透射）光线。我们将通过在反射或折射之间随机选择，并且每次交互仅生成一条散射光线来处理这一问题。</p>
+<p><strong>斯内尔定律（折射定律）</strong> <span class="math display">\[
+\eta ·\sin\theta=\eta&#39;· \sin\theta&#39;
+\]</span> <img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205154223729.png"
+alt="image-20221205154223729" /></p>
+<p><span class="math inline">\(\eta\)</span>是折射率，其中air = 1.0,
+glass = 1.3–1.7, diamond =2.4</p>
+<p>假设折射光线设为<span
+class="math inline">\(R&#39;\)</span>和折射侧的法向量<span
+class="math inline">\(n&#39;\)</span>，根据向量分量，有 <span
+class="math display">\[
+R&#39;=R&#39;_⊥+R&#39;_{||}
+\]</span> 其中<span class="math inline">\(R&#39;_⊥\)</span>为垂直于<span
+class="math inline">\(n&#39;\)</span>的分量，<span
+class="math inline">\(R&#39;_{||}\)</span>为平行于<span
+class="math inline">\(n&#39;\)</span>的分量，利用折射定律解出 <span
+class="math display">\[
+R&#39;_⊥=\frac{\eta}{\eta&#39;}(R+\cos\theta n)
+\]</span></p>
+<p><span class="math display">\[
+R&#39;_{||}=-\sqrt{1-|R&#39;_⊥|^2}  n
+\]</span></p>
+<p>我们限制<span class="math inline">\(R\)</span>和<span
+class="math inline">\(n\)</span>是单位向量，有 <span
+class="math display">\[
+\cos\theta=-R·n
+\]</span> 有： <span class="math display">\[
+R&#39;_⊥=\frac{\eta}{\eta&#39;}(R+(-R·n) n)
+\]</span> 设计函数，计算<span class="math inline">\(R&#39;\)</span></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vec3 <span class="title">refract</span><span class="params">(<span class="type">const</span> vec3&amp; uv, <span class="type">const</span> vec3&amp; n, <span class="type">double</span> etai_over_etat)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> cos_theta = <span class="built_in">fmin</span>(<span class="built_in">dot</span>(-uv, n), <span class="number">1.0</span>);</span><br><span class="line">    vec3 r_out_perp = etai_over_etat * (uv + cos_theta*n);</span><br><span class="line">    vec3 r_out_parallel = -<span class="built_in">sqrt</span>(<span class="built_in">fabs</span>(<span class="number">1.0</span> - r_out_perp.<span class="built_in">length_squared</span>())) * n;</span><br><span class="line">    <span class="keyword">return</span> r_out_perp + r_out_parallel;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设计<strong>电解质类:</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">dielectric</span> : <span class="keyword">public</span> material &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">dielectric</span>(<span class="type">double</span> index_of_refraction) : <span class="built_in">ir</span>(index_of_refraction) &#123;&#125;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">scatter</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="type">const</span> ray&amp; r_in, <span class="type">const</span> hit_record&amp; rec, color&amp; attenuation, ray&amp;</span></span></span><br><span class="line"><span class="params"><span class="function">        scattered</span></span></span><br><span class="line"><span class="params"><span class="function">        )</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">            attenuation = <span class="built_in">color</span>(<span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);</span><br><span class="line">            <span class="type">double</span> refraction_ratio = rec.front_face ? (<span class="number">1.0</span>/ir) : ir;</span><br><span class="line">            </span><br><span class="line">            vec3 unit_direction = <span class="built_in">unit_vector</span>(r_in.<span class="built_in">direction</span>());</span><br><span class="line">            vec3 refracted = <span class="built_in">refract</span>(unit_direction, rec.normal,</span><br><span class="line">            refraction_ratio);</span><br><span class="line">            </span><br><span class="line">            scattered = <span class="built_in">ray</span>(rec.p, refracted);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="type">double</span> ir; <span class="comment">// Index of Refraction</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>效果图：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205155754441.png"
+alt="image-20221205155754441" />
+<figcaption aria-hidden="true">image-20221205155754441</figcaption>
+</figure>
+<p>但是以上效果还有数学上的错误</p>
+<p>当选取<span class="math inline">\(\eta=1.5\)</span>和<span
+class="math inline">\(\eta’=1\)</span>时，有可能造成 <span
+class="math display">\[
+\sin \theta&#39;=\frac{1.5}{1.0}·\sin\theta&gt;1.0
+\]</span> 所以在代码中我们做一下限制：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">double</span> cos_theta = <span class="built_in">fmin</span>(<span class="built_in">dot</span>(-unit_direction, rec.normal), <span class="number">1.0</span>);</span><br><span class="line"><span class="type">double</span> sin_theta = <span class="built_in">sqrt</span>(<span class="number">1.0</span> - cos_theta*cos_theta);</span><br><span class="line">    <span class="keyword">if</span> (refraction_ratio * sin_theta &gt; <span class="number">1.0</span>) &#123;</span><br><span class="line">    <span class="comment">// Must Reflect</span></span><br><span class="line">    ...</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Can Refract</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>效果图如下：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205155835974.png"
+alt="image-20221205155835974" />
+<figcaption aria-hidden="true">image-20221205155835974</figcaption>
+</figure>
+<p><strong>Schlick 近似：</strong></p>
+<p>真正的玻璃具有随角度变化的反射率——以陡峭的角度看窗户，它就变成了镜子。这有一个非常丑陋的方程式，但几乎每个人都使用克里斯托夫·施里克（Christophe
+Schlick）的一个廉价而精确的多项式近似</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (cannot_refract || <span class="built_in">reflectance</span>(cos_theta, refraction_ratio) &gt;</span><br><span class="line">    <span class="built_in">random_double</span>())</span><br><span class="line">        direction = <span class="built_in">reflect</span>(unit_direction, rec.normal);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        direction = <span class="built_in">refract</span>(unit_direction, rec.normal,refraction_ratio);</span><br><span class="line">    scattered = <span class="built_in">ray</span>(rec.p, direction);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">double</span> ir; <span class="comment">// Index of Refraction</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">double</span> <span class="title">reflectance</span><span class="params">(<span class="type">double</span> cosine, <span class="type">double</span> ref_idx)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Use Schlick&#x27;s approximation for reflectance.</span></span><br><span class="line">        <span class="keyword">auto</span> r0 = (<span class="number">1</span>-ref_idx) / (<span class="number">1</span>+ref_idx);</span><br><span class="line">        r0 = r0*r0;</span><br><span class="line">        <span class="keyword">return</span> r0 + (<span class="number">1</span>-r0)*<span class="built_in">pow</span>((<span class="number">1</span> - cosine),<span class="number">5</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>效果图：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205161352791.png"
+alt="image-20221205161352791" />
+<figcaption aria-hidden="true">image-20221205161352791</figcaption>
+</figure>
+<h2 id="task-4">task 4</h2>
+<p>阅读《Ray Tracing in One Weekend》的Chapter 11 和Chapter 12
+，实现摄像机的聚焦模糊效果。贴出效果图，简述你遇到的问题以及是如何解决的。</p>
+<p>Chapter 11</p>
+<p><strong>可定位摄像机</strong></p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205170036810.png"
+alt="image-20221205170036810" />
+<figcaption aria-hidden="true">image-20221205170036810</figcaption>
+</figure>
+<p><strong>修改摄像机类</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">camera</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">camera</span>(</span><br><span class="line">            point3 lookfrom,</span><br><span class="line">            point3 lookat,</span><br><span class="line">            vec3 vup,</span><br><span class="line">            <span class="type">double</span> vfov, <span class="comment">// vertical field-of-view in degrees</span></span><br><span class="line">            <span class="type">double</span> aspect_ratio</span><br><span class="line">        ) &#123;</span><br><span class="line">            <span class="keyword">auto</span> theta = <span class="built_in">degrees_to_radians</span>(vfov);</span><br><span class="line">            <span class="keyword">auto</span> h = <span class="built_in">tan</span>(theta/<span class="number">2</span>);</span><br><span class="line">            <span class="keyword">auto</span> viewport_height = <span class="number">2.0</span> * h;</span><br><span class="line">            <span class="keyword">auto</span> viewport_width = aspect_ratio * viewport_height;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">auto</span> w = <span class="built_in">unit_vector</span>(lookfrom - lookat);</span><br><span class="line">            <span class="keyword">auto</span> u = <span class="built_in">unit_vector</span>(<span class="built_in">cross</span>(vup, w));</span><br><span class="line">            <span class="keyword">auto</span> v = <span class="built_in">cross</span>(w, u);</span><br><span class="line">            </span><br><span class="line">            origin = lookfrom;</span><br><span class="line">            horizontal = viewport_width * u;</span><br><span class="line">            vertical = viewport_height * v;</span><br><span class="line">            lower_left_corner = origin - horizontal/<span class="number">2</span> - vertical/<span class="number">2</span> - w;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function">ray <span class="title">get_ray</span><span class="params">(<span class="type">double</span> s, <span class="type">double</span> t)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">ray</span>(origin, lower_left_corner + s*horizontal + t*vertical - origin);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        point3 origin;</span><br><span class="line">        point3 lower_left_corner;</span><br><span class="line">        vec3 horizontal;</span><br><span class="line">        vec3 vertical;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205170431974.png"
+alt="image-20221205170431974" />
+<figcaption aria-hidden="true">image-20221205170431974</figcaption>
+</figure>
+<p>改变视角</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">camera <span class="title">cam</span><span class="params">(point3(<span class="number">-2</span>,<span class="number">2</span>,<span class="number">1</span>), point3(<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>), vec3(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>), <span class="number">20</span>, aspect_ratio)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>效果图：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205170446897.png"
+alt="image-20221205170446897" />
+<figcaption aria-hidden="true">image-20221205170446897</figcaption>
+</figure>
+<p>Chapter 12</p>
+<p><strong>散焦模糊</strong></p>
+<p>通常情况下，所有场景光线都源于观察点。为了实现散焦模糊，生成源自以观察点为中心的磁盘内部的随机场景光线。这个半径越大，散焦模糊越大。你可以把我们的原装相机想象成半径为零的散焦盘（完全没有模糊），因此所有光线都起源于盘中心</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vec3 <span class="title">random_in_unit_disk</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line"><span class="keyword">auto</span> p = <span class="built_in">vec3</span>(<span class="built_in">random_double</span>(<span class="number">-1</span>,<span class="number">1</span>), <span class="built_in">random_double</span>(<span class="number">-1</span>,<span class="number">1</span>), <span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span> (p.<span class="built_in">length_squared</span>() &gt;= <span class="number">1</span>) <span class="keyword">continue</span>;</span><br><span class="line"><span class="keyword">return</span> p;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">camera</span> &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">camera</span>(</span><br><span class="line">            point3 lookfrom,</span><br><span class="line">            point3 lookat,</span><br><span class="line">            vec3 vup,</span><br><span class="line">            <span class="type">double</span> vfov, <span class="comment">// vertical field-of-view in degrees</span></span><br><span class="line">            <span class="type">double</span> aspect_ratio,</span><br><span class="line">            <span class="type">double</span> aperture,</span><br><span class="line">            <span class="type">double</span> focus_dist</span><br><span class="line">        ) &#123;</span><br><span class="line">            <span class="keyword">auto</span> theta = <span class="built_in">degrees_to_radians</span>(vfov);</span><br><span class="line">            <span class="keyword">auto</span> h = <span class="built_in">tan</span>(theta/<span class="number">2</span>);</span><br><span class="line">            <span class="keyword">auto</span> viewport_height = <span class="number">2.0</span> * h;</span><br><span class="line">            <span class="keyword">auto</span> viewport_width = aspect_ratio * viewport_height;</span><br><span class="line">            </span><br><span class="line">            w = <span class="built_in">unit_vector</span>(lookfrom - lookat);</span><br><span class="line">            u = <span class="built_in">unit_vector</span>(<span class="built_in">cross</span>(vup, w));</span><br><span class="line">            v = <span class="built_in">cross</span>(w, u);</span><br><span class="line">        </span><br><span class="line">            origin = lookfrom;</span><br><span class="line">            horizontal = focus_dist * viewport_width * u;</span><br><span class="line">            vertical = focus_dist * viewport_height * v;</span><br><span class="line">            lower_left_corner = origin - horizontal/<span class="number">2</span> - vertical/<span class="number">2</span> - focus_dist*w;</span><br><span class="line">            lens_radius = aperture / <span class="number">2</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="function">ray <span class="title">get_ray</span><span class="params">(<span class="type">double</span> s, <span class="type">double</span> t)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">            vec3 rd = lens_radius * <span class="built_in">random_in_unit_disk</span>();</span><br><span class="line">            vec3 offset = u * rd.<span class="built_in">x</span>() + v * rd.<span class="built_in">y</span>();</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">ray</span>(</span><br><span class="line">                origin + offset,</span><br><span class="line">                lower_left_corner + s*horizontal + t*vertical - origin - offset</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        point3 origin;</span><br><span class="line">        point3 lower_left_corner;</span><br><span class="line">        vec3 horizontal;</span><br><span class="line">        vec3 vertical;</span><br><span class="line">        vec3 u, v, w;</span><br><span class="line">        <span class="type">double</span> lens_radius;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>使用大光圈（放大图像）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">point3 <span class="title">lookfrom</span><span class="params">(<span class="number">3</span>,<span class="number">3</span>,<span class="number">2</span>)</span></span>;</span><br><span class="line"><span class="function">point3 <span class="title">lookat</span><span class="params">(<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>)</span></span>;</span><br><span class="line"><span class="function">vec3 <span class="title">vup</span><span class="params">(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="keyword">auto</span> dist_to_focus = (lookfrom-lookat).<span class="built_in">length</span>();</span><br><span class="line"><span class="keyword">auto</span> aperture = <span class="number">2.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function">camera <span class="title">cam</span><span class="params">(lookfrom, lookat, vup, <span class="number">20</span>, aspect_ratio, aperture, dist_to_focus)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>效果图：</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205171904859.png"
+alt="image-20221205171904859" />
+<figcaption aria-hidden="true">image-20221205171904859</figcaption>
+</figure>
+<h2 id="task-5">task 5</h2>
+<p>阅读《Ray Tracing in One Weekend》的Chapter 13
+，渲染一张炫酷真实的图片。贴出效果图，简述你遇到的问题以及是如何解决的。</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205172357629.png"
+alt="image-20221205172357629" />
+<figcaption aria-hidden="true">image-20221205172357629</figcaption>
+</figure>
+<p>最后，我们直接在场景中生成很多随机球体，加入随机场景函数如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">hittable_list <span class="title">random_scene</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hittable_list world;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">auto</span> ground_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>));</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">0</span>,<span class="number">-1000</span>,<span class="number">0</span>), <span class="number">1000</span>, ground_material));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> a = <span class="number">-11</span>; a &lt; <span class="number">11</span>; a++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> b = <span class="number">-11</span>; b &lt; <span class="number">11</span>; b++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> choose_mat = <span class="built_in">random_double</span>();</span><br><span class="line">            <span class="function">point3 <span class="title">center</span><span class="params">(a + <span class="number">0.9</span>*random_double(), <span class="number">0.2</span>, b +<span class="number">0.9</span>*random_double())</span></span>;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> ((center - <span class="built_in">point3</span>(<span class="number">4</span>, <span class="number">0.2</span>, <span class="number">0</span>)).<span class="built_in">length</span>() &gt; <span class="number">0.9</span>) &#123;</span><br><span class="line">                shared_ptr&lt;material&gt; sphere_material;</span><br><span class="line">                </span><br><span class="line">                <span class="keyword">if</span> (choose_mat &lt; <span class="number">0.8</span>) &#123;</span><br><span class="line">                <span class="comment">// diffuse</span></span><br><span class="line">                <span class="keyword">auto</span> albedo = color::<span class="built_in">random</span>() * color::<span class="built_in">random</span>();</span><br><span class="line">                sphere_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(albedo);</span><br><span class="line">                world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>, sphere_material));</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (choose_mat &lt; <span class="number">0.95</span>) &#123;</span><br><span class="line">                <span class="comment">// metal</span></span><br><span class="line">                <span class="keyword">auto</span> albedo = color::<span class="built_in">random</span>(<span class="number">0.5</span>, <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">auto</span> fuzz = <span class="built_in">random_double</span>(<span class="number">0</span>, <span class="number">0.5</span>);</span><br><span class="line">                sphere_material = <span class="built_in">make_shared</span>&lt;metal&gt;(albedo, fuzz);</span><br><span class="line">                world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>,sphere_material));</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// glass</span></span><br><span class="line">                sphere_material = <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>);</span><br><span class="line">                world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>,sphere_material));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">auto</span> material1 = <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>);</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material1));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">auto</span> material2 = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.4</span>, <span class="number">0.2</span>, <span class="number">0.1</span>));</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">-4</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material2));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">auto</span> material3 = <span class="built_in">make_shared</span>&lt;metal&gt;(<span class="built_in">color</span>(<span class="number">0.7</span>, <span class="number">0.6</span>, <span class="number">0.5</span>), <span class="number">0.0</span>);</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">4</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material3));</span><br><span class="line">    <span class="keyword">return</span> world;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改主函数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Image</span></span><br><span class="line">    <span class="type">const</span> <span class="keyword">auto</span> aspect_ratio = <span class="number">3.0</span> / <span class="number">2.0</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> image_width = <span class="number">1200</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> image_height = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(image_width / aspect_ratio);</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> samples_per_pixel = <span class="number">500</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> max_depth = <span class="number">50</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// World</span></span><br><span class="line">    <span class="keyword">auto</span> world = <span class="built_in">random_scene</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Camera</span></span><br><span class="line">    <span class="function">point3 <span class="title">lookfrom</span><span class="params">(<span class="number">13</span>,<span class="number">2</span>,<span class="number">3</span>)</span></span>;</span><br><span class="line">    <span class="function">point3 <span class="title">lookat</span><span class="params">(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="function">vec3 <span class="title">vup</span><span class="params">(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">auto</span> dist_to_focus = <span class="number">10.0</span>;</span><br><span class="line">    <span class="keyword">auto</span> aperture = <span class="number">0.1</span>;</span><br><span class="line">    <span class="function">camera <span class="title">cam</span><span class="params">(lookfrom, lookat, vup, <span class="number">20</span>, aspect_ratio, aperture,</span></span></span><br><span class="line"><span class="params"><span class="function">    dist_to_focus)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Render</span></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;P3\n&quot;</span> &lt;&lt; image_width &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; image_height &lt;&lt; <span class="string">&quot;\n255\n&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = image_height<span class="number">-1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205174319831.png"
+alt="image-20221205174319831" />
+<figcaption aria-hidden="true">image-20221205174319831</figcaption>
+</figure>
+<ul>
+<li>如效果图所示，玻璃球并没有真正的阴影，这使得它们看起来像是漂浮的</li>
+<li>那是因为玻璃球下的大球体上的一个点仍然有很多光线照射到它，因为天空被重新排列而不是被阻挡。使得玻璃球没有阴影</li>
+</ul>
+<h2 id="task-6">task 6</h2>
+<p>阅读《Ray Tracing The Next Week》的Chapter 3
+，为场景物体构建一颗BVH树（Bounding Volume
+Hierarchies，包围体层次结构），加速追踪的射线与场景的求交计算过程。对比有无BVH树的渲染时间，简述你遇到的问题以及是如何解决的。</p>
+<p>一般来说，场景加速结构分为两类，</p>
+<ul>
+<li><p>按<strong>空间划分</strong>的（比如四叉树，八叉树,KD-Tree）等结构</p></li>
+<li><p>以BVH为代表的按<strong>物体划分</strong>的加速结构了</p></li>
+</ul>
+<p>BVH：通过一个二叉查找树结构，存储场景中的物体，一般会和包围盒结合在一起使用。只要一条光线与父节点做判断，判定结果是不穿过父节点，则所有的子节点都可以在此次采样中被剔除。
+以书上的图来举例：比如光线和紫色的包围盒做检测，判定是不会穿过紫色包围盒，则红色和蓝色的包围盒全部都不用做检测了。</p>
+<figure>
+<img
+src="https://img-blog.csdnimg.cn/8a3c32371e634cd4a7b6fbb60b7ba535.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg5MDIyMA==,size_16,color_FFFFFF,t_70"
+alt="在这里插入图片描述" />
+<figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p>我们使用的包围盒是AABB包围盒，直观来说，就是直接在物体外面套一个刚好能装下这个物体的盒子。
+而判断是否与包围盒相交的算法我们使用的是堆叠法</p>
+<figure>
+<img
+src="https://img-blog.csdnimg.cn/b26109af977d41abbbd71867feeddc2f.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg5MDIyMA==,size_16,color_FFFFFF,t_70"
+alt="在这里插入图片描述" />
+<figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p>由于我们的光线具有唯一的表达式 p(t) = a +
+tb（a为起点，b为方向向量），所以你只需要分别求出和蓝色平面与绿色平面相交的t值。然后检查这个t值有没有重叠，有的话就代表有相交。同样的，这个方法可以推广至三维。</p>
+<p><strong>BVH树的构造过程如下（参考博客）</strong>：</p>
+<ul>
+<li>首先BVH是按照物体的划分方式，在三维空间中，我们有三个轴可以选取。由于BVH是二叉查找树结构，我们需要每一次都对随机选取的轴进行按轴排序，然后计算出中点，进行进一步的递归分割。</li>
+<li>这里递归分割的终止条件就是看每一次分割之后剩下多少物体。如果剩下的物体数量&lt;=2，那么就终止分割，如果剩下的物体数量&gt;2，那么就让左右子树指针指向一个新的BVH_NODE，并且对应调用bvh_node的构造函数</li>
+<li>上述分割结束之后，此时构造应该来到了最底层，即左右指针指向的是基本图元。那么，我们又从最底层开始逐渐网上调用BouddingBox来构造包围盒。</li>
+<li>在最底层的基本图元上，不同的类有对应的包围盒方法（代码里面写的很清楚，如果是个球体就用正方体包围起来）在上升过程中，会在递归的本层构造刚好能覆盖左右子树的包围盒。（在递归代码中，left_box和right_box会等于下一层的BoudingBox，然后本层的BoudingBox等于在这两个盒子之上多加一个）</li>
+<li>递归结束，整个BVH树也就构建好了</li>
+</ul>
+<p>在完成了BVH树的部署之后，就可以在场景的最后返回</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="built_in">static_cast</span>&lt;hittable_list&gt;(<span class="built_in">make_shared</span>&lt;bvh_node&gt;(world,<span class="number">0</span>,<span class="number">1</span>));</span><br></pre></td></tr></table></figure>
+<p>使用了一次强制转换，而且是两个子类，hittable_list和bvh_node之间的转换。所以这个地方应该是将最后一个bvh_node（即根节点）推入了hittable_list的队列里面。</p>
+<p>这样不用和场景中的每一个物体去求交，而是和相交的包围盒里面的物体去求交，会加速不少。</p>
+<p>时间所需对比</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>非BVH树</th>
+<th>BVH树</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205200537911.png"
+alt="image-20221205200537911" /></td>
+<td><img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20221205200526246.png"
+alt="image-20221205200526246" /></td>
+</tr>
+</tbody>
+</table>
+<p>可以看到非BVH树用时1390s而BVH树只需要320s</p>
+<h2 id="task-7">Task 7</h2>
+<p>跟着提供的教程实现了一个光线追踪渲染器，谈谈你对基于光线追踪渲染的理解以及你的困惑、感想和收获，当然也欢迎同学们提出宝贵的作业意见反馈。</p>
+<p><strong>理解：</strong>通过一步一步建立一个光线追踪渲染器，可以发现该渲染器并不是一蹴而就的。其中需要从初步色彩渲染开始，再到确定一个需要渲染的物体，需要建立一定的几何空间，通过光线命中函数，进而对物体进行渲染。在渲染的过程中，为了使得效果图更加真实，我们需要对物体做漫反射，阴影，金属反射（镜面反射），折射效果，在实现效果的过程中，我们需要明确摄像机，目标物体，在世界空间中相对位置，通过数学上的空间线性变换，确定光线路径（实际上就是呈现色彩效果），在构建BVH树之后，我发现渲染速度明显加快了，速度甚至提升为原来的4倍，在图形学方面，我觉得不仅需要还原物体的真实性，而且也要提高渲染的效率。所以通过运用所学习的算法（BVH树），对物体进行划分，只要一条光线与父节点做判断，判定结果是不穿过父节点，则所有的子节点都可以在此次采样中被剔除，相当于做了一个剪枝，减少递归（遍历次数），从而提高渲染效率，但是这以增大了空间复杂度。</p>
+<p><strong>困难</strong>：在实验过程中，出现的许多头文件冲突的情况，为此，需要理清楚每个头文件的引用次序结构，从而消除报错。</p>
+<p><strong>感想收获</strong>：最大的收获其实就是获得了一个不错的光线追踪渲染器模板，但是这个模板还不够成熟，因为还有许多更高效率的算法，能够减少渲染时间，同时可以发现，这份代码的逻辑结构相当不错，很容易理清光线追踪渲染逻辑。</p>
+
+    </article>
+    <!-- license -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">https://klc1006.github.io/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">December 5th 2022, 12:00:00 am</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">March 15th 2023, 4:44:06 pm</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/" title="【计算机图形学】Assignment5 Bezier Curve">
+                    <div class="nextTitle">【计算机图形学】Assignment5 Bezier Curve</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/" title="【计算机图形学】Assignment3 Lighting Texturing">
+                    <div class="prevTitle">【计算机图形学】Assignment3 Lighting Texturing</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- comment -->
+    
+        <div class="post-comment">
+            <!-- 来必力 City 版安装代码 -->
+
+
+            
+
+            
+
+            
+
+            <!-- utteranc评论 -->
+
+
+            <!-- partial('_partial/comment/changyan') -->
+            <!--PC版-->
+
+
+            
+            
+
+            
+
+        </div>
+    
+    <!-- timeliness note -->
+    <!-- idea from: https://hexo.fluid-dev.com/posts/hexo-injector/#%E6%96%87%E7%AB%A0%E6%97%B6%E6%95%88%E6%80%A7%E6%8F%90%E7%A4%BA -->
+    
+    <!-- Mathjax -->
+    
+        
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+
+
+    
+</main>
+
+                <!-- profile -->
+                
+            </div>
+            <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+        <div class="social">
+            
+    
+        
+            
+                <a href="mailto:1172485065@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/Klc1006" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                    
+                    <img class="profile-qr" src="/assets/wechatqr.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+
+        </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- website approve for Chinese user -->
+    
+    <!-- 不蒜子  -->
+    
+        <div class="busuanzi-container">
+            
+             
+                <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+            
+        </div>
+    	
+</footer>
+
+        </div>
+        <!-- toc -->
+        
+            <div class="toc-wrapper toc-wrapper-loding" style=
+
+
+
+
+
+
+
+    top:50vh;
+
+>
+                <div class="toc-catalog">
+                    <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+                </div>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#task-1"><span class="toc-number">1.</span> <span class="toc-text">task 1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-2"><span class="toc-number">2.</span> <span class="toc-text">task 2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-3"><span class="toc-number">3.</span> <span class="toc-text">task 3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-4"><span class="toc-number">4.</span> <span class="toc-text">task 4</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-5"><span class="toc-number">5.</span> <span class="toc-text">task 5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-6"><span class="toc-number">6.</span> <span class="toc-text">task 6</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-7"><span class="toc-number">7.</span> <span class="toc-text">Task 7</span></a></li></ol>
+            </div>
+        
+        <!-- sidebar -->
+        <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+        <div class="sidebar-panel-archives">
+    <!-- 在 ejs 中将 archive 按照时间排序 -->
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 16
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+        
+            
+            
+            <div class="archive-year"> 2023 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span>
+            <a class="archive-post-title" href="/2023/03/15/%E3%80%90RL%E3%80%91PPO/">【RL】PPO以及更新神经网络RNN</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/08</span>
+            <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span>
+            <a class="archive-post-title" href="/2023/03/07/cpp/">面向对象编程 OOP（cpp语言篇）</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/09</span>
+            <a class="archive-post-title" href="/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">【计算机图形学】Assignment6 Mass Spring Simulation</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2022 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/25</span>
+            <a class="archive-post-title" href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/">【计算机图形学】Assignment5 Bezier Curve</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/05</span>
+            <a class="archive-post-title" href="/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">【计算机图形学】Assignment4 Ray Tracing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/29</span>
+            <a class="archive-post-title" href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/">【计算机图形学】Assignment3 Lighting Texturing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/26</span>
+            <a class="archive-post-title" href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">【计算机图形学】Assignment2_Rasterization_ZBuffering</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/09</span>
+            <a class="archive-post-title" href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">【计算机图形学】Assignment1 3D Transformation</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/09</span>
+            <a class="archive-post-title" href="/2022/06/09/AI%20Course%2012/">【AI Course】PDDL解决规划问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/19</span>
+            <a class="archive-post-title" href="/2022/05/19/AI%20Course%208/">【AI Course】KNN完成情感分类标签</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/07</span>
+            <a class="archive-post-title" href="/2022/05/07/AI%20Course%207%20203/">【AI Course】朴素贝叶斯</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/28</span>
+            <a class="archive-post-title" href="/2022/04/28/AI%20Course%206/">【AI Course】归结演绎推理</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span>
+            <a class="archive-post-title" href="/2022/04/09/AI%20Course3/">【AI Course】A*和 IDA*算法解决15-puzzle问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/02</span>
+            <a class="archive-post-title" href="/2022/03/02/AI%20course%201_20337013/">【AI Course】一致代价实现最短路径</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2021 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span>
+            <a class="archive-post-title" href="/2021/11/15/%E3%80%90%E8%AE%A1%E7%BB%84%E5%AE%9E%E9%AA%8C%E3%80%91%E5%8D%95%E5%91%A8%E6%9C%9FCPU/">【计组实验】单周期CPU</a>
+        </li>
+    
+    </div>
+</div>
+
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+        
+            <span class="sidebar-tag-name" data-tags="归结推理">
+                <span class="iconfont-archer">&#xe606;</span>
+                归结推理
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="A*">
+                <span class="iconfont-archer">&#xe606;</span>
+                A*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IDA*">
+                <span class="iconfont-archer">&#xe606;</span>
+                IDA*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="PDDL">
+                <span class="iconfont-archer">&#xe606;</span>
+                PDDL
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="规划问题">
+                <span class="iconfont-archer">&#xe606;</span>
+                规划问题
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="AI">
+                <span class="iconfont-archer">&#xe606;</span>
+                AI
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="最短路径">
+                <span class="iconfont-archer">&#xe606;</span>
+                最短路径
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="朴素贝叶斯">
+                <span class="iconfont-archer">&#xe606;</span>
+                朴素贝叶斯
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="KNN">
+                <span class="iconfont-archer">&#xe606;</span>
+                KNN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="分类">
+                <span class="iconfont-archer">&#xe606;</span>
+                分类
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="cpp">
+                <span class="iconfont-archer">&#xe606;</span>
+                cpp
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="leetcode">
+                <span class="iconfont-archer">&#xe606;</span>
+                leetcode
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="CPU">
+                <span class="iconfont-archer">&#xe606;</span>
+                CPU
+            </span>
+        
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+        缺失模块，请参考主题文档进行安装配置：https://github.com/fi3ework/hexo-theme-archer#%E5%AE%89%E8%A3%85%E4%B8%BB%E9%A2%98
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+
+    </div>
+</div>
+
+        <!-- site-meta -->
+        <script>
+    var siteMetaRoot = "/"
+    if (siteMetaRoot === "undefined") {
+        siteMetaRoot = '/'
+    }
+    var siteMeta = {
+        url: "https://Klc1006.github.io",
+        root: siteMetaRoot,
+        author: "Klc"
+    }
+</script>
+
+        <!-- import experimental options here -->
+        <!-- Custom Font -->
+
+
+        <!-- main func -->
+        <script src="/scripts/main.js?v=20211217"></script>
+        <!-- dark mode -->
+        <script src="/scripts/dark.js?v=20211217"></script>
+        <!-- fancybox -->
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
+        <!-- algolia -->
+        
+        <!-- busuanzi -->
+        
+            <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+        
+        <!-- CNZZ -->
+        
+        <!-- async load share.js -->
+        
+            <script src="/scripts/share.js?v=20211217" async></script>
+        
+        <!-- mermaid -->
+        
+            <script src='https://cdn.jsdelivr.net/npm/mermaid@8.11.0/dist/mermaid.min.js'></script>
+            <script>
+                if (window.mermaid) {
+                    mermaid.initialize({theme: 'dark'});
+                }
+            </script>
+        
+    </body>
+</html>

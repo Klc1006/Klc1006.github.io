@@ -426,6 +426,41 @@
         
         
             
+        
+        <article class="index-post">
+            <a class="abstract-title" href="/2023/03/15/%E3%80%90RL%E3%80%91PPO/">
+                
+                <span class="abstract-title-text">【RL】PPO以及更新神经网络RNN</span>
+            </a>
+            <div class="abstract-content">
+                状态价值函数\(V_{\pi}\)和动作价值函数\(Q_{\pi}\)的关系
+
+状态价值函数:从状态\(s\)出发遵循策略\(\pi\)能获得的期望回报
+\[
+\begin{aligned}
+    V_{\pi}(s)&amp;=\mathbb E [G_{t}|S_{t}=s]\\
+    &amp;=\mathbb E [R_{t+1}+\gamma G_{t+1}|S_{t}=s]\\
+    &amp;=\mathbb E [R_{t+1}+\gamma V_{\pi}(S_{t+1})|S_{t}=s]\\
+    &amp;=\mathbb E [R_{t+...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/03/16">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/03/15</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
             
         
         <article class="index-post">
@@ -520,188 +555,27 @@
         
         
             
-            
         
         <article class="index-post">
-            <a class="abstract-title" href="/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">
+            <a class="abstract-title" href="/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">
                 
-                <span class="abstract-title-text">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</span>
+                <span class="abstract-title-text">【计算机图形学】Assignment6 Mass Spring Simulation</span>
             </a>
             <div class="abstract-content">
-                <p>Adaptive FSP</p>
+                质点弹簧系统是一种拉格朗日视角的物理模拟，把物体看成由一个个质点构成，质点之间通过弹簧相连，从而产生一定程度的弹性形变。质点弹簧系统适用于模拟布料软体、刚体等物理材质。对于物体中的任意两个不同的质点\(x_i\)和\(x_j\)，从\(j\)作用到\(i\)的作用力可由以下的胡克定律（Hooke's
+law）给出： $$ f_{ij}=-k(-l_{ij})()
+\[
+其中$k$是弹簧刚度系数（spring stiffness），
+$l_{ij}$是质点之间的弹簧静止长度，
+$\widehat{x_i-x_j}$是从质点指向质点的单位方向向量（即
+$\widehat{x_i-...
             </div>
             <!-- read more -->
             
             <div class="abstract-post-meta">
                 <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/09">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/02/20</span>
-                </div>
-                <!-- tags -->
-                
-                    <div class= abstract-tags >
-    
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="论文调研">论文调研</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="FSP">FSP</a>
-    
-</div>
-
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/02/12/the%20dynamics%20of%20reforcelearning/">
-                
-                <span class="abstract-title-text">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</span>
-            </a>
-            <div class="abstract-content">
-                <p>区分两个learner：</p>
-<ul>
-<li>不知道（或忽略）其他agent的存在的 reforcelearner</li>
-<li>明确尝试学习联合动作的价值及其对应者的策略的learner</li>
-</ul>
-<p>以这两个视角：研究合作多智能体系统中的Q-learning</p>
-<p>关注点：</p>
-<ul>
-<li>部分动作可观测性，博弈结构，探索策略</li>
-<li>对收敛到（最优和次优）纳什均衡和learned Q value的影响。</li>
-</ul>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/09">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/02/12</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/02/07/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">
-                
-                <span class="abstract-title-text">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold&#39;em Agent 笔记</span>
-            </a>
-            <div class="abstract-content">
-                <p>（看得有点迷糊，不确定理解得对不对）</p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/09">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/02/07</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/02/05/Correlated%20Q-Learning/">
-                
-                <span class="abstract-title-text">【论文调研】Correlated Q-Learning笔记</span>
-            </a>
-            <div class="abstract-content">
-                <p>实验风向：设计多智能体Q学习算法来学习一般和马尔可夫博弈中的均衡策略</p>
-<p>相关Qlearning：一种基于相关平衡解概念的算法</p>
-<p>实验结果：相关Q学习优于纳什Q学习</p>
-<p>相关Q在一般和（general
-sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。相关Q也推广了</p>
-<p>零和博弈，纳什均衡集和极小极大均衡集重合。</p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/09">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/02/05</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/01/28/DeepStack%E7%AC%94%E8%AE%B0/">
-                
-                <span class="abstract-title-text">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</span>
-            </a>
-            <div class="abstract-content">
-                <p>发表日期: 2017 机构: Alberta University</p>
-<p><strong>核心算法：公共树博弈建模+限制深度持续重新求解+深度反事实价值网络+CFR-D算法+范围（range）</strong></p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/09">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/01/28</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2023/01/16/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/">
-                
-                <span class="abstract-title-text">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</span>
-            </a>
-            <div class="abstract-content">
-                <p>参考链接：https://zhuanlan.zhihu.com/p/38168216</p>
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/03/09">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/01/16</span>
+                <div class="abstract-date" title="Last updated: 2023/03/15">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/01/09</span>
                 </div>
                 <!-- tags -->
                 
@@ -892,14 +766,7 @@ sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。�
         
         
         
-        
-        
-        
-        
-        
     
-        
-        
         
         
         
@@ -1000,7 +867,7 @@ sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。�
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 17
+        Total : 16
         </div>
         <!-- search  -->
         
@@ -1016,6 +883,12 @@ sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。�
             
         
         <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span>
+            <a class="archive-post-title" href="/2023/03/15/%E3%80%90RL%E3%80%91PPO/">【RL】PPO以及更新神经网络RNN</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
             <span class="archive-post-date">03/08</span>
             <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
         </li>
@@ -1028,38 +901,8 @@ sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。�
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">02/20</span>
-            <a class="archive-post-title" href="/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/12</span>
-            <a class="archive-post-title" href="/2023/02/12/the%20dynamics%20of%20reforcelearning/">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/07</span>
-            <a class="archive-post-title" href="/2023/02/07/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/05</span>
-            <a class="archive-post-title" href="/2023/02/05/Correlated%20Q-Learning/">【论文调研】Correlated Q-Learning笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">01/28</span>
-            <a class="archive-post-title" href="/2023/01/28/DeepStack%E7%AC%94%E8%AE%B0/">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">01/16</span>
-            <a class="archive-post-title" href="/2023/01/16/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</a>
+            <span class="archive-post-date">01/09</span>
+            <a class="archive-post-title" href="/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">【计算机图形学】Assignment6 Mass Spring Simulation</a>
         </li>
     
         
@@ -1073,14 +916,32 @@ sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。�
             
         
         <li class="archive-post-item">
-            <span class="archive-post-date">10/03</span>
-            <a class="archive-post-title" href="/2022/10/03/Lab1/">Lab 1</a>
+            <span class="archive-post-date">12/25</span>
+            <a class="archive-post-title" href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/">【计算机图形学】Assignment5 Bezier Curve</a>
         </li>
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">08/25</span>
-            <a class="archive-post-title" href="/2022/08/25/hello-world/">Hello World</a>
+            <span class="archive-post-date">12/05</span>
+            <a class="archive-post-title" href="/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">【计算机图形学】Assignment4 Ray Tracing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/29</span>
+            <a class="archive-post-title" href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/">【计算机图形学】Assignment3 Lighting Texturing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/26</span>
+            <a class="archive-post-title" href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">【计算机图形学】Assignment2_Rasterization_ZBuffering</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/09</span>
+            <a class="archive-post-title" href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">【计算机图形学】Assignment1 3D Transformation</a>
         </li>
     
         
@@ -1139,16 +1000,6 @@ sum）博弈中推广了纳什Q，因为相关均衡集包含纳什均衡集。�
 
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
-        
-            <span class="sidebar-tag-name" data-tags="论文调研">
-                <span class="iconfont-archer">&#xe606;</span>
-                论文调研
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="FSP">
-                <span class="iconfont-archer">&#xe606;</span>
-                FSP
-            </span>
         
             <span class="sidebar-tag-name" data-tags="归结推理">
                 <span class="iconfont-archer">&#xe606;</span>

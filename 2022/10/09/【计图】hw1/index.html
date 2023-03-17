@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+    
+
+<!-- keywords -->
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Klc">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Klc">
+    
+        <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta name="description" content="Task 1 实现观察矩阵（View Matrix）的计算，如下所示，该函数在TRRenderer.cpp 文件中。 实验原理 该实验实际上是需要我们实现glm::lookAt函数 ①整体平移，将摄像机平移至世界坐标系原点， ②将顶点从世界坐标系变换至摄像机坐标系。 参数解释：camera摄像机的位置，target摄像机目标点，worldup世界空间的上向量 具体步骤：  根据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【计算机图形学】Assignment1 3D Transformation">
+<meta property="og:url" content="https://klc1006.github.io/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="Task 1 实现观察矩阵（View Matrix）的计算，如下所示，该函数在TRRenderer.cpp 文件中。 实验原理 该实验实际上是需要我们实现glm::lookAt函数 ①整体平移，将摄像机平移至世界坐标系原点， ②将顶点从世界坐标系变换至摄像机坐标系。 参数解释：camera摄像机的位置，target摄像机目标点，worldup世界空间的上向量 具体步骤：  根据">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdn.net/20160605173813298">
+<meta property="og:image" content="https://s2.loli.net/2023/03/15/feZDjPLGbnVEBwv.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/15/XmfDiG4AIkBOS5R.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/15/em92T4zqHhdXLG5.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/15/D6myP8V2bBGciMF.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/15/WZdTy3oqQw7jkRP.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/15/N2gBfbnAEUJXkOQ.png">
+<meta property="og:image" content="https://s2.loli.net/2023/03/15/yN3CjhZ2pOuKYwx.webp">
+<meta property="article:published_time" content="2022-10-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-15T08:50:54.969Z">
+<meta property="article:author" content="Klc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdn.net/20160605173813298">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
+    
+    <title>【计算机图形学】Assignment1 3D Transformation · PityBug&#39;s Studio</title>
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+    (function (w) {
+        'use strict'
+        // rel=preload support test
+        if (!w.loadCSS) {
+            w.loadCSS = function () {}
+        }
+        // define on the loadCSS obj
+        var rp = (loadCSS.relpreload = {})
+        // rel=preload feature support test
+        // runs once and returns a function for compat purposes
+        rp.support = (function () {
+            var ret
+            try {
+                ret = w.document.createElement('link').relList.supports('preload')
+            } catch (e) {
+                ret = false
+            }
+            return function () {
+                return ret
+            }
+        })()
+
+        // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+        // then change that media back to its intended value on load
+        rp.bindMediaToggle = function (link) {
+            // remember existing media attr for ultimate state, or default to 'all'
+            var finalMedia = link.media || 'all'
+
+            function enableStylesheet() {
+                link.media = finalMedia
+            }
+
+            // bind load handlers to enable media
+            if (link.addEventListener) {
+                link.addEventListener('load', enableStylesheet)
+            } else if (link.attachEvent) {
+                link.attachEvent('onload', enableStylesheet)
+            }
+
+            // Set rel and non-applicable media type to start an async request
+            // note: timeout allows this to happen async to let rendering continue in IE
+            setTimeout(function () {
+                link.rel = 'stylesheet'
+                link.media = 'only x'
+            })
+            // also enable media after 3 seconds,
+            // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+            setTimeout(enableStylesheet, 3000)
+        }
+
+        // loop through link elements in DOM
+        rp.poly = function () {
+            // double check this to prevent external calls from running
+            if (rp.support()) {
+                return
+            }
+            var links = w.document.getElementsByTagName('link')
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i]
+                // qualify links to those with rel=preload and as=style attrs
+                if (
+                    link.rel === 'preload' &&
+                    link.getAttribute('as') === 'style' &&
+                    !link.getAttribute('data-loadcss')
+                ) {
+                    // prevent rerunning on link
+                    link.setAttribute('data-loadcss', true)
+                    // bind listeners to toggle media back
+                    rp.bindMediaToggle(link)
+                }
+            }
+        }
+
+        // if unsupported, run the polyfill
+        if (!rp.support()) {
+            // run once at least
+            rp.poly()
+
+            // rerun poly on an interval until onload
+            var run = w.setInterval(rp.poly, 500)
+            if (w.addEventListener) {
+                w.addEventListener('load', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            } else if (w.attachEvent) {
+                w.attachEvent('onload', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            }
+        }
+
+        // commonjs
+        if (typeof exports !== 'undefined') {
+            exports.loadCSS = loadCSS
+        } else {
+            w.loadCSS = loadCSS
+        }
+    })(typeof global !== 'undefined' ? global : this)
+</script>
+
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20211217" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/dark.css?v=20211217" as="style">
+    <link rel="stylesheet" href="/css/dark.css">
+    <link rel="stylesheet" href="/css/mobile.css?v=20211217" media="(max-width: 960px)">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js?v=20211217" as="script">
+    <link rel="preload" href="/scripts/dark.js?v=20211217" as="script">
+    <link rel="preload" href="/font/Oswald-Regular.ttf" as="font" crossorigin>
+    <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
+    <!-- algolia -->
+    
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ == undefined) {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js" />')
+        }
+    </script>
+    
+        <body class="post-body">
+    
+        <!-- header -->
+        <header class="header header-mobile">
+    <!-- top read progress line -->
+    <div class="header-element">
+        <div class="read-progress"></div>
+    </div>
+    <!-- sidebar menu button -->
+    <div class="header-element">
+        
+            <div class="header-sidebar-menu">
+        
+            
+                <div style="padding-left: 1px;">&#xe775;</div>
+            
+        </div>
+    </div>
+    <!-- header actions -->
+    <div class="header-actions">
+        <!-- theme mode switch button -->
+        <span class="header-theme-btn header-element">
+            <i class="fas fa-adjust"></i>
+        </span>
+        <!-- back to home page text -->
+        <span class="home-link header-element">
+            <a href=/>PityBug's Studio.</a>
+        </span>
+    </div>
+    <!-- toggle banner for post layout -->
+    
+        
+            <div class="banner">
+        
+            <div class="blog-title header-element">
+                <a href="/">PityBug&#39;s Studio.</a>
+            </div>
+            <div class="post-title header-element">
+                <a href="#" class="post-name">【计算机图形学】Assignment1 3D Transformation</a>
+            </div>
+        </div>
+    
+</header>
+
+        <!-- fixed footer -->
+        <footer class="footer-fixed">
+    <!-- back to top button -->
+    <div class="footer-fixed-element">
+        
+            <div class="back-top back-top-hidden">
+        
+        
+            <div>&#xe639;</div>
+        
+        </div>
+    </div>
+</footer>
+
+        <!-- wrapper -->
+        <div class="wrapper">
+            <div class="site-intro" style="
+
+
+
+
+
+
+
+    height:50vh;
+
+">
+    
+    <!-- 主页  -->
+    
+        
+    <!-- 404页  -->
+    
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+                【计算机图形学】Assignment1 3D Transformation
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+                
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页 meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+    
+</div>
+
+                
+                <!-- 文章字数统计 -->
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">4.5k</span>阅读时长: <span class="post-count reading-time">20 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <!-- 撰写日期 -->
+                    <span class="iconfont-archer post-intro-calander">&#xe676;</span>
+                    <span class="post-intro-time">2022/10/09</span>
+                    <!-- busuanzi -->
+                    
+                        <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                            <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    
+                    <!-- 文章分享 -->
+                    <span class="share-wrapper">
+                        <span class="iconfont-archer share-icon">&#xe71d;</span>
+                        <span class="share-text">Share</span>
+                        <ul class="share-list">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+            <script>
+  // get user agent
+  function getBrowserVersions() {
+    var u = window.navigator.userAgent
+    return {
+      userAgent: u,
+      trident: u.indexOf('Trident') > -1, //IE内核
+      presto: u.indexOf('Presto') > -1, //opera内核
+      webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+      gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+      mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+      ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+      android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+      iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+      iPad: u.indexOf('iPad') > -1, //是否为iPad
+      webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+      weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+      uc: u.indexOf('UCBrowser') > -1, //是否为android下的UC浏览器
+    }
+  }
+  var browser = {
+    versions: getBrowserVersions(),
+  }
+  console.log('userAgent: ' + browser.versions.userAgent)
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded')
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document
+        .getElementsByClassName('intro-title')[0]
+        .classList.add('intro-fade-in')
+      document
+        .getElementsByClassName('intro-subtitle')[0]
+        .classList.add('intro-fade-in')
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in')
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb() {
+    if (browser.versions.uc) {
+      console.log('UCBrowser')
+      fontLoaded()
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular'],
+        },
+        loading: function () {
+          // 所有字体开始加载
+          // console.log('font loading');
+        },
+        active: function () {
+          // 所有字体已渲染
+          fontLoaded()
+        },
+        inactive: function () {
+          // 字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout')
+          fontLoaded()
+        },
+        timeout: 5000, // Set the timeout to two seconds
+      })
+    }
+  }
+
+  function asyncErr() {
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document,
+      t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0]
+    o.src = u
+    if (cb) {
+      o.addEventListener(
+        'load',
+        function (e) {
+          cb(null, e)
+        },
+        false
+      )
+    }
+    if (err) {
+      o.addEventListener(
+        'error',
+        function (e) {
+          err(null, e)
+        },
+        false
+      )
+    }
+    s.parentNode.insertBefore(o, s)
+  }
+
+  var asyncLoadWithFallBack = function (arr, success, reject) {
+    var currReject = function () {
+      reject()
+      arr.shift()
+      if (arr.length) async(arr[0], success, currReject)
+    }
+
+    async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack(
+    [
+      'https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js',
+      'https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js',
+      "/lib/webfontloader.min.js",
+    ],
+    asyncCb,
+    asyncErr
+  )
+</script>
+
+            <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+            <div class="container container-unloaded">
+                <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="task-1">Task 1</h2>
+<p><strong>实现观察矩阵（View
+Matrix）的计算，如下所示，该函数在TRRenderer.cpp 文件中。</strong></p>
+<h3 id="实验原理">实验原理</h3>
+<p>该实验实际上是需要我们实现<code>glm::lookAt</code>函数</p>
+<p>①整体平移，将摄像机平移至世界坐标系原点，</p>
+<p>②将顶点从世界坐标系变换至摄像机坐标系。</p>
+<p>参数解释：<code>camera</code>摄像机的位置，<code>target</code>摄像机目标点，<code>worldup</code>世界空间的上向量</p>
+<p>具体步骤：</p>
+<ul>
+<li><p>根据这些参数确定摄像机坐标系的三个轴向量</p>
+<p><strong>注意：变换到视图空间中时摄像机是朝向视图空间的−Z方向的，所以求视图空间中的Z轴时是摄像机的位置减去目标点的位置</strong>
+<span class="math display">\[
+  Z=normalize(camera-target)
+  \]</span></p>
+<p><span class="math display">\[
+  X=normalize(cross(up,Z))
+  \]</span></p>
+<p><span class="math display">\[
+  Y=normalize(cross(Z,X))
+  \]</span></p>
+<p>至此，我们求出了视图空间的三条轴向量，再加上摄像机的位置我们就可以求出将世界坐标变换到与视图坐标重合的矩阵</p></li>
+<li><p>计算变换矩阵<code>M=T⋅R</code>，其中<code>T</code>是平移到摄像机位置<code>camera</code>的变换矩阵，<code>R</code>是旋转到摄像机坐标轴方向的旋转矩阵
+<span class="math display">\[
+  M=T\cdot R=
+  \left[\begin{matrix}
+  1 &amp; 0 &amp; 0&amp;camera_x\\
+  0&amp; 1 &amp; 0&amp;camera_y\\
+  0 &amp; 0 &amp; 1&amp;camera_z\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]
+  \cdot
+  \left[\begin{matrix}
+  X_x&amp;Y_x&amp; Z_x&amp;0\\
+  X_y&amp;Y_y&amp;Z_y&amp;0\\
+  X_z&amp;Y_z&amp;Z_z&amp;0\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]
+  \]</span>
+<strong>矩阵<code>M</code>仅仅是将世界坐标轴变换到摄像机坐标轴</strong></p>
+<p>当我们向前移动摄像机的时候，可以看成是摄像机不动，而物体朝着与摄像机朝向相反的方向移动。当我们向右旋转摄像机时，相当于摄像机不动而物体朝着摄像机的左边移动</p>
+<p>计算机图形学中的虚拟3D摄像机实际上是通过物体的移动来实现的，所以我们要构造的视图矩阵是公式中的<strong>逆矩阵</strong>。
+<span class="math display">\[
+  viewMatrix=M^\mathrm{-1}=(T\cdot R)^\mathrm{-1}=R^\mathrm{-1} \cdot
+T^\mathrm{-1}=\left[\begin{matrix}
+  1 &amp; 0 &amp; 0&amp;camera_x\\
+  0&amp; 1 &amp; 0&amp;camera_y\\
+  0 &amp; 0 &amp; 1&amp;camera_z\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]^\mathrm{-1}
+  \cdot
+  \left[\begin{matrix}
+  X_x&amp;Y_x&amp; Z_x&amp;0\\
+  X_y&amp;Y_y&amp;Z_y&amp;0\\
+  X_z&amp;Y_z&amp;Z_z&amp;0\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]^\mathrm{-1}
+  \]</span> 其中 <span class="math display">\[
+  T^\mathrm{-1}=
+  \left[\begin{matrix}
+  1 &amp; 0 &amp; 0&amp;camera_x\\
+  0&amp; 1 &amp; 0&amp;camera_y\\
+  0 &amp; 0 &amp; 1&amp;camera_z\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]^\mathrm{-1}
+  =\left[\begin{matrix}
+  1 &amp; 0 &amp; 0&amp;-camera_x\\
+  0&amp; 1 &amp; 0&amp;-camera_y\\
+  0 &amp; 0 &amp; 1&amp;-camera_z\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]
+  \]</span></p>
+<p><span class="math display">\[
+  R^\mathrm{-1}=\left[\begin{matrix}
+  X_x&amp;Y_x&amp; Z_x&amp;0\\
+  X_y&amp;Y_y&amp;Z_y&amp;0\\
+  X_z&amp;Y_z&amp;Z_z&amp;0\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]^\mathrm{-1}=
+  \left[\begin{matrix}
+  X_x&amp;X_y&amp; X_z&amp;0\\
+  Y_x&amp;Y_y&amp;Y_z&amp;0\\
+  Z_x&amp;Z_y&amp;Z_z&amp;0\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]
+  \]</span></p>
+<p>最后我们得到的视图矩阵为 <span class="math display">\[
+  viewMatrix=\left[\begin{matrix}
+  X_x&amp;X_y&amp; X_z&amp;0\\
+  Y_x&amp;Y_y&amp;Y_z&amp;0\\
+  Z_x&amp;Z_y&amp;Z_z&amp;0\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]
+  \cdot
+  \left[\begin{matrix}
+  1 &amp; 0 &amp; 0&amp;-camera_x\\
+  0&amp; 1 &amp; 0&amp;-camera_y\\
+  0 &amp; 0 &amp; 1&amp;-camera_z\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]=
+  \left[\begin{matrix}
+  X_x&amp;X_y&amp; X_z&amp;-X\cdot camera\\
+  Y_x&amp;Y_y&amp;Y_z&amp;-Y\cdot camera\\
+  Z_x&amp;Z_y&amp;Z_z&amp;-Z\cdot camera\\
+  0&amp;0&amp;0&amp;1
+  \end{matrix}\right]
+  \]</span></p></li>
+</ul>
+<h3 id="代码实现">代码实现</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">glm::mat4 <span class="title">TRRenderer::calcViewMatrix</span><span class="params">(glm::vec3 camera, glm::vec3 target, glm::vec3 worldUp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Setup view matrix (world space -&gt; camera space)</span></span><br><span class="line">	glm::mat4 vMat = glm::<span class="built_in">mat4</span>(<span class="number">1.0f</span>);</span><br><span class="line">	<span class="comment">//计算出摄像机坐标轴方向</span></span><br><span class="line">       <span class="comment">//经过叉乘方向认证，对应方向均正确</span></span><br><span class="line">	glm::vec3 cameraDirection = glm::<span class="built_in">normalize</span>(camera - target);</span><br><span class="line">       <span class="comment">//此处与上述原理略有不同，规定摄像机向右方向为X轴正方向</span></span><br><span class="line">	glm::vec3 cameraRight = glm::<span class="built_in">normalize</span>(glm::<span class="built_in">cross</span>(cameraDirection, worldUp));</span><br><span class="line">	glm::vec3 cameraUp = glm::<span class="built_in">normalize</span>(glm::<span class="built_in">cross</span>(cameraDirection, cameraRight));</span><br><span class="line"></span><br><span class="line">	<span class="comment">//填写视图矩阵对应元素</span></span><br><span class="line">	vMat[<span class="number">0</span>][<span class="number">0</span>] = cameraRight.x;</span><br><span class="line">	vMat[<span class="number">1</span>][<span class="number">0</span>] = cameraRight.y;</span><br><span class="line">	vMat[<span class="number">2</span>][<span class="number">0</span>] = cameraRight.z;</span><br><span class="line">	vMat[<span class="number">3</span>][<span class="number">0</span>] = -glm::<span class="built_in">dot</span>(camera, cameraRight);</span><br><span class="line"></span><br><span class="line">	vMat[<span class="number">0</span>][<span class="number">1</span>] = cameraUp.x;</span><br><span class="line">	vMat[<span class="number">1</span>][<span class="number">1</span>] = cameraUp.y;</span><br><span class="line">	vMat[<span class="number">2</span>][<span class="number">1</span>] = cameraUp.z;</span><br><span class="line">	vMat[<span class="number">3</span>][<span class="number">1</span>] = -glm::<span class="built_in">dot</span>(camera, cameraUp);</span><br><span class="line"></span><br><span class="line">	vMat[<span class="number">0</span>][<span class="number">2</span>] = cameraDirection.x;</span><br><span class="line">	vMat[<span class="number">1</span>][<span class="number">2</span>] = cameraDirection.y;</span><br><span class="line">	vMat[<span class="number">2</span>][<span class="number">2</span>] = cameraDirection.z;</span><br><span class="line">	vMat[<span class="number">3</span>][<span class="number">2</span>] = -glm::<span class="built_in">dot</span>(camera, cameraDirection);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//Task 1: Implement the calculation of view matrix, and then set it to vMat</span></span><br><span class="line">	<span class="comment">//  Note: You can use any glm function (such as glm::normalize, glm::cross, glm::dot) except glm::lookAt</span></span><br><span class="line">	<span class="comment">//glm::transpose(vMat);</span></span><br><span class="line">	<span class="keyword">return</span> vMat;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="task-2">Task 2</h2>
+<p><strong>实现透视投影矩阵（Project
+Matrix）的计算，如下所示，该函数在TRRenderer.cpp 文件中。</strong></p>
+<h3 id="实验原理-1">实验原理</h3>
+<p>一个视锥体我们目前用六个参数表示：<code>left</code>,<code>right</code>，<code>bottom</code>，<code>top</code>，<code>near</code>，<code>far</code>，简写为<code>l</code>、<code>r</code>、<code>b</code>、<code>t</code>、<code>n</code>和<code>f</code>，即视锥体的六个面。<strong>我们的目标就是将视图空间中在视锥体内的点变换到标准化设备坐标中的立方体内。</strong>即<code>x</code>轴方向从<code>[l,r]</code>映射到<code>[−1,1]</code>，<code>y</code>轴方向从<code>[b,t]</code>映射到<code>[−1,1]</code>，<code>z</code>轴方向从<code>[−n,−f]</code>映射到<code>[−1,1]</code>.</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.39/blog/TinySoftRenderer/2.jpg"
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>透视投影视锥和标准化设备坐标</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.39/blog/TinySoftRenderer/3.jpg"
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>从-Y方向看去的视锥横截面</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/ZeusYang/CDN-for-yangwc.com@1.1.39/blog/TinySoftRenderer/4.jpg"
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>从-X方向看去的视锥横截面</p>
+<p>根据相似性原理，有 <span class="math display">\[
+\frac{x_p}{x_e}=\frac{-n}{z_e} \Rightarrow x_p=\frac{-n \cdot
+x_e}{z_e}=\frac{n \cdot x_e}{-z_e}
+\]</span></p>
+<p><span class="math display">\[
+\frac{y_p}{y_e}=\frac{-n}{z_e} \Rightarrow y_p=\frac{-n \cdot
+y_e}{z_e}=\frac{n \cdot y_e}{-z_e}
+\]</span></p>
+<p>分母都是一个<code>−ze</code>，这与我们将裁剪空间中的顶点做透视除法相对应，透视投影然后做透视除法如下公式
+<span class="math display">\[
+\left(\begin{matrix}
+x_{clip}\\
+y_{clip}\\
+z_{clip}\\
+w_{clip}
+\end{matrix}\right)
+=M_{projection} \cdot
+\left(\begin{matrix}
+x_{eye}\\
+y_{eye}\\
+z_{eye}\\
+w_{eye}
+\end{matrix}\right)
+\]</span></p>
+$$ (
+<span class="math display">\[\begin{matrix}
+x_{ndc}\\
+y_{ndc}\\
+z_{ndc}\\
+
+\end{matrix}\]</span>
+<h1 id="section">)</h1>
+(
+<span class="math display">\[\begin{matrix}
+x_{eye}/w_{clip}\\
+y_{eye}/w_{clip}\\
+z_{eye}/w_{clip}\\
+
+\end{matrix}\]</span>
+<p>) $$</p>
+<p>  为了便于构建矩阵（xe和ye均与−ze相除，不好构建矩阵），我们令裁剪空间中的wclip为-ze，将除以−ze的这一步挪到了透视除法去做。故目前的透视矩阵就变为：
+<span class="math display">\[
+\left(\begin{matrix}
+x_{clip}\\
+y_{clip}\\
+z_{clip}\\
+w_{clip}
+\end{matrix}\right)
+=
+\left(\begin{matrix}
+·&amp;·&amp;·&amp;·\\
+·&amp;·&amp;·&amp;·\\
+·&amp;·&amp;·&amp;·\\
+0&amp;0&amp;-1&amp;0
+\end{matrix}\right)
+\cdot
+\left(\begin{matrix}
+x_{eye}\\
+y_{eye}\\
+z_{eye}\\
+w_{eye}
+\end{matrix}\right)
+\]</span>
+其中”..”均表示未知。得到在近平面的xp和yp之后，我们还要将xp映射到[−1,1]范围，同理yp也是。以xp为例，我们知道其值域为[l,r]。为了将xp其映射到[−1,1]，我们首先将其映射到[0,1]，不难得到如下式子：
+<span class="math display">\[
+\frac{x_p-l}{r-l}\in[0,1]
+\]</span> 对上式乘2减1有 <span class="math display">\[
+x_n=2\frac{x_p-l}{r-l}-1=\frac{2x_p}{r-l}-\frac{r+l}{r-l} \in[-1,1]
+\]</span> 同理yp到yn的映射 <span class="math display">\[
+y_n=2\frac{y_p-b}{t-b}-1=\frac{2x_p}{t-b}-\frac{t+b}{t-b} \in[-1,1]
+\]</span> 将xp和yp带入以上公式 <span class="math display">\[
+x_n=\underbrace{(\frac{2n}{r-l} \cdot x_e+\frac{r+l}{r-l} \cdot
+z_e)}_{x_c}/-z_e
+\]</span></p>
+<p><span class="math display">\[
+y_n=\underbrace{(\frac{2n}{t-b} \cdot y_e+\frac{t+b}{t-b} \cdot
+z_e)}_{y_c}/-z_e
+\]</span></p>
+<p>初步填充投影矩阵 <span class="math display">\[
+\left(\begin{matrix}
+x_{clip}\\
+y_{clip}\\
+z_{clip}\\
+w_{clip}
+\end{matrix}\right)
+=
+\left(\begin{matrix}
+\frac{2n}{r-l} &amp;0&amp;\frac{r+l}{r-l}&amp;0\\
+0&amp;\frac{2n}{t-b} &amp;\frac{t+b}{t-b}&amp;0\\
+0&amp;0&amp;A&amp;B\\
+0&amp;0&amp;-1&amp;0
+\end{matrix}\right)
+\cdot
+\left(\begin{matrix}
+x_{eye}\\
+y_{eye}\\
+z_{eye}\\
+w_{eye}
+\end{matrix}\right)
+\]</span>
+因为我们知道z的投影与xe和ye无关，只与ze、we有关，故可以假设投影矩阵的第三行如上式所示，A和B就是我们假设的要求解的未知表达式</p>
+<p>在视图空间中的we是等于11的，wc即前面提到的−ze，从而有： <span
+class="math display">\[
+z_n=z_c/w_c=\frac{Az_e+Bw_e}{-z_e}=\frac{Az_e+B}{-z_e}
+\]</span>
+考虑：在−n处的z值被映射到−1，在−f处的z值被映射到1，将(zn,ze)=(−1,−n)和((zn,ze)=(1,−f)带入式子
+<span class="math display">\[
+\left\{
+\begin{array}{c}
+\frac{-An+B}{n}=-1\\
+\frac{-Af+B}{n}=1
+\end{array}
+\right.
+\Rightarrow
+\left\{
+\begin{array}{c}
+A=-\frac{f+n}{f-n}\\
+B=-\frac{2fn}{f-n}
+\end{array}
+\right.
+\]</span> 所以有 <span class="math display">\[
+z_n=\underbrace{(-\frac{f+n}{f-n} \cdot z_e+-\frac{2fn}{f-n} \cdot
+z_e)}_{z_c}/-z_e
+\]</span> 最终我们得到得透视投影矩阵为 <span class="math display">\[
+M_{projection}=
+\left(\begin{matrix}
+\frac{2n}{r-l} &amp;0&amp;\frac{r+l}{r-l}&amp;0\\
+0&amp;\frac{2n}{t-b} &amp;\frac{t+b}{t-b}&amp;0\\
+0&amp;0&amp;-\frac{f+n}{f-n}&amp;-\frac{2fn}{f-n}\\
+0&amp;0&amp;-1&amp;0
+\end{matrix}\right)
+\]</span>
+在视图空间中的视锥体通常都是关于x轴和y轴对称的，从而有r=−l、t=−b，将其简化成如下形式：
+<span class="math display">\[
+M_{projection}=
+\left(\begin{matrix}
+\frac{2n}{r-l} &amp;0&amp;0&amp;0\\
+0&amp;\frac{2n}{t-b} &amp;0&amp;0\\
+0&amp;0&amp;-\frac{f+n}{f-n}&amp;-\frac{2fn}{f-n}\\
+0&amp;0&amp;-1&amp;0
+\end{matrix}\right)
+\]</span>
+注意到r−l=width即近平面宽度，t−b=height即近平面的高度，可以根据fovy和aspect得出width和height
+<span class="math display">\[
+r-l=width=2*near*aspect*tan(fovy/2)
+\]</span></p>
+<p><span class="math display">\[
+t-b=height=2*near*tan(fovy/2)
+\]</span></p>
+<p>在视锥体中的顶点<code>(xe,ye,ze)</code>,<code>(xe,ye,ze)</code>被投影到锥体的近平面，近平面上的点我们记为<code>(xp,yp,−n)</code>,<code>(xp,yp,−n)</code>,由相似性，有
+<span class="math display">\[
+M_{projection}=\left(\begin{matrix}
+{1}\over {aspect*tan(fovy/2)}&amp;0&amp; 0&amp;0\\
+0&amp;{1}\over {tan(fovy/2)}&amp;0&amp;0\\
+0&amp;0&amp;-\frac{(f+n)}{f-n}&amp;-\frac{2fn} {f-n}\\
+0&amp;0&amp;-1&amp;0
+\end{matrix}\right)
+\]</span></p>
+<h3 id="代码实现-1">代码实现</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">glm::mat4 <span class="title">TRRenderer::calcPerspProjectMatrix</span><span class="params">(<span class="type">float</span> fovy, <span class="type">float</span> aspect, <span class="type">float</span> near, <span class="type">float</span> far)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Setup perspective matrix (camera space -&gt; clip space)</span></span><br><span class="line">	glm::mat4 pMat = glm::<span class="built_in">mat4</span>(<span class="number">1.0f</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Task 2: Implement the calculation of perspective matrix, and then set it to pMat</span></span><br><span class="line">	<span class="comment">//  Note: You can use any math function (such as std::tan) except glm::perspective</span></span><br><span class="line">	<span class="comment">//根据上述原理，填入矩阵元素</span></span><br><span class="line">	pMat[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1.0f</span> / (std::<span class="built_in">tan</span>(fovy / <span class="number">2.0f</span>) * aspect);</span><br><span class="line">	pMat[<span class="number">1</span>][<span class="number">1</span>] = <span class="number">1.0f</span> / std::<span class="built_in">tan</span>(fovy / <span class="number">2.0f</span>);</span><br><span class="line">	pMat[<span class="number">2</span>][<span class="number">2</span>] = -(near + far) / (far - near);</span><br><span class="line">	pMat[<span class="number">2</span>][<span class="number">3</span>] = <span class="number">1.0f</span>;</span><br><span class="line">	pMat[<span class="number">3</span>][<span class="number">2</span>] = -(<span class="number">2.0f</span> * far * near) / (far - near);</span><br><span class="line">	pMat[<span class="number">3</span>][<span class="number">3</span>] = <span class="number">0.0f</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> pMat;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实验结果及分析">实验结果及分析</h3>
+<h2 id="task3">Task3</h2>
+<p>实现视口变换矩阵（Viewport
+Matrix）的计算，如下所示，该函数在TRRenderer.cpp 文件 中。</p>
+<h3 id="实验原理-2">实验原理</h3>
+<figure>
+<img src="https://img-blog.csdn.net/20160605173813298" alt="视口变换" />
+<figcaption aria-hidden="true">视口变换</figcaption>
+</figure>
+<p>首先，我们定义窗口的左下角（sx，sy）为（0，0），ns和
+fs指定远近剪裁平面到屏幕坐标的映射关系。ns=-1，fs=1，使用的线性映射关系如下
+<span class="math display">\[
+(-1,s_x),(1,s_x+w_s)
+\]</span></p>
+<p><span class="math display">\[
+(-1,s_y),(1,s_y+h_s)
+\]</span></p>
+<p><span class="math display">\[
+(-1,n_s),(1,f_s)
+\]</span></p>
+<p>可以求出线性映射函数如下 <span class="math display">\[
+x_s = \frac{w_s}{2} x_n +s_x+\frac{w_s}{2}
+\]</span></p>
+<p><span class="math display">\[
+y_s = \frac{h_s}{2} y_n +s_y+\frac{h_s}{2}
+\]</span></p>
+<p><span class="math display">\[
+z_s = \frac{f_s-n_s}{2} z_n +s_y+\frac{n_s+f_s}{2}
+\]</span></p>
+<p>由上述式子得到视口变换矩阵 <span class="math display">\[
+viewPort=\left(\begin{matrix}
+{w}\over {2}&amp;0&amp; 0&amp;{w}\over {2}\\
+0&amp;{-h}\over {2}&amp;0&amp;{h}\over {2}\\
+0&amp;0&amp;{(f-n)}\over {2}&amp;{(f+n)}\over {2}\\
+0&amp;0&amp;0&amp;1
+\end{matrix}\right)
+\]</span>
+在这里，我们把窗口变换看作，把世界坐标空间变换到窗口坐标空间，其中包括对空间，在x，y，z轴方向上作<strong>scaler
+和 平移</strong>变换</p>
+<h3 id="代码实现-2">代码实现</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">glm::mat4 <span class="title">TRRenderer::calcViewPortMatrix</span><span class="params">(<span class="type">int</span> width, <span class="type">int</span> height)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Setup viewport matrix (ndc space -&gt; screen space)</span></span><br><span class="line">	glm::mat4 vpMat = glm::<span class="built_in">mat4</span>(<span class="number">1.0f</span>);</span><br><span class="line">       <span class="comment">//默认规定</span></span><br><span class="line">	<span class="type">float</span> far = <span class="number">1.0f</span>;</span><br><span class="line">	<span class="type">float</span> near = <span class="number">-1.0f</span>;</span><br><span class="line">	<span class="comment">//根据上述原理，填入矩阵元素</span></span><br><span class="line">	vpMat[<span class="number">0</span>][<span class="number">0</span>] = width / <span class="number">2</span>;</span><br><span class="line">	vpMat[<span class="number">1</span>][<span class="number">1</span>] = -height / <span class="number">2</span>;</span><br><span class="line">	vpMat[<span class="number">2</span>][<span class="number">2</span>] = (far-near)/<span class="number">2</span>;</span><br><span class="line">	vpMat[<span class="number">3</span>][<span class="number">0</span>] = width / <span class="number">2</span>;</span><br><span class="line">	vpMat[<span class="number">3</span>][<span class="number">1</span>] = height / <span class="number">2</span>;</span><br><span class="line">	vpMat[<span class="number">3</span>][<span class="number">2</span>] = (far+near)/<span class="number">2</span>;</span><br><span class="line">	vpMat[<span class="number">3</span>][<span class="number">3</span>] = <span class="number">1.0f</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Task 3: Implement the calculation of viewport matrix, and then set it to vpMat</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> vpMat;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="实验结果及分析-1">实验结果及分析</h2>
+<p>完成task1，2，3 后，窗口会有动画展示如图</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/15/feZDjPLGbnVEBwv.png"
+alt="image-20221012203336941" />
+<figcaption aria-hidden="true">image-20221012203336941</figcaption>
+</figure>
+<h2 id="task4">Task4</h2>
+<p><strong>程序默认物体绕着<span
+class="math inline">\(y\)</span>轴不停地旋转，请你在main.cpp
+文件中稍微修改一下代码，使得物体</strong> <strong>分别绕<span
+class="math inline">\(x\)</span>轴和<span
+class="math inline">\(z\)</span>轴旋转。贴出你的结果。</strong></p>
+<h3 id="实验原理-3">实验原理</h3>
+<p><code>model_mat = glm::rotate(model_mat, (float)deltaTime * 0.001f, glm::vec3(0, 1, 0));</code>函数是使得图像在y轴方向上作旋转操作。</p>
+<p>在x轴上作旋转：设置<code>glm::vec3(1, 0, 0)</code></p>
+<p>在z轴上作旋转：设置<code>glm::vec3(0, 0, 1)</code></p>
+<h3 id="代码实现-3">代码实现</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Rotation</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">//Task 4: Make the model rotate around x axis and z axis, respectively</span></span><br><span class="line">	model_mat = glm::<span class="built_in">rotate</span>(model_mat, (<span class="type">float</span>)deltaTime * <span class="number">0.001f</span>, glm::<span class="built_in">vec3</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">	<span class="comment">//model_mat = glm::rotate(model_mat, (float)deltaTime * 0.001f, glm::vec3(1, 0, 0));</span></span><br><span class="line">	<span class="comment">//model_mat = glm::rotate(model_mat, (float)deltaTime * 0.001f, glm::vec3(0, 0, 1));</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="实验结果及分析-2">实验结果及分析</h3>
+<p>在x轴上旋转</p>
+<figure>
+<img src="https://s2.loli.net/2023/03/15/XmfDiG4AIkBOS5R.png"
+alt="image-20221012204231523" />
+<figcaption aria-hidden="true">image-20221012204231523</figcaption>
+</figure>
+<p>在z轴上旋转</p>
+<p><img src="https://s2.loli.net/2023/03/15/em92T4zqHhdXLG5.png" /></p>
+<h2 id="task5">Task5</h2>
+<p><strong>仔细体会使物体随着时间的推进不断绕<span
+class="math inline">\(y\)</span>轴旋转的代码，现在要你用glm::scale
+函数实现物体不停地放大、缩小、放大的循环动画，物体先放大至<span
+class="math inline">\(2.0\)</span>倍、然后缩小至原来的大小，然后再放大至<span
+class="math inline">\(2.0\)</span>，依次循环下去，要求缩放速度适中，不要太快也不要太慢。贴出你的效果，说说你是怎么实现的。（请注释掉前面的旋转代码）</strong></p>
+<h3 id="实验原理-4">实验原理</h3>
+<p>在这个实验中，需要对物体实现不停地放大、缩小、放大的循环动画，自然可以想到使用<code>glm::scale()</code>函数对物体作周期性的scalar操作，我们可以根据时间设置周期函数<code>1.5+0.5sin(total_time)</code>,使得scalar系数在[1,2]之间周期性地变化。</p>
+<h3 id="代码实现-4">代码实现</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">			<span class="type">static</span> <span class="type">float</span> total_time = <span class="number">0</span>;</span><br><span class="line">...</span><br><span class="line"><span class="comment">//Scale</span></span><br><span class="line">			&#123;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//Task 5: Implement the scale up and down animation using glm::scale function</span></span><br><span class="line">				model_mat = glm::<span class="built_in">scale</span>(glm::<span class="built_in">mat4</span>(<span class="number">1.0f</span>), glm::<span class="built_in">vec3</span>(<span class="number">1.5</span>+<span class="number">0.5</span>*<span class="built_in">sin</span>(total_time)));</span><br><span class="line">				total_time += (<span class="type">float</span>)deltaTime * <span class="number">0.01f</span>;</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实验结果及分析-3">实验结果及分析</h3>
+<p><img src="https://s2.loli.net/2023/03/15/D6myP8V2bBGciMF.png" /></p>
+<p><img src="https://s2.loli.net/2023/03/15/WZdTy3oqQw7jkRP.png" /></p>
+<p>图像画面会在1倍和2倍之间循环放大缩小</p>
+<h2 id="task6">Task6</h2>
+<p><strong>现在要求你实现正交投影矩阵的计算，如下所示，该函数在TRRenderer.cpp
+文件中。</strong></p>
+<h3 id="实验原理-5">实验原理</h3>
+<p>正交投影只需做简单的线性映射就行了。只需将<code>x</code>轴方向从<code>[l,r]</code>映射到<code>[−1,1]</code>，<code>y</code>轴方向从<code>[b,t]</code>映射到<code>[−1,1]</code>，<code>z</code>轴方向从<code>[−n,−f]</code>映射到<code>[−1,1]</code>，而这个映射的过程很简单，先映射到<code>[0,1]</code>，再映射到<code>[0,2]</code>，最后映射到<code>[−1,1]</code>.
+<span class="math display">\[
+M_{projection}=\left(\begin{matrix}
+{2}\over {r-l}&amp;0&amp; 0&amp;{-(r+l)}\over {r-l}\\
+0&amp;{2}\over {t-b}&amp;0&amp;{-(t+b)}\over {t-b}\\
+0&amp;0&amp;-{2}\over {f-n}&amp;-{(f+n)}\over {f-n}\\
+0&amp;0&amp;0&amp;1
+\end{matrix}\right)
+\]</span></p>
+<h3 id="代码实现-5">代码实现</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">glm::mat4 <span class="title">TRRenderer::calcOrthoProjectMatrix</span><span class="params">(<span class="type">float</span> left, <span class="type">float</span> right, <span class="type">float</span> bottom, <span class="type">float</span> top, <span class="type">float</span> near, <span class="type">float</span> far)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Setup orthogonal matrix (camera space -&gt; homogeneous space)</span></span><br><span class="line">	glm::mat4 pMat = glm::<span class="built_in">mat4</span>(<span class="number">1.0f</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Task 6: Implement the calculation of orthogonal projection, and then set it to pMat</span></span><br><span class="line">	pMat[<span class="number">0</span>][<span class="number">0</span>]=<span class="number">2</span>/(right-left);</span><br><span class="line">	pMat[<span class="number">1</span>][<span class="number">1</span>]=<span class="number">2</span>/(top-bottom);</span><br><span class="line">	pMat[<span class="number">2</span>][<span class="number">2</span>]=<span class="number">-2</span> / (far - near);</span><br><span class="line">	pMat[<span class="number">3</span>][<span class="number">0</span>]=-(right + left) / (right - left);</span><br><span class="line">	pMat[<span class="number">3</span>][<span class="number">1</span>]=-(top + bottom) / (top - bottom);</span><br><span class="line">	pMat[<span class="number">3</span>][<span class="number">2</span>]=-(far + near) / (far - near);</span><br><span class="line">	<span class="keyword">return</span> pMat;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实验结果及分析-4">实验结果及分析</h3>
+<figure>
+<img src="https://s2.loli.net/2023/03/15/N2gBfbnAEUJXkOQ.png"
+alt="image-20221012204631385" />
+<figcaption aria-hidden="true">image-20221012204631385</figcaption>
+</figure>
+<p>正交投影呈现的图像方方正正，缺少立体效果</p>
+<h2 id="task7">Task7</h2>
+<p><strong>实现了正交投影计算后，在main.cpp
+的如下代码中，分别尝试调用透视投影和正交投影函数，通过滚动鼠标的滚轮来拉近或拉远摄像机的位置，仔细体会这两种投影的差别。</strong></p>
+<h3 id="尝试结果">尝试结果</h3>
+<p>如视频所示</p>
+<p><strong>透视投影</strong></p>
+<p>在滚动鼠标滚轮时会有明显的远近缩进放大，有明显的立体感，3D还原效果更好</p>
+<p><strong>正交投影</strong></p>
+<p>在滚动鼠标滚轮时没有明显的变化，当过度缩进时，物体会逐渐消失在画面之中，可以理解为距离过远，不在窗口范围内</p>
+<h2 id="task8">Task8</h2>
+<p>完成上述的编程实践之后，请你思考并回答以下问题：
+<strong>（1）请简述正交投影和透视投影的区别。</strong></p>
+<p>区别在于：透视图有很强的立体空间的表现力而正交视图能准确表达物体在空间中的位置和状态
+原因为：
+透视图是把立体三维空间的形象按照人眼的视觉习惯表现在二维平面上的构成画面。它具有消失感、距离感、相同大小的形体呈现出有规律的变化等一系列的透视特性，能逼真地反映形体的空间形象。</p>
+<p>正交视图则是不考虑物体的透视效果，只是将物体所在三维空间的点一一对应到二维视图平面上的成像。按实际比例显示，没有透视变形。</p>
+<p>透视投影</p>
+<p><strong>（2）从物体局部空间的顶点的顶点到最终的屏幕空间上的顶点，需要经历哪几个空间的坐标系？</strong></p>
+<p><strong>一个顶点在最终被转化为片段之前需要经历的所有不同状态——五个坐标系统</strong>
+局部空间/物体空间 世界空间 观察空间/视觉空间 裁剪空间 屏幕空间</p>
+<p><strong>流程如下</strong></p>
+<figure>
+<img src="https://s2.loli.net/2023/03/15/yN3CjhZ2pOuKYwx.webp"
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p><strong>裁剪空间下的顶点的<span
+class="math inline">\(w\)</span>值是哪个空间坐标下的<span
+class="math inline">\(z\)</span>值？它有什么空间意义？</strong></p>
+<p>裁剪空间顶点坐标w 分量就是视角空间下的深度值，将其除以远裁面就是0-1
+的深度值。</p>
+<p>远裁剪面的距离可以通过内置的_ProjectionParams.z 变量来获取。</p>
+<p>意义：该顶点的w值可用于获取顶点的深度值，因为离观察者越远的顶点坐标w分量越大。</p>
+<p><strong>（3）经过投影变换之后，几何顶点的坐标值是被直接变换到了NDC坐标（即<span
+class="math inline">\(xyz\)</span>的值全部都在</strong> <strong><span
+class="math inline">\([-1,1]\)</span>范围内）吗？</strong></p>
+<p>经过“透视除法”之后，坐标x, y, z的取值会归一化到范围在[-1.
+1]之间的数，这个坐标也称作标准化设备坐标(NDC, Normalized Device
+Coordinate)，而“透视除法”后超出NDC坐标范围的点将被裁剪掉，然后再转换到屏幕上窗口中的坐标到屏幕空间(Screen
+Space)中。</p>
+<p><strong>透视除法（Perspective Division）是什么？</strong></p>
+<p>对W ，VP变换后点(x, y, z, w)变为(x/w, y/w, z/w, 1)</p>
+<p><strong>为什么要有这么一个过程？</strong></p>
+<p>完成透视除法后才到NDC坐标有[-1, 1]的与参数无关的范围。</p>
+<p>使用透视除法，可以理解为将一个三维坐标点(x, y,
+z)表示成一个等价的四维齐次坐标(x, y, z,
+w)，其中我们需要保证w=1，以保证后续矩阵运算的正确性。</p>
+
+    </article>
+    <!-- license -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">https://klc1006.github.io/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">October 9th 2022, 12:00:00 am</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">March 15th 2023, 4:50:54 pm</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/" title="【计算机图形学】Assignment2_Rasterization_ZBuffering">
+                    <div class="nextTitle">【计算机图形学】Assignment2_Rasterization_ZBuffering</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2022/06/09/AI%20Course%2012/" title="【AI Course】PDDL解决规划问题">
+                    <div class="prevTitle">【AI Course】PDDL解决规划问题</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- comment -->
+    
+        <div class="post-comment">
+            <!-- 来必力 City 版安装代码 -->
+
+
+            
+
+            
+
+            
+
+            <!-- utteranc评论 -->
+
+
+            <!-- partial('_partial/comment/changyan') -->
+            <!--PC版-->
+
+
+            
+            
+
+            
+
+        </div>
+    
+    <!-- timeliness note -->
+    <!-- idea from: https://hexo.fluid-dev.com/posts/hexo-injector/#%E6%96%87%E7%AB%A0%E6%97%B6%E6%95%88%E6%80%A7%E6%8F%90%E7%A4%BA -->
+    
+    <!-- Mathjax -->
+    
+        
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+
+
+    
+</main>
+
+                <!-- profile -->
+                
+            </div>
+            <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+        <div class="social">
+            
+    
+        
+            
+                <a href="mailto:1172485065@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/Klc1006" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                    
+                    <img class="profile-qr" src="/assets/wechatqr.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+
+        </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- website approve for Chinese user -->
+    
+    <!-- 不蒜子  -->
+    
+        <div class="busuanzi-container">
+            
+             
+                <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+            
+        </div>
+    	
+</footer>
+
+        </div>
+        <!-- toc -->
+        
+            <div class="toc-wrapper toc-wrapper-loding" style=
+
+
+
+
+
+
+
+    top:50vh;
+
+>
+                <div class="toc-catalog">
+                    <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+                </div>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#task-1"><span class="toc-number">1.</span> <span class="toc-text">Task 1</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">实验原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.2.</span> <span class="toc-text">代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-2"><span class="toc-number">2.</span> <span class="toc-text">Task 2</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86-1"><span class="toc-number">2.1.</span> <span class="toc-text">实验原理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#section"><span class="toc-number"></span> <span class="toc-text">)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-1"><span class="toc-number">0.1.</span> <span class="toc-text">代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%88%86%E6%9E%90"><span class="toc-number">0.2.</span> <span class="toc-text">实验结果及分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task3"><span class="toc-number">1.</span> <span class="toc-text">Task3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86-2"><span class="toc-number">1.1.</span> <span class="toc-text">实验原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-2"><span class="toc-number">1.2.</span> <span class="toc-text">代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%88%86%E6%9E%90-1"><span class="toc-number">2.</span> <span class="toc-text">实验结果及分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task4"><span class="toc-number">3.</span> <span class="toc-text">Task4</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86-3"><span class="toc-number">3.1.</span> <span class="toc-text">实验原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-3"><span class="toc-number">3.2.</span> <span class="toc-text">代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%88%86%E6%9E%90-2"><span class="toc-number">3.3.</span> <span class="toc-text">实验结果及分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task5"><span class="toc-number">4.</span> <span class="toc-text">Task5</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86-4"><span class="toc-number">4.1.</span> <span class="toc-text">实验原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-4"><span class="toc-number">4.2.</span> <span class="toc-text">代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%88%86%E6%9E%90-3"><span class="toc-number">4.3.</span> <span class="toc-text">实验结果及分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task6"><span class="toc-number">5.</span> <span class="toc-text">Task6</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86-5"><span class="toc-number">5.1.</span> <span class="toc-text">实验原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-5"><span class="toc-number">5.2.</span> <span class="toc-text">代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%88%86%E6%9E%90-4"><span class="toc-number">5.3.</span> <span class="toc-text">实验结果及分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task7"><span class="toc-number">6.</span> <span class="toc-text">Task7</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%9D%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-number">6.1.</span> <span class="toc-text">尝试结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task8"><span class="toc-number">7.</span> <span class="toc-text">Task8</span></a></li></ol>
+            </div>
+        
+        <!-- sidebar -->
+        <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+        <div class="sidebar-panel-archives">
+    <!-- 在 ejs 中将 archive 按照时间排序 -->
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 16
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+        
+            
+            
+            <div class="archive-year"> 2023 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span>
+            <a class="archive-post-title" href="/2023/03/15/%E3%80%90RL%E3%80%91PPO/">【RL】PPO以及更新神经网络RNN</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/08</span>
+            <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span>
+            <a class="archive-post-title" href="/2023/03/07/cpp/">面向对象编程 OOP（cpp语言篇）</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/09</span>
+            <a class="archive-post-title" href="/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">【计算机图形学】Assignment6 Mass Spring Simulation</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2022 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/25</span>
+            <a class="archive-post-title" href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/">【计算机图形学】Assignment5 Bezier Curve</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/05</span>
+            <a class="archive-post-title" href="/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">【计算机图形学】Assignment4 Ray Tracing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/29</span>
+            <a class="archive-post-title" href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/">【计算机图形学】Assignment3 Lighting Texturing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/26</span>
+            <a class="archive-post-title" href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">【计算机图形学】Assignment2_Rasterization_ZBuffering</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/09</span>
+            <a class="archive-post-title" href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">【计算机图形学】Assignment1 3D Transformation</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/09</span>
+            <a class="archive-post-title" href="/2022/06/09/AI%20Course%2012/">【AI Course】PDDL解决规划问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/19</span>
+            <a class="archive-post-title" href="/2022/05/19/AI%20Course%208/">【AI Course】KNN完成情感分类标签</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/07</span>
+            <a class="archive-post-title" href="/2022/05/07/AI%20Course%207%20203/">【AI Course】朴素贝叶斯</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/28</span>
+            <a class="archive-post-title" href="/2022/04/28/AI%20Course%206/">【AI Course】归结演绎推理</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span>
+            <a class="archive-post-title" href="/2022/04/09/AI%20Course3/">【AI Course】A*和 IDA*算法解决15-puzzle问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/02</span>
+            <a class="archive-post-title" href="/2022/03/02/AI%20course%201_20337013/">【AI Course】一致代价实现最短路径</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2021 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span>
+            <a class="archive-post-title" href="/2021/11/15/%E3%80%90%E8%AE%A1%E7%BB%84%E5%AE%9E%E9%AA%8C%E3%80%91%E5%8D%95%E5%91%A8%E6%9C%9FCPU/">【计组实验】单周期CPU</a>
+        </li>
+    
+    </div>
+</div>
+
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+        
+            <span class="sidebar-tag-name" data-tags="归结推理">
+                <span class="iconfont-archer">&#xe606;</span>
+                归结推理
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="A*">
+                <span class="iconfont-archer">&#xe606;</span>
+                A*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IDA*">
+                <span class="iconfont-archer">&#xe606;</span>
+                IDA*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="PDDL">
+                <span class="iconfont-archer">&#xe606;</span>
+                PDDL
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="规划问题">
+                <span class="iconfont-archer">&#xe606;</span>
+                规划问题
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="AI">
+                <span class="iconfont-archer">&#xe606;</span>
+                AI
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="最短路径">
+                <span class="iconfont-archer">&#xe606;</span>
+                最短路径
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="朴素贝叶斯">
+                <span class="iconfont-archer">&#xe606;</span>
+                朴素贝叶斯
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="KNN">
+                <span class="iconfont-archer">&#xe606;</span>
+                KNN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="分类">
+                <span class="iconfont-archer">&#xe606;</span>
+                分类
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="cpp">
+                <span class="iconfont-archer">&#xe606;</span>
+                cpp
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="leetcode">
+                <span class="iconfont-archer">&#xe606;</span>
+                leetcode
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="CPU">
+                <span class="iconfont-archer">&#xe606;</span>
+                CPU
+            </span>
+        
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+        缺失模块，请参考主题文档进行安装配置：https://github.com/fi3ework/hexo-theme-archer#%E5%AE%89%E8%A3%85%E4%B8%BB%E9%A2%98
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+
+    </div>
+</div>
+
+        <!-- site-meta -->
+        <script>
+    var siteMetaRoot = "/"
+    if (siteMetaRoot === "undefined") {
+        siteMetaRoot = '/'
+    }
+    var siteMeta = {
+        url: "https://Klc1006.github.io",
+        root: siteMetaRoot,
+        author: "Klc"
+    }
+</script>
+
+        <!-- import experimental options here -->
+        <!-- Custom Font -->
+
+
+        <!-- main func -->
+        <script src="/scripts/main.js?v=20211217"></script>
+        <!-- dark mode -->
+        <script src="/scripts/dark.js?v=20211217"></script>
+        <!-- fancybox -->
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
+        <!-- algolia -->
+        
+        <!-- busuanzi -->
+        
+            <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+        
+        <!-- CNZZ -->
+        
+        <!-- async load share.js -->
+        
+            <script src="/scripts/share.js?v=20211217" async></script>
+        
+        <!-- mermaid -->
+        
+            <script src='https://cdn.jsdelivr.net/npm/mermaid@8.11.0/dist/mermaid.min.js'></script>
+            <script>
+                if (window.mermaid) {
+                    mermaid.initialize({theme: 'dark'});
+                }
+            </script>
+        
+    </body>
+</html>

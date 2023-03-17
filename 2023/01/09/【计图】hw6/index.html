@@ -19,28 +19,22 @@
         <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
-    <meta name="description" content="区分两个learner：  不知道（或忽略）其他agent的存在的 reforcelearner 明确尝试学习联合动作的价值及其对应者的策略的learner  以这两个视角：研究合作多智能体系统中的Q-learning 关注点：  部分动作可观测性，博弈结构，探索策略 对收敛到（最优和次优）纳什均衡和learned Q value的影响。">
+    <meta name="description" content="质点弹簧系统是一种拉格朗日视角的物理模拟，把物体看成由一个个质点构成，质点之间通过弹簧相连，从而产生一定程度的弹性形变。质点弹簧系统适用于模拟布料软体、刚体等物理材质。对于物体中的任意两个不同的质点\(x_i\)和\(x_j\)，从\(j\)作用到\(i\)的作用力可由以下的胡克定律（Hooke&#39;s law）给出： $$ f_{ij}&#x3D;-k(-l_{ij})() \[ 其中$k$是弹簧刚度系">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记">
-<meta property="og:url" content="https://klc1006.github.io/2023/02/12/the%20dynamics%20of%20reforcelearning/index.html">
+<meta property="og:title" content="【计算机图形学】Assignment6 Mass Spring Simulation">
+<meta property="og:url" content="https://klc1006.github.io/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="区分两个learner：  不知道（或忽略）其他agent的存在的 reforcelearner 明确尝试学习联合动作的价值及其对应者的策略的learner  以这两个视角：研究合作多智能体系统中的Q-learning 关注点：  部分动作可观测性，博弈结构，探索策略 对收敛到（最优和次优）纳什均衡和learned Q value的影响。">
+<meta property="og:description" content="质点弹簧系统是一种拉格朗日视角的物理模拟，把物体看成由一个个质点构成，质点之间通过弹簧相连，从而产生一定程度的弹性形变。质点弹簧系统适用于模拟布料软体、刚体等物理材质。对于物体中的任意两个不同的质点\(x_i\)和\(x_j\)，从\(j\)作用到\(i\)的作用力可由以下的胡克定律（Hooke&#39;s law）给出： $$ f_{ij}&#x3D;-k(-l_{ij})() \[ 其中$k$是弹簧刚度系">
 <meta property="og:locale">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/xsTqe85itWbCJzM.png">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/j384P5nRQEXqM72.png">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/RtdGn7xV2w9FvAe.png">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/67vSJuCBs4E1Itz.png">
-<meta property="og:image" content="https://s2.loli.net/2023/03/06/JcK9hWVRBLrkTxI.png">
-<meta property="article:published_time" content="2023-02-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-03-09T03:14:22.319Z">
+<meta property="article:published_time" content="2023-01-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-15T08:43:43.379Z">
 <meta property="article:author" content="Klc">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://s2.loli.net/2023/03/06/xsTqe85itWbCJzM.png">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
     
-    <title>【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记 · PityBug&#39;s Studio</title>
+    <title>【计算机图形学】Assignment6 Mass Spring Simulation · PityBug&#39;s Studio</title>
     <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
 /* This file is meant as a standalone workflow for
 - testing support for link[rel=preload]
@@ -265,7 +259,7 @@
                 <a href="/">PityBug&#39;s Studio.</a>
             </div>
             <div class="post-title header-element">
-                <a href="#" class="post-name">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</a>
+                <a href="#" class="post-name">【计算机图形学】Assignment6 Mass Spring Simulation</a>
             </div>
         </div>
     
@@ -311,7 +305,7 @@
         <h1 class="intro-title">
             <!-- 主页  -->
             
-                【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent System...
+                【计算机图形学】Assignment6 Mass Spring Simulation
             <!-- 404 -->
             
         </h1>
@@ -337,13 +331,13 @@
                 <!-- 文章字数统计 -->
                 
                     <div class="post-intro-read">
-                        <span>字数统计: <span class="post-count word-count">631</span>阅读时长: <span class="post-count reading-time">2 min</span></span>
+                        <span>字数统计: <span class="post-count word-count">1.7k</span>阅读时长: <span class="post-count reading-time">7 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
                     <!-- 撰写日期 -->
                     <span class="iconfont-archer post-intro-calander">&#xe676;</span>
-                    <span class="post-intro-time">2023/02/12</span>
+                    <span class="post-intro-time">2023/01/09</span>
                     <!-- busuanzi -->
                     
                         <span id="busuanzi_container_page_pv" class="busuanzi-pv">
@@ -498,93 +492,184 @@
             <div class="container container-unloaded">
                 <main class="main post-page">
     <article class="article-entry">
-        <p>区分两个learner：</p>
+        <p>质点弹簧系统是一种拉格朗日视角的物理模拟，把物体看成由一个个质点构成，质点之间通过弹簧相连，从而产生一定程度的弹性形变。质点弹簧系统适用于模拟布料软体、刚体等物理材质。对于物体中的任意两个不同的质点<span
+class="math inline">\(x_i\)</span>和<span
+class="math inline">\(x_j\)</span>，从<span
+class="math inline">\(j\)</span>作用到<span
+class="math inline">\(i\)</span>的作用力可由以下的胡克定律（Hooke's
+law）给出： $$ f_{ij}=-k(-l_{ij})()</p>
+<p><span class="math display">\[
+其中$k$是弹簧刚度系数（spring stiffness），
+$l_{ij}$是质点之间的弹簧静止长度，
+$\widehat{x_i-x_j}$是从质点指向质点的单位方向向量（即
+$\widehat{x_i-x_j}=\frac{x_i-x_j}{||x_i-x_j||}$）。对于质点$x_i$，它受到的作用力就是与之相连的所有弹性力的合力：
+\]</span> f_{i}=<em>j^{ji}f</em>{ij} <span class="math display">\[
+求出了合力，再根据牛顿第二定律可求出质点的加速度和位置的变化梯度：
+\]</span> =f_i $$</p>
+<p><span class="math display">\[
+\frac{\partial x_i}{\partial t}=v_i
+\]</span></p>
+<p>上面就是质点弹簧系统的核心公式，比较简单，基本都是高中物理的内容。求出了质点的加速度和速度之后，最简单的方法就是采用下面的显式积分公式来更新每个质点的速度<span
+class="math inline">\(v\)</span>和位置<span
+class="math inline">\(x\)</span>，从而生成符合弹簧特性的动画： <span
+class="math display">\[
+v_{t+1}=v_t+\Delta t \frac{f_t}{m}
+\tag{4}
+\]</span></p>
+<p><span class="math display">\[
+x_{t+1}=x_t+\Delta t v_t
+\]</span></p>
+<p>亦或者用更为稳定一点的半隐式欧拉积分法（依旧是显式积分）： <span
+class="math display">\[
+v_{t+1}=v_t+\Delta t \frac{f_t}{m}
+\tag{5}
+\]</span></p>
+<p><span class="math display">\[
+x_{t+1}=x_t+\Delta t v_{t+1}
+\]</span></p>
+<p>公式(4)和(5)的区别仅在于更新<span
+class="math inline">\(x_{t+1}\)</span>时是用<span
+class="math inline">\(v_{t}\)</span>还是<span
+class="math inline">\(v_{t+1}\)</span>，其中是时间步长。综上所述，一个简单的质点弹簧模型求解步骤为：</p>
 <ul>
-<li>不知道（或忽略）其他agent的存在的 reforcelearner</li>
-<li>明确尝试学习联合动作的价值及其对应者的策略的learner</li>
+<li>计算每个质点受到的弹簧合力，使用公式(1)和公式(2)；</li>
+<li>根据公式(4)（或(5)）更新质点的速度矢量<span
+class="math inline">\(v_{t+1}=v_{t}+\Delta t
+\frac{f_t}{m}\)</span>；</li>
+<li>碰撞检测和处理，作业框架里面就是简单地对窗口边界做一个判断和处理；</li>
+<li>根据公式(4)（或(5)）更新质点的位置矢量<span
+class="math inline">\(x_{t+1}=x_{t}+\Delta v_t\)</span>。</li>
 </ul>
-<p>以这两个视角：研究合作多智能体系统中的Q-learning</p>
-<p>关注点：</p>
+<h2 id="task-1">Task 1</h2>
+<p>用前面的公式即显式积分法来实现质点弹簧系统的动画仿真。你需要填充代码的地方在<code>Utils.cpp</code>
+文件的<code>simulate()</code>函数，如下所示。其中<code>dt</code>
+是时间步长，<code>gravity</code>
+是重力加速度。你需要先计算每个质点的合力（用前面的公式和），然后用合力更新速度值，最后更新质点的位置矢量。实现好之后，尝试然后按下<code>g</code>
+键查看动画效果（或者点击鼠标生成更多的质点），贴出你的效果，并简述你是怎么做的。</p>
+<p>思路：</p>
+<p>按照两个公式对速度和位置进行更新</p>
 <ul>
-<li>部分动作可观测性，博弈结构，探索策略</li>
-<li>对收敛到（最优和次优）纳什均衡和learned Q value的影响。</li>
-</ul>
-<span id="more"></span>
-<h3 id="comparing-independent-and-joint-action-learners">Comparing
-Independent and Joint-Action Learners</h3>
-<p>简单协调游戏中的相对表现：</p>
-<p><img src="https://s2.loli.net/2023/03/06/xsTqe85itWbCJzM.png" alt="image-20230305193656463"  /></p>
+<li>计算合力<span
+class="math inline">\(f_{ij}=-k(\sqrt{x_i-x_j}-l_{ij})(\widehat{x_i-xj})\)</span>、$f_{i}=<em>j^{ji}f</em>{ij}
+$
 <ul>
-<li>ILs：
-<ul>
-<li>不会认为他们的任何一个选择（平均而言）比另一个更好。</li>
-<li>A对于动作a0和a1的Q值将收敛到5，因为每当执行a0时，b0和b1执行的概率为0:5。（在任何时候，由于策略的随机性和学习率的衰减，我们都会预期学习到的Q值不会相同）</li>
-<li></li>
-<li>两个IL和JAL选择最佳联合动作的概率，作为它们之间交互次数的函数。</li>
-<li>温度参数最初为T=16，在T+1次交互作用时衰减了<span
-class="math inline">\(0.9^t\)</span>。</li>
-<li>ILs的协调非常快</li>
-<li>两个平衡点都没有偏好:两个平衡中的每一个都在大约一半的试验中获得。</li>
+<li><span
+class="math inline">\(\sqrt{x_i-x_j}\)</span>用代码表示为<code>glm::length(m_x[i]-m_x[j])</code></li>
+<li><span
+class="math inline">\(\widehat{x_i-xj}\)</span>用代码表示为<code>glm::normalize(m_x[i]-m_x[j])</code></li>
 </ul></li>
-<li>JALs
+<li>更新速度<span class="math inline">\(v_{t+1}=v_t+\Delta t
+\frac{f_t}{m}\)</span>
 <ul>
-<li>固定数量的交互操作之后，JAL确实表现得更好。虽然JAL有更多的信息可供他们使用，但融合并没有显著增强。</li>
-<li>虽然JAL能够区分不同联合行动的Q值，但他们使用这些信息的能力受到行动选择机制的限制。</li>
-<li>“插入”勘探策略的单个行动的价值或多或少与ILs的Q值相同。区别在于：JAL使用显式分布和联合Q值来计算它们，而不是直接更新它们。</li>
+<li><code>m_v[i]+=dt*(force/m_particleMass);</code></li>
+<li>更新后，<code>m_v</code>表示<span
+class="math inline">\(v_{t+1}\)</span></li>
+</ul></li>
+<li>更新位置<span class="math inline">\(x_{t+1}=x_t+\Delta t
+v_t\)</span>
+<ul>
+<li><code>m_x[i]+=temp[i]*dt;</code></li>
+<li>这里使用<code>temp</code>(<span
+class="math inline">\(v_{t}\)</span>)保存了未更新前的<code>m_v</code>(<span
+class="math inline">\(v_t\)</span>)</li>
 </ul></li>
 </ul>
-<h3 id="the-effects-of-partial-action-observability">The Effects of
-Partial Action Observability</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">	...	</span><br><span class="line"><span class="comment">// <span class="doctag">TODO:</span> for each particle i, calculate the force f, and then update the m_v[i]</span></span><br><span class="line">	</span><br><span class="line">	std::vector&lt;glm::vec2&gt; temp=m_v;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">0</span>; i &lt; m_numParticles; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// Gravity force</span></span><br><span class="line">		glm::vec2 force = gravity * m_particleMass;</span><br><span class="line">		<span class="comment">// You should use m_restLength[i][j], m_stiffness, m_x, dt, and m_particleMass herein</span></span><br><span class="line">		<span class="comment">// glm::vec2 f_i=glm::vec2(0.0f,0.0f);</span></span><br><span class="line">		</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">unsigned</span> <span class="type">int</span> j = <span class="number">0</span>; j &lt; m_numParticles; ++j)</span><br><span class="line">		&#123;	</span><br><span class="line">			glm::vec2 f_ij=glm::<span class="built_in">vec2</span>(<span class="number">0.0f</span>,<span class="number">0.0f</span>);</span><br><span class="line">			<span class="keyword">if</span>(m_restLength[i][j]!=<span class="number">0</span>)</span><br><span class="line">				f_ij=-m_stiffness*(glm::<span class="built_in">length</span>(m_x[i]-m_x[j])-m_restLength[i][j])*glm::<span class="built_in">normalize</span>(m_x[i]-m_x[j]);</span><br><span class="line">			force+=f_ij;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//Update the m_v[i]</span></span><br><span class="line">		m_v[i]+=dt*(force/m_particleMass);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Todo: update the position m_x[i] using m_v[i]</span></span><br><span class="line">	<span class="comment">// Note: you should use the time step dt</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">1</span>; i &lt; m_numParticles; ++i)</span><br><span class="line">	&#123;	</span><br><span class="line">		<span class="comment">//方法一：</span></span><br><span class="line">		m_x[i]+=temp[i]*dt;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验结果</strong></p>
+<p>尚未用阻尼对速度进行衰减处理，因此实现的动画效果会一直动荡的比较厉害</p>
 <figure>
-<img src="https://s2.loli.net/2023/03/06/j384P5nRQEXqM72.png"
-alt="image-20230305195054605" />
-<figcaption aria-hidden="true">image-20230305195054605</figcaption>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20230109162032623.png"
+alt="image-20230109162032623" />
+<figcaption aria-hidden="true">image-20230109162032623</figcaption>
 </figure>
+<h2 id="task-2">Task 2</h2>
+<p>用前面的公式（5）即半隐式积分法来实现质点弹簧系统的动画仿真。填充代码的地方与Task1一致，这里不再赘述。简述你是怎么做的。</p>
+<p>按照两个公式对速度和位置进行更新</p>
 <ul>
-<li><figure>
-<img src="https://s2.loli.net/2023/03/06/RtdGn7xV2w9FvAe.png"
-alt="image-20230305200206449" />
-<figcaption aria-hidden="true">image-20230305200206449</figcaption>
-</figure></li>
-<li>agent i更新对所有的动作更新联合Q-value</li>
-<li>Pr is computed in the obvious way by i using its beliefs and Bayes
-rule.</li>
-<li>观测模型越准确，agent的收敛速度就会更快</li>
-</ul>
-<h3 id="convergence-and-game-structure">Convergence and Game
-Structure</h3>
-<figure>
-<img src="https://s2.loli.net/2023/03/06/67vSJuCBs4E1Itz.png"
-alt="image-20230305201148923" />
-<figcaption aria-hidden="true">image-20230305201148923</figcaption>
-</figure>
+<li>计算合力<span
+class="math inline">\(f_{ij}=-k(\sqrt{x_i-x_j}-l_{ij})(\widehat{x_i-xj})\)</span>、$f_{i}=<em>j^{ji}f</em>{ij}
+$
 <ul>
-<li>该博弈具有三个确定性均衡</li>
-<li>当k=-100时，agent
-A发现其第一和第三个动作是因为B的随机探索而没有吸引力
-<ul>
-<li>如果A是IL,a0和a2的平均reward会相当低</li>
-<li>如果A是JAl，它对B的策略的信仰会使这些行动具有较低的预期价值。</li>
+<li><span
+class="math inline">\(\sqrt{x_i-x_j}\)</span>用代码表示为<code>glm::length(m_x[i]-m_x[j])</code></li>
+<li><span
+class="math inline">\(\widehat{x_i-xj}\)</span>用代码表示为<code>glm::normalize(m_x[i]-m_x[j])</code></li>
 </ul></li>
-<li>k越接近零，agent发现其第一和第三行动不具吸引力的可能性越低。</li>
-</ul>
-<figure>
-<img src="https://s2.loli.net/2023/03/06/JcK9hWVRBLrkTxI.png"
-alt="image-20230305200819725" />
-<figcaption aria-hidden="true">image-20230305200819725</figcaption>
-</figure>
+<li>更新速度<span class="math inline">\(v_{t+1}=v_t+\Delta t
+\frac{f_t}{m}\)</span>
 <ul>
-<li>收敛到一个最优平衡点受到“惩罚”k的大小的影响。</li>
+<li><code>m_v[i]+=dt*(force/m_particleMass);</code></li>
+<li>更新后，<code>m_v</code>表示<span
+class="math inline">\(v_{t+1}\)</span></li>
+</ul></li>
+<li>更新位置<span class="math inline">\(x_{t+1}=x_t+\Delta t
+v_{t+1}\)</span>(<strong>唯一不同之处</strong>)
+<ul>
+<li><code>m_x[i]+=m_v[i]*dt;</code></li>
+</ul></li>
 </ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Todo: update the position m_x[i] using m_v[i]</span></span><br><span class="line">	<span class="comment">// Note: you should use the time step dt</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">1</span>; i &lt; m_numParticles; ++i)</span><br><span class="line">	&#123;	</span><br><span class="line">		<span class="comment">//半隐式欧拉积分法</span></span><br><span class="line">		m_x[i]+=m_v[i]*dt;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验结果</strong></p>
+<p>情况与task1大致相同，由于没有加入衰减效果，弹簧永远不会停止。</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20230109162112916.png"
+alt="image-20230109162112916" />
+<figcaption aria-hidden="true">image-20230109162112916</figcaption>
+</figure>
+<h2 id="task-3">Task 3</h2>
+<p>对质点的速度<span
+class="math inline">\(v\)</span>按照给定的阻尼系数进行衰减，以实现更贴近物理真实的弹簧效果。
+实现了前两个Task之后，弹簧的效果看起来有种不正常的跳动和动荡。现实中的弹簧不会永远跳动，因为动能会因摩擦而减小。为了模拟这种效果，我们用以下的衰减公式对速度进行衰减处理：
+<span class="math display">\[
+v=v·e^{-\Delta·\mu}
+\]</span> 其中<span
+class="math inline">\(\mu\)</span>是阻尼系数，在<code>Simulator</code>类中存储为<code>m_damping</code>。上述的公式使得速度以指数的方式衰减。请你在<code>simulate</code>
+函数的最后一步（更新质点位置之前），用上述的公式更新质点的速度，使得质点的速度以一定的程度进行衰减。</p>
+<p>在更新质点位置之前，对速度作衰减处理</p>
+<p><strong>对于每一个质点作衰减</strong><code>m_v[i] *= glm::exp(-dt*m_damping);​</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//衰减</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">0</span>; i &lt; m_numParticles; ++i)</span><br><span class="line">&#123;</span><br><span class="line">	m_v[i] *= glm::<span class="built_in">exp</span>(-dt*m_damping);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验结果</strong></p>
+<p>物体最终呈现出”下垂“的静止状态</p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20230109162213426.png"
+alt="image-20230109162213426" />
+<figcaption aria-hidden="true">image-20230109162213426</figcaption>
+</figure>
+<h2 id="task-4">Task 4</h2>
+<p>尝试修改Simulator 的m_stiffness
+系数运行动画仿真，看看效果有什么不同，仔细体会公式中的弹簧刚度系数的物理意义。</p>
+<p>更改弹簧刚度系数如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// float m_stiffness = 8000;</span></span><br><span class="line"><span class="type">float</span> m_stiffness = <span class="number">1000</span>;</span><br><span class="line"><span class="comment">// float m_stiffness = 10000000;</span></span><br></pre></td></tr></table></figure>
+<p><strong>m_stiffness = 1000：</strong></p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20230109161913688.png"
+alt="image-20230109161913688" />
+<figcaption aria-hidden="true">image-20230109161913688</figcaption>
+</figure>
+<p><strong>m_stiffness = 10000000：</strong></p>
+<figure>
+<img
+src="C:\Users\Scott\AppData\Roaming\Typora\typora-user-images\image-20230109161920140.png"
+alt="image-20230109161920140" />
+<figcaption aria-hidden="true">image-20230109161920140</figcaption>
+</figure>
+<p>弹簧刚度系数<span
+class="math inline">\(k\)</span>越小，弹簧（细绳）之间的弹力越小，容易被拉长，表现出“松弛感”。</p>
+<p>反之，弹簧刚度系数<span
+class="math inline">\(k\)</span>越大，弹簧（细绳）之间的弹力越大，不容易被拉长，表现吃很明显的“紧绷感”。</p>
 
     </article>
     <!-- license -->
     
         <div class="license-wrapper">
             <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
-            <p>原文链接：<a href="https://klc1006.github.io/2023/02/12/the%20dynamics%20of%20reforcelearning/">https://klc1006.github.io/2023/02/12/the%20dynamics%20of%20reforcelearning/</a>
-            <p>发表日期：<a href="https://klc1006.github.io/2023/02/12/the%20dynamics%20of%20reforcelearning/">February 12th 2023, 12:00:00 am</a>
-            <p>更新日期：<a href="https://klc1006.github.io/2023/02/12/the%20dynamics%20of%20reforcelearning/">March 9th 2023, 11:14:22 am</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">https://klc1006.github.io/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">January 9th 2023, 12:00:00 am</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">March 15th 2023, 4:43:43 pm</a>
             <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     
@@ -593,16 +678,16 @@ alt="image-20230305200819725" />
         <li class="next">
             
                 <div class="nextSlogan">Next Post</div>
-                <a href="/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/" title="【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记">
-                    <div class="nextTitle">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</div>
+                <a href="/2023/03/07/cpp/" title="面向对象编程 OOP（cpp语言篇）">
+                    <div class="nextTitle">面向对象编程 OOP（cpp语言篇）</div>
                 </a>
             
         </li>
         <li class="previous">
             
                 <div class="prevSlogan">Previous Post</div>
-                <a href="/2023/02/07/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/" title="【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记">
-                    <div class="prevTitle">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记</div>
+                <a href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/" title="【计算机图形学】Assignment5 Bezier Curve">
+                    <div class="prevTitle">【计算机图形学】Assignment5 Bezier Curve</div>
                 </a>
             
         </li>
@@ -757,10 +842,7 @@ alt="image-20230305200819725" />
                 <div class="toc-catalog">
                     <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
                 </div>
-                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#comparing-independent-and-joint-action-learners"><span class="toc-number">1.</span> <span class="toc-text">Comparing
-Independent and Joint-Action Learners</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#the-effects-of-partial-action-observability"><span class="toc-number">2.</span> <span class="toc-text">The Effects of
-Partial Action Observability</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#convergence-and-game-structure"><span class="toc-number">3.</span> <span class="toc-text">Convergence and Game
-Structure</span></a></li></ol>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#task-1"><span class="toc-number">1.</span> <span class="toc-text">Task 1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-2"><span class="toc-number">2.</span> <span class="toc-text">Task 2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-3"><span class="toc-number">3.</span> <span class="toc-text">Task 3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task-4"><span class="toc-number">4.</span> <span class="toc-text">Task 4</span></a></li></ol>
             </div>
         
         <!-- sidebar -->
@@ -854,14 +936,7 @@ Structure</span></a></li></ol>
         
         
         
-        
-        
-        
-        
-        
     
-        
-        
         
         
         
@@ -962,7 +1037,7 @@ Structure</span></a></li></ol>
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 17
+        Total : 16
         </div>
         <!-- search  -->
         
@@ -978,6 +1053,12 @@ Structure</span></a></li></ol>
             
         
         <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span>
+            <a class="archive-post-title" href="/2023/03/15/%E3%80%90RL%E3%80%91PPO/">【RL】PPO以及更新神经网络RNN</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
             <span class="archive-post-date">03/08</span>
             <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
         </li>
@@ -990,38 +1071,8 @@ Structure</span></a></li></ol>
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">02/20</span>
-            <a class="archive-post-title" href="/2023/02/20/AdaptiveFSP%E7%AC%94%E8%AE%B0/">【论文调研】CONVERGING TO UNEXPLOITABLE POLICIES IN CONTINUOUS CONTROL ADVERSARIAL GAMES 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/12</span>
-            <a class="archive-post-title" href="/2023/02/12/the%20dynamics%20of%20reforcelearning/">【论文调研】The Dynamics of Reinforcement Learning in Cooperative Multiagent Systems 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/07</span>
-            <a class="archive-post-title" href="/2023/02/07/hierarchical%20abstraction%20algorithm%E7%AC%94%E8%AE%B0/">【论文调研】Hierarchical Abstraction, Distributed Equilibrium Computation, and Post-Processing, with Application to a Champion No-Limit Texas Hold'em Agent 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/05</span>
-            <a class="archive-post-title" href="/2023/02/05/Correlated%20Q-Learning/">【论文调研】Correlated Q-Learning笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">01/28</span>
-            <a class="archive-post-title" href="/2023/01/28/DeepStack%E7%AC%94%E8%AE%B0/">【论文调研】DeepStack:Expert-Level Artificial Intelligence in Heads-Up No-Limit Poker 笔记</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
-            <span class="archive-post-date">01/16</span>
-            <a class="archive-post-title" href="/2023/01/16/Fictitious%20Self-Play%20in%20Extensive-Form%20Games%E7%AC%94%E8%AE%B0/">【论文调研】Fictitious Self-Play in Extensive-Form Games 笔记</a>
+            <span class="archive-post-date">01/09</span>
+            <a class="archive-post-title" href="/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">【计算机图形学】Assignment6 Mass Spring Simulation</a>
         </li>
     
         
@@ -1035,14 +1086,32 @@ Structure</span></a></li></ol>
             
         
         <li class="archive-post-item">
-            <span class="archive-post-date">10/03</span>
-            <a class="archive-post-title" href="/2022/10/03/Lab1/">Lab 1</a>
+            <span class="archive-post-date">12/25</span>
+            <a class="archive-post-title" href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/">【计算机图形学】Assignment5 Bezier Curve</a>
         </li>
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">08/25</span>
-            <a class="archive-post-title" href="/2022/08/25/hello-world/">Hello World</a>
+            <span class="archive-post-date">12/05</span>
+            <a class="archive-post-title" href="/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">【计算机图形学】Assignment4 Ray Tracing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/29</span>
+            <a class="archive-post-title" href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/">【计算机图形学】Assignment3 Lighting Texturing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/26</span>
+            <a class="archive-post-title" href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">【计算机图形学】Assignment2_Rasterization_ZBuffering</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/09</span>
+            <a class="archive-post-title" href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">【计算机图形学】Assignment1 3D Transformation</a>
         </li>
     
         
@@ -1101,16 +1170,6 @@ Structure</span></a></li></ol>
 
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
-        
-            <span class="sidebar-tag-name" data-tags="论文调研">
-                <span class="iconfont-archer">&#xe606;</span>
-                论文调研
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="FSP">
-                <span class="iconfont-archer">&#xe606;</span>
-                FSP
-            </span>
         
             <span class="sidebar-tag-name" data-tags="归结推理">
                 <span class="iconfont-archer">&#xe606;</span>

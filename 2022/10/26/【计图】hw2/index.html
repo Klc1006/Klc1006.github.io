@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+    
+
+<!-- keywords -->
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Klc">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Klc">
+    
+        <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta name="description" content="Task1 实现Bresenham直线光栅化算法（你应该要用到线性插值函数VertexData::lerp（ ）参考链 接。 该函数在TRShaderPipeline.cpp 文件中，其中的from 和to 参数分别代表直线的起点和终点， screen_width 和screen_height 是窗口的宽高，超出窗口的点应该被丢弃。rasterized_points 存 放光栅化插值得">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【计算机图形学】Assignment2_Rasterization_ZBuffering">
+<meta property="og:url" content="https://klc1006.github.io/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="Task1 实现Bresenham直线光栅化算法（你应该要用到线性插值函数VertexData::lerp（ ）参考链 接。 该函数在TRShaderPipeline.cpp 文件中，其中的from 和to 参数分别代表直线的起点和终点， screen_width 和screen_height 是窗口的宽高，超出窗口的点应该被丢弃。rasterized_points 存 放光栅化插值得">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-10-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-15T08:44:20.570Z">
+<meta property="article:author" content="Klc">
+<meta name="twitter:card" content="summary">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/avatar/%E9%BC%A0%E9%BC%A0.jpg">
+    
+    <title>【计算机图形学】Assignment2_Rasterization_ZBuffering · PityBug&#39;s Studio</title>
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+    (function (w) {
+        'use strict'
+        // rel=preload support test
+        if (!w.loadCSS) {
+            w.loadCSS = function () {}
+        }
+        // define on the loadCSS obj
+        var rp = (loadCSS.relpreload = {})
+        // rel=preload feature support test
+        // runs once and returns a function for compat purposes
+        rp.support = (function () {
+            var ret
+            try {
+                ret = w.document.createElement('link').relList.supports('preload')
+            } catch (e) {
+                ret = false
+            }
+            return function () {
+                return ret
+            }
+        })()
+
+        // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+        // then change that media back to its intended value on load
+        rp.bindMediaToggle = function (link) {
+            // remember existing media attr for ultimate state, or default to 'all'
+            var finalMedia = link.media || 'all'
+
+            function enableStylesheet() {
+                link.media = finalMedia
+            }
+
+            // bind load handlers to enable media
+            if (link.addEventListener) {
+                link.addEventListener('load', enableStylesheet)
+            } else if (link.attachEvent) {
+                link.attachEvent('onload', enableStylesheet)
+            }
+
+            // Set rel and non-applicable media type to start an async request
+            // note: timeout allows this to happen async to let rendering continue in IE
+            setTimeout(function () {
+                link.rel = 'stylesheet'
+                link.media = 'only x'
+            })
+            // also enable media after 3 seconds,
+            // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+            setTimeout(enableStylesheet, 3000)
+        }
+
+        // loop through link elements in DOM
+        rp.poly = function () {
+            // double check this to prevent external calls from running
+            if (rp.support()) {
+                return
+            }
+            var links = w.document.getElementsByTagName('link')
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i]
+                // qualify links to those with rel=preload and as=style attrs
+                if (
+                    link.rel === 'preload' &&
+                    link.getAttribute('as') === 'style' &&
+                    !link.getAttribute('data-loadcss')
+                ) {
+                    // prevent rerunning on link
+                    link.setAttribute('data-loadcss', true)
+                    // bind listeners to toggle media back
+                    rp.bindMediaToggle(link)
+                }
+            }
+        }
+
+        // if unsupported, run the polyfill
+        if (!rp.support()) {
+            // run once at least
+            rp.poly()
+
+            // rerun poly on an interval until onload
+            var run = w.setInterval(rp.poly, 500)
+            if (w.addEventListener) {
+                w.addEventListener('load', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            } else if (w.attachEvent) {
+                w.attachEvent('onload', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            }
+        }
+
+        // commonjs
+        if (typeof exports !== 'undefined') {
+            exports.loadCSS = loadCSS
+        } else {
+            w.loadCSS = loadCSS
+        }
+    })(typeof global !== 'undefined' ? global : this)
+</script>
+
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20211217" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/dark.css?v=20211217" as="style">
+    <link rel="stylesheet" href="/css/dark.css">
+    <link rel="stylesheet" href="/css/mobile.css?v=20211217" media="(max-width: 960px)">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js?v=20211217" as="script">
+    <link rel="preload" href="/scripts/dark.js?v=20211217" as="script">
+    <link rel="preload" href="/font/Oswald-Regular.ttf" as="font" crossorigin>
+    <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
+    <!-- algolia -->
+    
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ == undefined) {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js" />')
+        }
+    </script>
+    
+        <body class="post-body">
+    
+        <!-- header -->
+        <header class="header header-mobile">
+    <!-- top read progress line -->
+    <div class="header-element">
+        <div class="read-progress"></div>
+    </div>
+    <!-- sidebar menu button -->
+    <div class="header-element">
+        
+            <div class="header-sidebar-menu">
+        
+            
+                <div style="padding-left: 1px;">&#xe775;</div>
+            
+        </div>
+    </div>
+    <!-- header actions -->
+    <div class="header-actions">
+        <!-- theme mode switch button -->
+        <span class="header-theme-btn header-element">
+            <i class="fas fa-adjust"></i>
+        </span>
+        <!-- back to home page text -->
+        <span class="home-link header-element">
+            <a href=/>PityBug's Studio.</a>
+        </span>
+    </div>
+    <!-- toggle banner for post layout -->
+    
+        
+            <div class="banner">
+        
+            <div class="blog-title header-element">
+                <a href="/">PityBug&#39;s Studio.</a>
+            </div>
+            <div class="post-title header-element">
+                <a href="#" class="post-name">【计算机图形学】Assignment2_Rasterization_ZBuffering</a>
+            </div>
+        </div>
+    
+</header>
+
+        <!-- fixed footer -->
+        <footer class="footer-fixed">
+    <!-- back to top button -->
+    <div class="footer-fixed-element">
+        
+            <div class="back-top back-top-hidden">
+        
+        
+            <div>&#xe639;</div>
+        
+        </div>
+    </div>
+</footer>
+
+        <!-- wrapper -->
+        <div class="wrapper">
+            <div class="site-intro" style="
+
+
+
+
+
+
+
+    height:50vh;
+
+">
+    
+    <!-- 主页  -->
+    
+        
+    <!-- 404页  -->
+    
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+                【计算机图形学】Assignment2_Rasterization_ZBuffering
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+                
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页 meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+    
+</div>
+
+                
+                <!-- 文章字数统计 -->
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">5.7k</span>阅读时长: <span class="post-count reading-time">28 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <!-- 撰写日期 -->
+                    <span class="iconfont-archer post-intro-calander">&#xe676;</span>
+                    <span class="post-intro-time">2022/10/26</span>
+                    <!-- busuanzi -->
+                    
+                        <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                            <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    
+                    <!-- 文章分享 -->
+                    <span class="share-wrapper">
+                        <span class="iconfont-archer share-icon">&#xe71d;</span>
+                        <span class="share-text">Share</span>
+                        <ul class="share-list">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+            <script>
+  // get user agent
+  function getBrowserVersions() {
+    var u = window.navigator.userAgent
+    return {
+      userAgent: u,
+      trident: u.indexOf('Trident') > -1, //IE内核
+      presto: u.indexOf('Presto') > -1, //opera内核
+      webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+      gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+      mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+      ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+      android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+      iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+      iPad: u.indexOf('iPad') > -1, //是否为iPad
+      webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+      weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+      uc: u.indexOf('UCBrowser') > -1, //是否为android下的UC浏览器
+    }
+  }
+  var browser = {
+    versions: getBrowserVersions(),
+  }
+  console.log('userAgent: ' + browser.versions.userAgent)
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded')
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document
+        .getElementsByClassName('intro-title')[0]
+        .classList.add('intro-fade-in')
+      document
+        .getElementsByClassName('intro-subtitle')[0]
+        .classList.add('intro-fade-in')
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in')
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb() {
+    if (browser.versions.uc) {
+      console.log('UCBrowser')
+      fontLoaded()
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular'],
+        },
+        loading: function () {
+          // 所有字体开始加载
+          // console.log('font loading');
+        },
+        active: function () {
+          // 所有字体已渲染
+          fontLoaded()
+        },
+        inactive: function () {
+          // 字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout')
+          fontLoaded()
+        },
+        timeout: 5000, // Set the timeout to two seconds
+      })
+    }
+  }
+
+  function asyncErr() {
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document,
+      t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0]
+    o.src = u
+    if (cb) {
+      o.addEventListener(
+        'load',
+        function (e) {
+          cb(null, e)
+        },
+        false
+      )
+    }
+    if (err) {
+      o.addEventListener(
+        'error',
+        function (e) {
+          err(null, e)
+        },
+        false
+      )
+    }
+    s.parentNode.insertBefore(o, s)
+  }
+
+  var asyncLoadWithFallBack = function (arr, success, reject) {
+    var currReject = function () {
+      reject()
+      arr.shift()
+      if (arr.length) async(arr[0], success, currReject)
+    }
+
+    async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack(
+    [
+      'https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js',
+      'https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js',
+      "/lib/webfontloader.min.js",
+    ],
+    asyncCb,
+    asyncErr
+  )
+</script>
+
+            <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+            <div class="container container-unloaded">
+                <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="task1">Task1</h2>
+<p>实现Bresenham直线光栅化算法（你应该要用到线性插值函数VertexData::lerp（
+）参考链 接。</p>
+<p>该函数在TRShaderPipeline.cpp 文件中，其中的from 和to
+参数分别代表直线的起点和终点， screen_width 和screen_height
+是窗口的宽高，超出窗口的点应该被丢弃。rasterized_points 存
+放光栅化插值得到的点。</p>
+<p>我们需要做的任务实际上就是描绘一个直线线段，首先我们定义两个点（x1，y1）（x2，y2），得到以下数学符号标记
+<span class="math display">\[
+\Delta x=x_1-x_0 &gt;0,\Delta y=y_1-y_0&gt;0,m=\frac{\Delta y}{\Delta x}
+\]</span> 其中m为斜率</p>
+<p>我假设第i此迭代获得的点是（xi，yi），那么第i+1次迭代获取的点可能是（xi+1，yi）或者（xi+1，yi+1），实际上，我们需要选取的是距离直线线段在该y轴上的交点最近的点。</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026104524096.png"
+alt="image-20221026104524096" />
+<figcaption aria-hidden="true">image-20221026104524096</figcaption>
+</figure>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026104652240.png"
+alt="image-20221026104652240" />
+<figcaption aria-hidden="true">image-20221026104652240</figcaption>
+</figure>
+<p>根据以上图示，我们需要计算d_upper
+和d_lower以确定选取那个点，所以取值如下 <span class="math display">\[
+d_{upper}=\bar{y_i}+1-\bar{y}_{i+1}=\bar{y}_i+1-m\bar{x}_{i+1}-B
+\]</span></p>
+<p><span class="math display">\[
+d_{upper}=\bar{y_i}-\bar{y}_{i+1}=m\bar{x}_{i+1}+B-\bar{y}_i
+\]</span></p>
+<p>当d_lower-d_upper&gt;0时，取右上方点</p>
+<p>当d_lower-d_upper&lt;0时，取左上方点 <span class="math display">\[
+d_{lower}-d_{upper}=2m(\bar{x}_i+1)-2\bar{y}_{i}+2B-1
+\]</span>
+为了进一步简化判断，我们将斜率等式两边同时乘上deltaX&gt;0,正负号不变</p>
+<p>定义以下等式 <span class="math display">\[
+p_i=\Delta x \cdot(d_{lower}-d_{upper})=2\Delta y\cdot x_i-2\Delta
+x\cdot\bar{y}_i+c
+\]</span></p>
+<p><span class="math display">\[
+c=(2B-1)\Delta x+2\Delta y
+\]</span></p>
+<p>使用p_i作为选取的标准，进一步简化 <span class="math display">\[
+p_{i+1}-p_{i}=2\Delta y-2\Delta x(\bar{y}_{i+1}-\bar{y}_i)
+\]</span> 这样我们使用p_i来判断，选取点</p>
+<p><span class="math display">\[
+若p_i\leq0,选择右边的点,此时
+\bar{y}_{i+1}=\bar{y}_i,p_{i+1}=p_{i}+2\Delta y
+\]</span></p>
+<p><span class="math display">\[
+若p_i\geq0,选择右上角的点,此时
+\bar{y}_{i+1}=\bar{y}_i+1,p_{i+1}=p_{i}+2\Delta y-2\Delta x
+\]</span></p>
+<p>按照上述逻辑，写出完善代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">TRShaderPipeline::rasterize_wire_aux</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> VertexData &amp;from,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> VertexData &amp;to,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">int</span> &amp;screen_width,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">int</span> &amp;screen_height,</span></span></span><br><span class="line"><span class="params"><span class="function">	std::vector&lt;VertexData&gt; &amp;rasterized_points)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Task1: Implement Bresenham line rasterization</span></span><br><span class="line">	<span class="comment">// Note: You shold use VertexData::lerp(from, to, weight) for interpolation,</span></span><br><span class="line">	<span class="comment">//       interpolated points should be pushed back to rasterized_points.</span></span><br><span class="line">	<span class="comment">//       Interpolated points shold be discarded if they are outside the window. </span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//       from.spos and to.spos are the screen space vertices.</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//For instance:</span></span><br><span class="line">	rasterized_points.<span class="built_in">push_back</span>(from);</span><br><span class="line">	<span class="comment">//rasterized_points.push_back(to);</span></span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> dx = to.spos.x - from.spos.x;</span><br><span class="line">	<span class="type">int</span> dy = to.spos.y - from.spos.y;</span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> stepX = <span class="number">1</span>, stepY = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//judge sign</span></span><br><span class="line">	<span class="keyword">if</span> (dx &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		stepX = <span class="number">-1</span>;</span><br><span class="line">		dx = -dx;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (dy) &#123;</span><br><span class="line">		stepY = <span class="number">-1</span>;</span><br><span class="line">		dy = -dy;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> d2x = <span class="number">2</span> * dx, d2y = <span class="number">2</span> * dy;</span><br><span class="line">	<span class="type">int</span> d2y_minus_d2x = d2y - d2x;</span><br><span class="line">	<span class="type">int</span> sx = from.spos.x;</span><br><span class="line">	<span class="type">int</span> sy = from.spos.y;</span><br><span class="line"></span><br><span class="line">	VertexData temp;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (dy &lt;=dx) &#123;</span><br><span class="line">		<span class="type">int</span> flag = d2y - d2x;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= dx; i++) &#123;</span><br><span class="line">			<span class="comment">//interpolation</span></span><br><span class="line">			temp = VertexData::<span class="built_in">lerp</span>(from, to, <span class="built_in">static_cast</span>&lt;<span class="type">double</span>&gt;(i) / dx);</span><br><span class="line">			<span class="comment">// temp.lerp(from, to, static_cast&lt;double&gt;(i) / dx);</span></span><br><span class="line">			<span class="comment">//add to rasterized</span></span><br><span class="line">               <span class="keyword">if</span>(temp.spos.x&lt;screen_width&amp;&amp;temp.spos.x&gt;<span class="number">0</span>&amp;&amp;temp.spos.y&lt;screen_width&amp;&amp;temp.spos.y&gt;<span class="number">0</span>)</span><br><span class="line">				rasterized_points.<span class="built_in">push_back</span>(temp);</span><br><span class="line">			sx += stepX;</span><br><span class="line">			<span class="keyword">if</span> (flag &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">				flag += d2y;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> &#123;</span><br><span class="line">				sy += stepY;</span><br><span class="line">				flag += d2y_minus_d2x;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="type">int</span> flag = d2x - d2y;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= dy; i++) &#123;</span><br><span class="line">			<span class="comment">//interpolation</span></span><br><span class="line">			temp = VertexData::<span class="built_in">lerp</span>(from, to, <span class="built_in">static_cast</span>&lt;<span class="type">double</span>&gt;(i) / dy);</span><br><span class="line">			temp.<span class="built_in">lerp</span>(from, to, <span class="built_in">static_cast</span>&lt;<span class="type">double</span>&gt;(i) / dy);</span><br><span class="line">			<span class="comment">//add to rasterized</span></span><br><span class="line">               <span class="keyword">if</span>(temp.spos.x&lt;screen_width&amp;&amp;temp.spos.x&gt;<span class="number">0</span>&amp;&amp;temp.spos.y&lt;screen_width&amp;&amp;temp.spos.y&gt;<span class="number">0</span>)</span><br><span class="line">				rasterized_points.<span class="built_in">push_back</span>(temp);</span><br><span class="line"></span><br><span class="line">			sy += stepY;</span><br><span class="line">			<span class="keyword">if</span> (flag &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">				flag += d2x;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> &#123;</span><br><span class="line">				sx += stepX;</span><br><span class="line">				flag -= d2y_minus_d2x;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	rasterized_points.<span class="built_in">push_back</span>(to);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验效果</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026201517448.png"
+alt="image-20221026201517448" />
+<figcaption aria-hidden="true">image-20221026201517448</figcaption>
+</figure>
+<h2 id="task2">Task2</h2>
+<p>实现简单的齐次空间裁剪，简述你是怎么做的。</p>
+<p>该函数在TRRenderer.cpp 文件中，输入的v0 、v1 和v2
+是三角形的三个顶点，其中的v0.cpos 、v1.cpos 和v2.cpos
+分别存储在齐次裁剪空间的顶点坐标（注意这是个四维齐次坐标）。如果顶点坐标在可见的视锥体之内的话，那么x
+、y 、z 的取值应该在[-w,w] 之间，而w 应该在[near,far]之间。（ near 和far
+是视锥体的近平面和远平面）</p>
+<p>按照以上算法描述，完善代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">std::vector&lt;TRShaderPipeline::VertexData&gt; <span class="title">TRRenderer::cliping</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v0,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v1,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v2)</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Clipping in the homogeneous clipping space</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//Task2: Implement simple vertex clipping</span></span><br><span class="line">	<span class="comment">// Note: If one of the vertices is inside the [-w,w]^3 space (and w should be in [near, far]),</span></span><br><span class="line">	<span class="comment">//       just return &#123;v0, v1, v2&#125;. Otherwise, return &#123;&#125;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//       Please Use v0.cpos, v1.cpos, v2.cpos</span></span><br><span class="line">	<span class="comment">//       m_frustum_near_far.x -&gt; near plane</span></span><br><span class="line">	<span class="comment">//       m_frustum_near_far.y -&gt; far plane</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(v0.cpos.x&lt;v0.cpos.w&amp;&amp;v0.cpos.x&gt;-v0.cpos.w  &amp;&amp;  v0.cpos.y&lt;v0.cpos.w&amp;&amp;v0.cpos.y&gt;-v0.cpos.w  &amp;&amp;  v0.cpos.z&lt;v0.cpos.w&amp;&amp;v0.cpos.z&gt;-v0.cpos.w  &amp;&amp;  near&lt;v0.cpos.w&amp;&amp;far&gt;v0.cpos.w )</span><br><span class="line">		<span class="keyword">return</span> &#123; v0, v1, v2 &#125;;</span><br><span class="line">	<span class="keyword">if</span>(v1.cpos.x&lt;v1.cpos.w&amp;&amp;v1.cpos.x&gt;-v1.cpos.w  &amp;&amp;  v1.cpos.y&lt;v1.cpos.w&amp;&amp;v1.cpos.y&gt;-v1.cpos.w  &amp;&amp;  v1.cpos.z&lt;v1.cpos.w&amp;&amp;v1.cpos.z&gt;-v1.cpos.w  &amp;&amp;  near&lt;v1.cpos.w&amp;&amp;far&gt;v1.cpos.w )</span><br><span class="line">		<span class="keyword">return</span> &#123; v0, v1, v2 &#125;;</span><br><span class="line">	<span class="keyword">if</span>(v2.cpos.x&lt;v2.cpos.w&amp;&amp;v2.cpos.x&gt;-v2.cpos.w  &amp;&amp;  v2.cpos.y&lt;v2.cpos.w&amp;&amp;v2.cpos.y&gt;-v2.cpos.w  &amp;&amp;  v2.cpos.z&lt;v2.cpos.w&amp;&amp;v2.cpos.z&gt;-v2.cpos.w  &amp;&amp;  near&lt;v2.cpos.w&amp;&amp;far&gt;v2.cpos.w )</span><br><span class="line">		<span class="keyword">return</span> &#123; v0, v1, v2 &#125;;</span><br><span class="line">	<span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验效果</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026201714339.png"
+alt="image-20221026201714339" />
+<figcaption aria-hidden="true">image-20221026201714339</figcaption>
+</figure>
+<h2 id="task3">Task3</h2>
+<p>我们将在ndc空间做三角形的背向面剔除，以逆时针环绕顺序为正面。在ndc空间，三角形的顶点坐标的x
+、y 和z 取值在[-1,1] 之间，摄像机在坐标原点(0,0,0) 处，朝向(0,0,-1)
+方向（右手坐标系）。我们可以通过叉乘得到三角形的法线朝向，然后与视线方向进行点乘，根据点乘结果大于0
+还是小于0
+来判断三角形此时是否是正面朝向还是背面朝向，如果背面朝向，则应该直接剔除，不进行光栅化等后续的处理，这就是背向面剔除的基本原理。你要填充的函数在TRRenderer.cpp
+文件中，如下所示，其中传入的参数为ndc空间下的三角形顶点坐 标。</p>
+<p>思路：</p>
+<p>算法过程其实很简单，通过计算v0，v1，v2的三角形平面的法向朝向，通过法向朝向判断正向还是背向，在这里只需要与视角方向点乘即可判断。</p>
+<p>完善代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">TRRenderer::isTowardBackFace</span><span class="params">(<span class="type">const</span> glm::vec4 &amp;v0, <span class="type">const</span> glm::vec4 &amp;v1, <span class="type">const</span> glm::vec4 &amp;v2)</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Back face culling in the ndc space</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Task3: Implement the back face culling</span></span><br><span class="line">	<span class="comment">//  Note: Return true if it&#x27;s a back-face, otherwise return false.</span></span><br><span class="line">	glm::vec3 view= glm::<span class="built_in">vec3</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>);</span><br><span class="line">	glm::vec4 l1=v1-v0;</span><br><span class="line">	glm::vec4 l2=v2-v1;</span><br><span class="line">	glm::vec3 line1=glm::<span class="built_in">vec3</span>(l1.x,l1.y,l1.z);</span><br><span class="line">	glm::vec3 line2=glm::<span class="built_in">vec3</span>(l2.x,l2.y,l2.z);</span><br><span class="line"></span><br><span class="line">	glm::vec3 normal=glm::<span class="built_in">normalize</span>(glm::<span class="built_in">cross</span>(line1,line2));</span><br><span class="line">	<span class="comment">//点乘大于0，返回true ，属于背向</span></span><br><span class="line">	<span class="keyword">if</span>(glm::<span class="built_in">dot</span>(normal,view)&gt;<span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">       <span class="comment">//点乘大于0，返回false ，属于正向</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验效果</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026201903315.png"
+alt="image-20221026201903315" />
+<figcaption aria-hidden="true">image-20221026201903315</figcaption>
+</figure>
+<h2 id="task4">Task4</h2>
+<p>实现基于Edge-function的三角形填充算法。
+基于Edge-function的三角形填充算法首先计算三角形的包围盒，然后遍历包围盒内的像素点，判断该像素点是否在三角形内部，这就是它的基本原理</p>
+<p><strong>包围盒</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026131518843.png"
+alt="image-20221026131518843" />
+<figcaption aria-hidden="true">image-20221026131518843</figcaption>
+</figure>
+<p>如图遍历三角形的三个顶点，计算三角形的包围盒。得到包围盒后在去遍历包围盒的像素点。</p>
+<p><strong>边缘函数</strong></p>
+<p>假设三角形的边缘可以看作是将2D平面（图像的平面）一分为二的线。</p>
+<p>Pineda方法的原理是找到一个称为边缘函数的函数。</p>
+<ul>
+<li><p>当我们测试该点在哪条线的哪一侧（图2中的点P）时，该函数将返回负数。</p></li>
+<li><p>在该行的左边，当正点在该行的右边时为正数；</p></li>
+<li><p>在该点正好在该行上时为零</p></li>
+</ul>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026124654170.png"
+alt="image-20221026124654170" />
+<figcaption aria-hidden="true">image-20221026124654170</figcaption>
+</figure>
+<p>将以上原理拓展到三角形的三个边缘，如果现在将相同的方法应用于其他两个边（v1-v2和v2-v0），则可以清楚地看到存在一个区域（白色三角形），其中所有点均为正。如果P实际上是像素中心的一个点，则可以使用此方法查找像素是否与三角形重叠。如果在这一点上，我们发现边缘函数为所有三个边缘返回正数，则像素包含在三角形中（或可能位于其边缘之一上），如下图所示</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026124847420.png"
+alt="image-20221026124847420" />
+<figcaption aria-hidden="true">image-20221026124847420</figcaption>
+</figure>
+<p>这里的顺序一定要是顺时针(如果为逆时针，则内部为负数)，Pinada使用的函数也恰好是线性的，这意味着可以递增地计算它</p>
+<p>综上定义以下边函数（以v0 v1为例） <span class="math display">\[
+E_{01}=(P.x-V_0.x)*(V_1.y-V_0.y)-(P.y-V_0.y)*(V_1.x-V_0.x)
+\]</span> 该函数值和点P有如下关系：</p>
+<ul>
+<li>E(P) &gt; 0 ，P在右侧</li>
+<li>E(P) = 0 ，P在线上</li>
+<li>E(P) &lt; 0 ，P在左侧</li>
+</ul>
+<p>该公式实际上是向量V0P和向量V0P的叉积，即一个平行四边形面积，该面积公式可运用到以下重心坐标的参数计算。</p>
+<p><strong>重心坐标</strong></p>
+<p>我们知道，可以运用以下公式表示三角形内任意一个点 <span
+class="math display">\[
+P=\lambda_0*V_0+\lambda_1*V_1+\lambda_2*V_2
+\]</span> 其中 <span class="math display">\[
+\lambda_0+\lambda_1+\lambda_2=1
+\]</span>
+假设您在三角形的每个顶点上定义了一种颜色。假设V0为红色，V1为绿色，V2为蓝色。如下图：</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026130304108.png"
+alt="image-20221026130304108" />
+<figcaption aria-hidden="true">image-20221026130304108</figcaption>
+</figure>
+<p>根据的到的重心系数向量，就可以，给三角形内部渲染，公式定义为 <span
+class="math display">\[
+C_P=\lambda_0*C_{V_0}+\lambda_1*C_{V_1}+\lambda_2*C_{V_2}
+\]</span> 所以在这里，我们关键需要求出重心系数向量</p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026130659752.png"
+alt="image-20221026130659752" />
+<figcaption aria-hidden="true">image-20221026130659752</figcaption>
+</figure>
+<p>根据面积得知 <span class="math display">\[
+S_{\triangle V_0 V_1 V_2}=S_{\triangle V_0 V_1 P}+S_{\triangle V_1 V_2
+P} +S_{\triangle V_2 V_0 P}
+\]</span> 根据上面得知的边缘函数，计算面积 <span class="math display">\[
+S_{\triangle V_0 V_1 P}=\frac{1}{2}E_{01}(P)\\
+S_{\triangle V_1 V_2 P}=\frac{1}{2}E_{12}(P) \\
+S_{\triangle V_2 V_0 P}=\frac{1}{2}E_{20}(P)
+\]</span> 用边缘函数求解重心坐标 <span class="math display">\[
+\lambda_0=\frac{S_{\triangle V_1 V_2 P}} {S_{\triangle V_0 V_1 V_2}}\\
+\lambda_1=\frac{S_{\triangle V_2 V_0 P}} {S_{\triangle V_0 V_1 V_2}}\\
+\lambda_2=\frac{S_{\triangle V_0 V_1 P}} {S_{\triangle V_0 V_1 V_2}}\\
+\]</span> 按照上述的算法描述，完善代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">float</span> <span class="title">edgeFunction</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	glm::vec2 &amp;a,</span></span></span><br><span class="line"><span class="params"><span class="function">	glm::vec2 &amp;b,</span></span></span><br><span class="line"><span class="params"><span class="function">	glm::vec2 &amp;c</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (c.x-a.x)*(b.y-a.y)-(c.y-a.y)*(b.x-a.x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">TRShaderPipeline::rasterize_fill_edge_function</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> VertexData &amp;v0,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> VertexData &amp;v1,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> VertexData &amp;v2,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">int</span> &amp;screen_width,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">int</span> &amp;screene_height,</span></span></span><br><span class="line"><span class="params"><span class="function">	std::vector&lt;VertexData&gt; &amp;rasterized_points)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Edge-function rasterization algorithm</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//Task4: Implement edge-function triangle rassterization algorithm</span></span><br><span class="line">	<span class="comment">// Note: You should use VertexData::barycentricLerp(v0, v1, v2, w) for interpolation, </span></span><br><span class="line">	<span class="comment">//       interpolated points should be pushed back to rasterized_points.</span></span><br><span class="line">	<span class="comment">//       Interpolated points shold be discarded if they are outside the window. </span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//       v0.spos, v1.spos and v2.spos are the screen space vertices.</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//For instance:</span></span><br><span class="line">	rasterized_points.<span class="built_in">push_back</span>(v0);</span><br><span class="line">	rasterized_points.<span class="built_in">push_back</span>(v1);</span><br><span class="line">	rasterized_points.<span class="built_in">push_back</span>(v2);</span><br><span class="line">	VertexData temp;</span><br><span class="line">	<span class="comment">//set the max and min</span></span><br><span class="line">	<span class="type">double</span> minX,maxX,minY,maxY;</span><br><span class="line">	minX=maxX=v0.spos.x;</span><br><span class="line">	minY=maxY=v0.spos.y;</span><br><span class="line"></span><br><span class="line">	minX=std::<span class="built_in">min</span>(minX,(<span class="type">double</span>)v1.spos.x);</span><br><span class="line">	maxX=std::<span class="built_in">max</span>(maxX,(<span class="type">double</span>)v1.spos.x);</span><br><span class="line">	minY=std::<span class="built_in">min</span>(minY,(<span class="type">double</span>)v1.spos.y);</span><br><span class="line">	maxY=std::<span class="built_in">max</span>(maxY,(<span class="type">double</span>)v1.spos.y);</span><br><span class="line"></span><br><span class="line">	minX=std::<span class="built_in">min</span>(minX,(<span class="type">double</span>)v2.spos.x);</span><br><span class="line">	maxX=std::<span class="built_in">max</span>(maxX,(<span class="type">double</span>)v2.spos.x);</span><br><span class="line">	minY=std::<span class="built_in">min</span>(minY,(<span class="type">double</span>)v2.spos.y);</span><br><span class="line">	maxY=std::<span class="built_in">max</span>(maxY,(<span class="type">double</span>)v2.spos.y);</span><br><span class="line">	<span class="type">float</span> area=<span class="built_in">edgeFunction</span>(glm::<span class="built_in">vec2</span>(v0.spos.x,v0.spos.y),glm::<span class="built_in">vec2</span>(v1.spos.x,v1.spos.y),glm::<span class="built_in">vec2</span>(v2.spos.x,v2.spos.y));</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">double</span> ix=minX;ix&lt;=maxX;ix++)&#123;</span><br><span class="line">		<span class="keyword">for</span>(<span class="type">double</span> iy=minY;iy&lt;=maxY;iy++)&#123;</span><br><span class="line">			<span class="type">float</span> d=<span class="number">0.5f</span>;</span><br><span class="line">			<span class="type">float</span> x=ix+d;</span><br><span class="line">			<span class="type">float</span> y=iy+d;</span><br><span class="line">			glm::vec2 p=glm::<span class="built_in">vec2</span>(x,y);</span><br><span class="line">			<span class="type">float</span> w0=<span class="built_in">edgeFunction</span>(glm::<span class="built_in">vec2</span>(v1.spos.x,v1.spos.y),glm::<span class="built_in">vec2</span>(v2.spos.x,v2.spos.y),p);</span><br><span class="line">			<span class="type">float</span> w1=<span class="built_in">edgeFunction</span>(glm::<span class="built_in">vec2</span>(v2.spos.x,v2.spos.y),glm::<span class="built_in">vec2</span>(v0.spos.x,v0.spos.y),p);</span><br><span class="line">			<span class="type">float</span> w2=<span class="built_in">edgeFunction</span>(glm::<span class="built_in">vec2</span>(v0.spos.x,v0.spos.y),glm::<span class="built_in">vec2</span>(v1.spos.x,v1.spos.y),p);</span><br><span class="line">			glm::vec3 w=glm::<span class="built_in">vec3</span>(w0,w1,w2);</span><br><span class="line">			<span class="keyword">if</span>(w.x&gt;=<span class="number">0</span> &amp;&amp; w.y&gt;=<span class="number">0</span> &amp;&amp; w.z&gt;=<span class="number">0</span>)&#123;</span><br><span class="line">				w.x=w.x/area;</span><br><span class="line">				w.y=w.y/area;</span><br><span class="line">				w.z=w.z/area;</span><br><span class="line">                   <span class="keyword">if</span>(temp.spos.x&lt;screen_width&amp;&amp;temp.spos.x&gt;<span class="number">0</span>&amp;&amp;temp.spos.y&lt;screen_width&amp;&amp;temp.spos.y&gt;<span class="number">0</span>)</span><br><span class="line">					temp=VertexData::<span class="built_in">barycentricLerp</span>(v0,v1,v2,w);</span><br><span class="line">				rasterized_points.<span class="built_in">push_back</span>(temp);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>实验效果</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026202333319.png"
+alt="image-20221026202333319" />
+<figcaption aria-hidden="true">image-20221026202333319</figcaption>
+</figure>
+<h2 id="task5">Task5</h2>
+<p>Task5、实现深度测试，这里只需编写一行代码即可。
+为了体现正确的三维前后遮挡关系，我们实现的帧缓冲包含了一个深度缓冲，用于存储当前场景中最近物体的深度值，前后的。三角形的三个顶点经过一系列变换之后，其z
+存储了深度信息，取值为[-1,1]
+，越大则越远。经过光栅化的线性插值，每个片元都有一个深度值，存储在cpos.z
+中。在着色阶段，我们可以用当前片元的cpos.z
+与当前深度缓冲的深度值进行比较，如果发现深度缓冲的取值更小（即更近），则应该直接不进行着色器并写入到帧缓冲。</p>
+<p>根据以上算法描述，完善代码（实际上只要添加一个if语句即可）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Fragment shader &amp; Depth testing</span></span><br><span class="line">&#123;</span><br><span class="line">					<span class="keyword">for</span> (<span class="keyword">auto</span> &amp;points : rasterized_points)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">//Task5: Implement depth testing here</span></span><br><span class="line">		<span class="comment">// Note: You should use m_backBuffer-&gt;readDepth() and points.spos to read the depth in buffer</span></span><br><span class="line">		<span class="comment">//       points.cpos.z is the depth of curr fragment</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">//Perspective correction after rasterization</span></span><br><span class="line">			TRShaderPipeline::VertexData::<span class="built_in">aftPrespCorrection</span>(points);</span><br><span class="line">			glm::vec4 fragColor;</span><br><span class="line">			<span class="keyword">if</span>(m_backBuffer-&gt;<span class="built_in">readDepth</span>(points.spos.x,points.spos.y) &gt;= points.cpos.z)&#123;</span><br><span class="line">				m_shader_handler-&gt;<span class="built_in">fragmentShader</span>(points, fragColor);</span><br><span class="line">				m_backBuffer-&gt;<span class="built_in">writeColor</span>(points.spos.x, points.spos.y, fragColor);</span><br><span class="line">				m_backBuffer-&gt;<span class="built_in">writeDepth</span>(points.spos.x, points.spos.y, points.cpos.z);</span><br><span class="line">			&#125;</span><br><span class="line">							</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验效果</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026202422456.png"
+alt="image-20221026202422456" />
+<figcaption aria-hidden="true">image-20221026202422456</figcaption>
+</figure>
+<h2 id="task6">Task6</h2>
+<p>实现了直线光栅化、三角形填充光栅化、齐次空间简单裁剪、背面剔除之后，谈谈你遇到的问题、困难和体会。</p>
+<p>本次实验中，比较简单的的两个实验应该是<strong>齐次空间简单裁剪、背面剔除</strong>这两个实验都是按部就班地实现算法即可，基本没有难度。</p>
+<p>本实验中比较难的是<strong>直线光栅化、三角形填充光栅化</strong>，最难的应该是<strong>三角形光栅化</strong>。</p>
+<p>直线光栅化遇到的困难主要是如何选取像素位置，通过阅读理论材料，按照最近原则，我们选取的应该是更贴近y坐标一侧的像素，从而得到frac，利用线性插值的到选取像素点的具体位置</p>
+<p>最难的应该就是<strong>三角形光栅化</strong>，首先我们要理解好<strong>边缘函数</strong>，通过边缘函数edgeFunction，我们不仅可以确定包围盒中的点是否在三角形内，还可以面积公式（edgeFunction相当于求出同等比例面积（平行四边面积）），进而可以确定w向量，在利用该w向量，对颜色按照一定的比重进行渲染。</p>
+<h2 id="task7">Task7</h2>
+<p>Task7、实现更为精细的齐次空间三角形裁剪（提高题，选做）。参考链接
+在Task2中，只要有一个三角形在可见的范围内，我们就直接返回全部顶点。但实际上我们应该做更加精细的裁剪，把超出范围的给裁剪掉。这里涉及到稍微复杂一点的裁剪算法，如果你有兴趣、有能力，我们鼓励你尝试实现更精细的裁剪算法。</p>
+<p><strong>点与面的关系判断</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026132508869.png"
+alt="image-20221026132508869" />
+<figcaption aria-hidden="true">image-20221026132508869</figcaption>
+</figure>
+<p>由图我们可以做一个总结 <span class="math display">\[
+如果（Q-P）·\vec{n}&gt;0,则点Q在裁剪平面外侧\\
+如果（Q-P）·\vec{n}=0,则点Q在裁剪平面上\\
+如果（Q-P）·\vec{n}&lt;0,则点Q在裁剪平内侧
+\]</span> <strong>线与面的关系判断和求交点</strong></p>
+<p>如上图，任取一条线段有两个顶点Q1和Q2,设 <span class="math display">\[
+d_1=(Q_1-P)·\vec{n},d_2=(Q_2-P)·\vec{n},
+\]</span> 不难得到：</p>
+<p><strong>1
+如果d1&gt;0,d2&gt;0，则边Q1Q2完全处于裁剪平面外侧</strong></p>
+<p><strong>2
+如果d1&lt;0,d2&lt;0，则边Q1Q2完全处于裁剪平面内侧</strong></p>
+<p><strong>3 如果d1∗d2&lt;0，则边Q1Q2与裁剪平面相交与点I</strong></p>
+<p><strong>求交点</strong></p>
+<p>交点坐标 <span class="math display">\[
+I=Q_1+t(Q_2-Q_1)
+\]</span> 我们使用task1提到的的插值函数VertexData::lerp（ ）即可</p>
+<p>以w=x平面为例，计算t <span class="math display">\[
+w_1+t(w_2-w_1)=x_1+t(x_2-x_1)\\
+t=\frac{w_1-x_1}{(w_1-x_1)-(w_2-x_2)}
+\]</span> 以w=-x平面为例，计算t <span class="math display">\[
+w_1+t(w_2-w_1)=-x_1-t(x_2-x_1)\\
+t=\frac{w_1+x_1}{(w_1+x_1)-(w_2+x_2)}
+\]</span>
+除了对w=y,w=−y,w=x,w=−x,w=z,w=−z裁剪之外，一般还会在之前再增加一个w=1e−5平面的裁剪(只要是一个极小数即可，并不一定要是1e-5)，该举措的目的是只保留下w&gt;1e−5的点，防止裁剪之后的透视除法阶段出现除0错误</p>
+<p>最重要的其实就是std::vector&lt;TRShaderPipeline::VertexData返回平面交点坐标和在空间范围内的顶点</p>
+<p>代码完善</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对w进行裁剪，将拥有较小的w的顶点线性插值到w = 1e-5平面上</span></span><br><span class="line"><span class="function">std::vector&lt;TRShaderPipeline::VertexData&gt; <span class="title">clip_with_plane_w</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	std::vector&lt;TRShaderPipeline::VertexData&gt;&amp; input)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; output;</span><br><span class="line">	<span class="type">int</span> vertex_num = input.<span class="built_in">size</span>();</span><br><span class="line">	<span class="type">int</span> prev_index;</span><br><span class="line">	<span class="type">int</span> curr_index;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//遍历所有顶点</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;vertex_num; ++i) &#123;</span><br><span class="line">		curr_index=i;</span><br><span class="line">		<span class="comment">//这里只对input集合内部做循环裁剪</span></span><br><span class="line">		prev_index=(i<span class="number">-1</span>+vertex_num)%vertex_num;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//每次考察pre_vertex和curr_vertex两个顶点组成的边</span></span><br><span class="line">		TRShaderPipeline::VertexData pre_vertex = input[prev_index];</span><br><span class="line">		TRShaderPipeline::VertexData curr_vertex = input[curr_index];</span><br><span class="line"></span><br><span class="line">		<span class="comment">//若顶点的w小于1e-5则d = -1</span></span><br><span class="line">		<span class="type">int</span> d1 = (pre_vertex.cpos.w &lt; <span class="number">1e-5</span>) ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line">		<span class="type">int</span> d2 = (curr_vertex.cpos.w &lt; <span class="number">1e-5</span>) ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//若一个顶点在平面内，一个在平面外，则需要进行线性插值</span></span><br><span class="line">		<span class="keyword">if</span> (d1 * d2 &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="comment">//m1表示该对应平面的轴坐标，原坐标点乘转换向量即可把对应轴的坐标取出来</span></span><br><span class="line"></span><br><span class="line">			<span class="type">float</span> t = (<span class="number">1e-5</span>f - pre_vertex.cpos.w) / (pre_vertex.cpos.w - curr_vertex.cpos.w);</span><br><span class="line">			TRShaderPipeline::VertexData new_vertex = TRShaderPipeline::VertexData::<span class="built_in">lerp</span>(pre_vertex, curr_vertex, t);</span><br><span class="line">			output.<span class="built_in">push_back</span>(new_vertex);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//若curr_vertex在平面内，则添加到顶点集</span></span><br><span class="line">		<span class="keyword">if</span> (d2 &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			output.<span class="built_in">push_back</span>(curr_vertex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> output;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//对轴进行裁剪，axis为指定的轴：</span></span><br><span class="line"><span class="comment">//0 - x轴；1 - y轴；2 - z轴</span></span><br><span class="line"></span><br><span class="line"><span class="function">std::vector&lt;TRShaderPipeline::VertexData&gt; <span class="title">clip_with_plane_axis</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> <span class="type">int</span> axis,</span></span></span><br><span class="line"><span class="params"><span class="function">	std::vector&lt;TRShaderPipeline::VertexData&gt;&amp; input</span></span></span><br><span class="line"><span class="params"><span class="function">	)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; output;</span><br><span class="line">	<span class="type">int</span> vertex_num = input.<span class="built_in">size</span>();</span><br><span class="line">	<span class="type">int</span> prev_index, curr_index;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; vertex_num; ++i) &#123;</span><br><span class="line">		curr_index = i;</span><br><span class="line">		<span class="comment">//这里只对input集合内部做循环裁剪</span></span><br><span class="line">		prev_index = (i - <span class="number">1</span> + vertex_num) % vertex_num;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//取出的两个点,尝试判断是否需要裁剪</span></span><br><span class="line">		TRShaderPipeline::VertexData pre_vertex = input[prev_index];</span><br><span class="line">		TRShaderPipeline::VertexData curr_vertex = input[curr_index];</span><br><span class="line">		</span><br><span class="line">		<span class="type">int</span> d1, d2;</span><br><span class="line">		<span class="comment">//简化d的正负判断,不适用法向量点乘,直接判断坐标关系</span></span><br><span class="line">		d1 = (pre_vertex.cpos[axis] &lt;= pre_vertex.cpos.w) ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line">		d2 = (curr_vertex.cpos[axis] &lt;= curr_vertex.cpos.w) ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//若一个顶点在视椎体内，一个在视椎体外，则需要进行线性插值</span></span><br><span class="line">		<span class="keyword">if</span> (d1 * d2 &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="type">float</span> w1_minus_axis1 = pre_vertex.cpos.w - pre_vertex.cpos[axis];</span><br><span class="line">			<span class="type">float</span> w2_minus_axis2 = curr_vertex.cpos.w - curr_vertex.cpos[axis];</span><br><span class="line">			<span class="type">float</span> t = w1_minus_axis1 / (w1_minus_axis1 - w2_minus_axis2);</span><br><span class="line">			TRShaderPipeline::VertexData new_vertex = TRShaderPipeline::VertexData::<span class="built_in">lerp</span>(pre_vertex, curr_vertex, t);</span><br><span class="line">			output.<span class="built_in">push_back</span>(new_vertex);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//顶点在视椎体内，加入顶点集</span></span><br><span class="line">		<span class="keyword">if</span> (d2 &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			output.<span class="built_in">push_back</span>(curr_vertex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	vertex_num = output.<span class="built_in">size</span>();</span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; output2;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//对w = -axis平面进行裁剪</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; vertex_num; ++i) &#123;</span><br><span class="line">		curr_index = i;</span><br><span class="line">		prev_index = (i - <span class="number">1</span> + vertex_num) % vertex_num;</span><br><span class="line"></span><br><span class="line">		TRShaderPipeline::VertexData pre_vertex = output[prev_index];</span><br><span class="line">		TRShaderPipeline::VertexData curr_vertex = output[curr_index];</span><br><span class="line"></span><br><span class="line">		<span class="type">int</span> d1, d2;</span><br><span class="line">		d1 = (pre_vertex.cpos[axis] &gt;= -pre_vertex.cpos.w) ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line">		d2 = (curr_vertex.cpos[axis] &gt;= -curr_vertex.cpos.w) ? <span class="number">-1</span> : <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (d1 * d2 &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="comment">//由于负平面计算公式不同,这里需要做一些变化</span></span><br><span class="line">			<span class="type">float</span> w1_plus_m1 = pre_vertex.cpos.w + pre_vertex.cpos[axis];</span><br><span class="line">			<span class="type">float</span> w2_plus_m2 = curr_vertex.cpos.w + curr_vertex.cpos[axis];</span><br><span class="line">			<span class="type">float</span> t = w1_plus_m1 / (w1_plus_m1 - w2_plus_m2);</span><br><span class="line">			TRShaderPipeline::VertexData new_vertex = TRShaderPipeline::VertexData::<span class="built_in">lerp</span>(pre_vertex, curr_vertex, t);</span><br><span class="line">			output2.<span class="built_in">push_back</span>(new_vertex);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (d2 &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			output2.<span class="built_in">push_back</span>(curr_vertex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> output2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">std::vector&lt;TRShaderPipeline::VertexData&gt; <span class="title">TRRenderer::cliping</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData&amp; v0,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData&amp; v1,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData&amp; v2)</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; list1&#123; v0, v1, v2 &#125;;</span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; outlist1 = <span class="built_in">clip_with_plane_w</span>(list1);</span><br><span class="line"></span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; list2 = <span class="built_in">clip_with_plane_axis</span>(<span class="number">0</span>, list1);</span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; list3 = <span class="built_in">clip_with_plane_axis</span>(<span class="number">1</span>, list2);</span><br><span class="line">	std::vector&lt;TRShaderPipeline::VertexData&gt; list4 = <span class="built_in">clip_with_plane_axis</span>(<span class="number">2</span>, list3);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> list4;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>实验效果</strong></p>
+<figure>
+<img
+src="C:/Users/Scott/AppData/Roaming/Typora/typora-user-images/image-20221026202801309.png"
+alt="image-20221026202801309" />
+<figcaption aria-hidden="true">image-20221026202801309</figcaption>
+</figure>
+<p>如图，有明显的边缘裁剪痕迹</p>
+<p><strong>附录：</strong></p>
+<p>一些<strong>失败</strong>的代码（可以不用看了）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">VertexsInside</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;v0,<span class="type">int</span> near,<span class="type">int</span> far)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> v0.cpos.x/v0.cpos.w&lt;=<span class="number">1</span>&amp;&amp;v0.cpos.x/v0.cpos.w&gt;=<span class="number">-1</span>  &amp;&amp;  v0.cpos.y/v0.cpos.w&lt;=<span class="number">1</span>&amp;&amp;v0.cpos.y/v0.cpos.w&gt;=<span class="number">-1</span>  &amp;&amp;  v0.cpos.z/v0.cpos.w&lt;=<span class="number">1</span>&amp;&amp;v0.cpos.z/v0.cpos.z&gt;=<span class="number">-1</span> ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//针对一个面</span></span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">d_x_p</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;Q)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(Q.cpos.x/Q.cpos.w&lt;=<span class="number">1</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">d_x_n</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;Q)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(Q.cpos.x/Q.cpos.w&gt;=<span class="number">-1</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">d_y_p</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;Q)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(Q.cpos.y/Q.cpos.w&lt;=<span class="number">1</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">d_y_n</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;Q)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(Q.cpos.y/Q.cpos.w&gt;=<span class="number">-1</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">d_z_p</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;Q)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(Q.cpos.z/Q.cpos.w&lt;=<span class="number">1</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">d_z_n</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;Q)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(Q.cpos.y/Q.cpos.w&gt;=<span class="number">-1</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">float</span> <span class="title">d</span><span class="params">(<span class="type">const</span> TRShaderPipeline::VertexData &amp;Q,glm::vec4 &amp;P,glm::vec4 &amp;n,<span class="type">int</span> flag)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">1</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">d_x_p</span>(Q);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">2</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">d_x_n</span>(Q);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">3</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">d_y_p</span>(Q);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">4</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">d_y_n</span>(Q);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">5</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">d_z_p</span>(Q);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">6</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">d_z_n</span>(Q);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">insert</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v0,</span></span></span><br><span class="line"><span class="params"><span class="function">	std::vector&lt;TRShaderPipeline::VertexData&gt; &amp;result</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>&#123;</span><br><span class="line">	<span class="comment">// std::vector&lt;TRShaderPipeline::VertexData&gt;::iterator t;</span></span><br><span class="line">	<span class="comment">// t=find(result.begin(),result.end(),v0);</span></span><br><span class="line">	<span class="comment">// if(t==result.end())&#123;</span></span><br><span class="line">		result.<span class="built_in">push_back</span>(v0);</span><br><span class="line">	<span class="comment">// &#125;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">clipping</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	glm::vec4 &amp;v_0,</span></span></span><br><span class="line"><span class="params"><span class="function">	glm::vec4 &amp;v_1,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v0,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v1,</span></span></span><br><span class="line"><span class="params"><span class="function">	glm::vec4 &amp;point1,</span></span></span><br><span class="line"><span class="params"><span class="function">	glm::vec4 &amp;x_p,</span></span></span><br><span class="line"><span class="params"><span class="function">	std::vector&lt;TRShaderPipeline::VertexData&gt; &amp;result,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">int</span> flag,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">int</span> near,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">int</span> far</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>&#123;</span><br><span class="line">	<span class="type">float</span> d1=<span class="number">0</span>;</span><br><span class="line">	<span class="type">float</span> d2=<span class="number">0</span>;</span><br><span class="line">	<span class="type">float</span> t=<span class="number">0</span>;</span><br><span class="line">	d1=-<span class="built_in">d</span>(v0,point1,x_p,flag);</span><br><span class="line">	d2=-<span class="built_in">d</span>(v1,point1,x_p,flag);</span><br><span class="line">	<span class="comment">// if(d1&lt;0&amp;&amp;d2&lt;0)&#123;</span></span><br><span class="line">	<span class="comment">// 	insert(v0,result);</span></span><br><span class="line">	<span class="comment">// 	insert(v1,result);</span></span><br><span class="line">	<span class="comment">// &#125;</span></span><br><span class="line">	<span class="keyword">if</span>(d1*d2&lt;<span class="number">0</span>)&#123;</span><br><span class="line">		<span class="keyword">if</span>(flag==<span class="number">1</span>)</span><br><span class="line">			t=(v0.cpos.w-v0.cpos.x)/((v0.cpos.w-v0.cpos.x)-(v1.cpos.w-v1.cpos.x));</span><br><span class="line">		<span class="keyword">if</span>(flag==<span class="number">2</span>)</span><br><span class="line">			t=(-v0.cpos.w-v0.cpos.x)/(-(v0.cpos.w+v0.cpos.x)+(v1.cpos.w+v1.cpos.x));</span><br><span class="line">		<span class="keyword">if</span>(flag==<span class="number">3</span>)</span><br><span class="line">			t=(v0.cpos.w-v0.cpos.y)/((v0.cpos.w-v0.cpos.y)-(v1.cpos.w-v1.cpos.y));</span><br><span class="line">		<span class="keyword">if</span>(flag==<span class="number">4</span>)</span><br><span class="line">			t=(-v0.cpos.w-v0.cpos.y)/(-(v0.cpos.w+v0.cpos.y)+(v1.cpos.w+v1.cpos.y));</span><br><span class="line">		<span class="keyword">if</span>(flag==<span class="number">5</span>)</span><br><span class="line">			t=(v0.cpos.w-v0.cpos.z)/((v0.cpos.w-v0.cpos.z)-(v1.cpos.w-v1.cpos.z));</span><br><span class="line">		<span class="keyword">if</span>(flag==<span class="number">6</span>)</span><br><span class="line">			t=(-v0.cpos.w-v0.cpos.z)/(-(v0.cpos.w+v0.cpos.z)+(v1.cpos.w+v1.cpos.z));</span><br><span class="line">		TRShaderPipeline::VertexData I;</span><br><span class="line">		<span class="comment">// I=plus(v0,product(t,minus(v1,v0)));</span></span><br><span class="line">		I=TRShaderPipeline::VertexData::<span class="built_in">lerp</span>(v0,v1,t);</span><br><span class="line">		<span class="comment">//判断在正方体内部</span></span><br><span class="line">		<span class="keyword">if</span>(<span class="built_in">VertexsInside</span>(I,near,far))&#123;</span><br><span class="line">			<span class="built_in">insert</span>(I,result);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// if(d1&lt;0)&#123;</span></span><br><span class="line">		<span class="comment">// 	insert(v0,result);</span></span><br><span class="line">		<span class="comment">// &#125;</span></span><br><span class="line">		<span class="comment">// if(d2&lt;0)&#123;</span></span><br><span class="line">		<span class="comment">// 	insert(v1,result);</span></span><br><span class="line">		<span class="comment">// &#125;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">clip_with_plane</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v0,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">const</span> TRShaderPipeline::VertexData &amp;v1,</span></span></span><br><span class="line"><span class="params"><span class="function">	std::vector&lt;TRShaderPipeline::VertexData&gt; &amp;result,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">int</span> near,</span></span></span><br><span class="line"><span class="params"><span class="function">	<span class="type">int</span> far </span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>&#123;	</span><br><span class="line">	glm::vec4 v_0 =v0.cpos;</span><br><span class="line">	glm::vec4 v_1 =v1.cpos;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//没用</span></span><br><span class="line">	glm::vec4 point1=glm::<span class="built_in">vec4</span>(<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>);<span class="comment">//x=w,y=w,z=w</span></span><br><span class="line">	glm::vec4 point2=glm::<span class="built_in">vec4</span>(<span class="number">-1</span>,<span class="number">-1</span>,<span class="number">-1</span>,<span class="number">1</span>);<span class="comment">//x=-w,y=-w,z=-w</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//法向量有问题</span></span><br><span class="line">	<span class="comment">//Xaxis</span></span><br><span class="line">	glm::vec4 x_p=glm::<span class="built_in">vec4</span>(<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>);</span><br><span class="line">	<span class="built_in">clipping</span>(v_0,v_1,v0,v1,point1,x_p,result,<span class="number">1</span>,near,far);</span><br><span class="line"></span><br><span class="line">	glm::vec4 x_n=glm::<span class="built_in">vec4</span>(<span class="number">-1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>);</span><br><span class="line">	<span class="built_in">clipping</span>(v_0,v_1,v0,v1,point2,x_n,result,<span class="number">2</span>,near,far);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Yaxis</span></span><br><span class="line">	glm::vec4 y_p=glm::<span class="built_in">vec4</span>(<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">-1</span>);</span><br><span class="line">	<span class="built_in">clipping</span>(v_0,v_1,v0,v1,point1,y_p,result,<span class="number">3</span>,near,far);cpp</span><br><span class="line"></span><br><span class="line">	glm::vec4 y_n=glm::<span class="built_in">vec4</span>(<span class="number">0</span>,<span class="number">-1</span>,<span class="number">0</span>,<span class="number">-1</span>);</span><br><span class="line">	<span class="built_in">clipping</span>(v_0,v_1,v0,v1,point2,y_n,result,<span class="number">4</span>,near,far);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Zaxis</span></span><br><span class="line">	glm::vec4 z_p=glm::<span class="built_in">vec4</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">-1</span>);</span><br><span class="line">	<span class="built_in">clipping</span>(v_0,v_1,v0,v1,point1,z_p,result,<span class="number">5</span>,near,far);</span><br><span class="line"></span><br><span class="line">	glm::vec4 z_n=glm::<span class="built_in">vec4</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">-1</span>,<span class="number">-1</span>);</span><br><span class="line">	<span class="built_in">clipping</span>(v_0,v_1,v0,v1,point2,z_n,result,<span class="number">6</span>,near,far);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+    </article>
+    <!-- license -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://Klc1006.github.io">Klc</a>
+            <p>原文链接：<a href="https://klc1006.github.io/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">https://klc1006.github.io/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/</a>
+            <p>发表日期：<a href="https://klc1006.github.io/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">October 26th 2022, 12:00:00 am</a>
+            <p>更新日期：<a href="https://klc1006.github.io/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">March 15th 2023, 4:44:20 pm</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/" title="【计算机图形学】Assignment3 Lighting Texturing">
+                    <div class="nextTitle">【计算机图形学】Assignment3 Lighting Texturing</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/" title="【计算机图形学】Assignment1 3D Transformation">
+                    <div class="prevTitle">【计算机图形学】Assignment1 3D Transformation</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- comment -->
+    
+        <div class="post-comment">
+            <!-- 来必力 City 版安装代码 -->
+
+
+            
+
+            
+
+            
+
+            <!-- utteranc评论 -->
+
+
+            <!-- partial('_partial/comment/changyan') -->
+            <!--PC版-->
+
+
+            
+            
+
+            
+
+        </div>
+    
+    <!-- timeliness note -->
+    <!-- idea from: https://hexo.fluid-dev.com/posts/hexo-injector/#%E6%96%87%E7%AB%A0%E6%97%B6%E6%95%88%E6%80%A7%E6%8F%90%E7%A4%BA -->
+    
+    <!-- Mathjax -->
+    
+        
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+
+
+    
+</main>
+
+                <!-- profile -->
+                
+            </div>
+            <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+        <div class="social">
+            
+    
+        
+            
+                <a href="mailto:1172485065@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="https://github.com/Klc1006" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                    
+                    <img class="profile-qr" src="/assets/wechatqr.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+
+        </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- website approve for Chinese user -->
+    
+    <!-- 不蒜子  -->
+    
+        <div class="busuanzi-container">
+            
+             
+                <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+            
+        </div>
+    	
+</footer>
+
+        </div>
+        <!-- toc -->
+        
+            <div class="toc-wrapper toc-wrapper-loding" style=
+
+
+
+
+
+
+
+    top:50vh;
+
+>
+                <div class="toc-catalog">
+                    <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+                </div>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#task1"><span class="toc-number">1.</span> <span class="toc-text">Task1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task2"><span class="toc-number">2.</span> <span class="toc-text">Task2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task3"><span class="toc-number">3.</span> <span class="toc-text">Task3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task4"><span class="toc-number">4.</span> <span class="toc-text">Task4</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task5"><span class="toc-number">5.</span> <span class="toc-text">Task5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task6"><span class="toc-number">6.</span> <span class="toc-text">Task6</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#task7"><span class="toc-number">7.</span> <span class="toc-text">Task7</span></a></li></ol>
+            </div>
+        
+        <!-- sidebar -->
+        <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+        <div class="sidebar-panel-archives">
+    <!-- 在 ejs 中将 archive 按照时间排序 -->
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 16
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+        
+            
+            
+            <div class="archive-year"> 2023 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/15</span>
+            <a class="archive-post-title" href="/2023/03/15/%E3%80%90RL%E3%80%91PPO/">【RL】PPO以及更新神经网络RNN</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/08</span>
+            <a class="archive-post-title" href="/2023/03/08/leetcodet%E9%A2%98%E8%A7%A3%E7%AC%94%E8%AE%B0/">【Leetcode】题解笔记</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span>
+            <a class="archive-post-title" href="/2023/03/07/cpp/">面向对象编程 OOP（cpp语言篇）</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/09</span>
+            <a class="archive-post-title" href="/2023/01/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw6/">【计算机图形学】Assignment6 Mass Spring Simulation</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2022 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/25</span>
+            <a class="archive-post-title" href="/2022/12/25/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw5/">【计算机图形学】Assignment5 Bezier Curve</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/05</span>
+            <a class="archive-post-title" href="/2022/12/05/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw4/">【计算机图形学】Assignment4 Ray Tracing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/29</span>
+            <a class="archive-post-title" href="/2022/11/29/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw3%20/">【计算机图形学】Assignment3 Lighting Texturing</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/26</span>
+            <a class="archive-post-title" href="/2022/10/26/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw2/">【计算机图形学】Assignment2_Rasterization_ZBuffering</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/09</span>
+            <a class="archive-post-title" href="/2022/10/09/%E3%80%90%E8%AE%A1%E5%9B%BE%E3%80%91hw1/">【计算机图形学】Assignment1 3D Transformation</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/09</span>
+            <a class="archive-post-title" href="/2022/06/09/AI%20Course%2012/">【AI Course】PDDL解决规划问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/19</span>
+            <a class="archive-post-title" href="/2022/05/19/AI%20Course%208/">【AI Course】KNN完成情感分类标签</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/07</span>
+            <a class="archive-post-title" href="/2022/05/07/AI%20Course%207%20203/">【AI Course】朴素贝叶斯</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/28</span>
+            <a class="archive-post-title" href="/2022/04/28/AI%20Course%206/">【AI Course】归结演绎推理</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span>
+            <a class="archive-post-title" href="/2022/04/09/AI%20Course3/">【AI Course】A*和 IDA*算法解决15-puzzle问题</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/02</span>
+            <a class="archive-post-title" href="/2022/03/02/AI%20course%201_20337013/">【AI Course】一致代价实现最短路径</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2021 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span>
+            <a class="archive-post-title" href="/2021/11/15/%E3%80%90%E8%AE%A1%E7%BB%84%E5%AE%9E%E9%AA%8C%E3%80%91%E5%8D%95%E5%91%A8%E6%9C%9FCPU/">【计组实验】单周期CPU</a>
+        </li>
+    
+    </div>
+</div>
+
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+        
+            <span class="sidebar-tag-name" data-tags="归结推理">
+                <span class="iconfont-archer">&#xe606;</span>
+                归结推理
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="A*">
+                <span class="iconfont-archer">&#xe606;</span>
+                A*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IDA*">
+                <span class="iconfont-archer">&#xe606;</span>
+                IDA*
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="PDDL">
+                <span class="iconfont-archer">&#xe606;</span>
+                PDDL
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="规划问题">
+                <span class="iconfont-archer">&#xe606;</span>
+                规划问题
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="AI">
+                <span class="iconfont-archer">&#xe606;</span>
+                AI
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="最短路径">
+                <span class="iconfont-archer">&#xe606;</span>
+                最短路径
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="朴素贝叶斯">
+                <span class="iconfont-archer">&#xe606;</span>
+                朴素贝叶斯
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="KNN">
+                <span class="iconfont-archer">&#xe606;</span>
+                KNN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="分类">
+                <span class="iconfont-archer">&#xe606;</span>
+                分类
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="cpp">
+                <span class="iconfont-archer">&#xe606;</span>
+                cpp
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="leetcode">
+                <span class="iconfont-archer">&#xe606;</span>
+                leetcode
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="CPU">
+                <span class="iconfont-archer">&#xe606;</span>
+                CPU
+            </span>
+        
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+        缺失模块，请参考主题文档进行安装配置：https://github.com/fi3ework/hexo-theme-archer#%E5%AE%89%E8%A3%85%E4%B8%BB%E9%A2%98
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+
+    </div>
+</div>
+
+        <!-- site-meta -->
+        <script>
+    var siteMetaRoot = "/"
+    if (siteMetaRoot === "undefined") {
+        siteMetaRoot = '/'
+    }
+    var siteMeta = {
+        url: "https://Klc1006.github.io",
+        root: siteMetaRoot,
+        author: "Klc"
+    }
+</script>
+
+        <!-- import experimental options here -->
+        <!-- Custom Font -->
+
+
+        <!-- main func -->
+        <script src="/scripts/main.js?v=20211217"></script>
+        <!-- dark mode -->
+        <script src="/scripts/dark.js?v=20211217"></script>
+        <!-- fancybox -->
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
+        <!-- algolia -->
+        
+        <!-- busuanzi -->
+        
+            <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+        
+        <!-- CNZZ -->
+        
+        <!-- async load share.js -->
+        
+            <script src="/scripts/share.js?v=20211217" async></script>
+        
+        <!-- mermaid -->
+        
+            <script src='https://cdn.jsdelivr.net/npm/mermaid@8.11.0/dist/mermaid.min.js'></script>
+            <script>
+                if (window.mermaid) {
+                    mermaid.initialize({theme: 'dark'});
+                }
+            </script>
+        
+    </body>
+</html>
